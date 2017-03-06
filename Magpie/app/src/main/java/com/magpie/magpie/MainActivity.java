@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,23 +21,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         Button loginButton = (Button)findViewById(R.id.loginButton);
-        EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
-        EditText passwordEditText = (EditText)findViewById(R.id.passwordEditText);
+        final EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
+        final EditText passwordEditText = (EditText)findViewById(R.id.passwordEditText);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(v, "Login with credentials not implemented yet.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(emailEditText.getText().toString().equals("seanadmin") &&
+                        passwordEditText.getText().toString().equals("admin")) {
+                    Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
