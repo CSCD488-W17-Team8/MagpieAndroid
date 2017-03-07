@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(emailEditText.getText().toString().equals("seanadmin") &&
+                if(emailEditText.getText().toString().equals("admin") &&
                         passwordEditText.getText().toString().equals("admin")) {
                     Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
                 }
