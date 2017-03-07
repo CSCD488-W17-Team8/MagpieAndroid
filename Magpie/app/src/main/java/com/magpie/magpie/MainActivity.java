@@ -1,5 +1,10 @@
 package com.magpie.magpie;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import com.magpie.magpie.Obtainable_loc;
+
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +16,8 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import junit.framework.Test;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,12 +32,28 @@ public class MainActivity extends AppCompatActivity {
         final EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
         final EditText passwordEditText = (EditText)findViewById(R.id.passwordEditText);
         loginButton.setOnClickListener(new View.OnClickListener() {
+
+            /**
+             * Until a more secure login system is implemented, only admin passwords are used to
+             * reach Views made for testing.
+             * @param v
+             */
             @Override
             public void onClick(View v) {
+
                 if(emailEditText.getText().toString().equals("admin") &&
                         passwordEditText.getText().toString().equals("admin")) {
-                    Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Admin logging in...", Toast.LENGTH_SHORT).show();
+
+                } else if(emailEditText.getText().toString().equals("zacharyadmin") &&
+                        passwordEditText.getText().toString().equals("admin")) {
+                    // Goes to Zachary's tester
+                    Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(v.getContext(), Obtainable_loc.class);
+                    startActivity(i);
                 }
+
+                // TODO: implement Google SSO and create more secure login system.
             }
         });
     }
