@@ -57,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
                 // TODO: implement Google SSO and create more secure login system.
             }
         });
-
-        EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
-        EditText passwordEditText = (EditText)findViewById(R.id.passwordEditText);
     }
 
     @Override
