@@ -12,8 +12,36 @@
     tools:context="com.magpie.magpie.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
+    <Button
+        android:id="@+id/loginBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="196dp"
+        android:text="@string/login" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:layout_above="@+id/loginBtn"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/passwordEditText"
+        android:layout_marginBottom="14dp"
+        android:ems="10"
+        android:hint="@string/e_mail_address"
+        android:inputType="textEmailAddress"
+        android:layout_alignLeft="@+id/passwordEditText"
+        android:layout_alignStart="@+id/passwordEditText" />
+
 </RelativeLayout>
