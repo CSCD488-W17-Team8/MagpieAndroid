@@ -4,6 +4,7 @@
     <string name="action_about">About</string>
     <string name="e_mail_prompt">E-mail address</string>
     <string name="password_prompt">Password</string>
+    <string name="login">Login</string>
 
     <!--- TODO: Add server client ID -->
     <string name="server_client_id">YOUR_SERVER_CLIENT_ID</string>
