@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
                 if(emailEditText.getText().toString().equals("admin") &&
                         passwordEditText.getText().toString().equals("admin")) {
                     Toast.makeText(getApplicationContext(), "Admin logging in...", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(v.getContext(), MapsActivity.class);
+                    startActivity(i);
 
                 } else if(emailEditText.getText().toString().equals("zacharyadmin") &&
                         passwordEditText.getText().toString().equals("admin")) {
