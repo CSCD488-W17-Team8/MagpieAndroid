@@ -35,7 +35,11 @@
             android:name=".Obtainable_loc"
             android:label="@string/title_activity_obtainable_loc"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Local_loc"></activity>
+        <activity android:name=".Local_loc" />
+        <activity
+            android:name=".Badge_page"
+            android:label="@string/title_activity_badge_page"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
