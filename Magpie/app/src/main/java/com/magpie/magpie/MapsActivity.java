@@ -14,8 +14,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.widget.TextViewCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,6 +26,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.magpie.magpie.CollectionUtils.Collection;
+import com.magpie.magpie.CollectionUtils.Element;
+
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -31,6 +37,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final float DEFAULT_ZOOM = 18;
 
     private GoogleMap mMap;
+
+    private Collection mCollection;
+    private ArrayList<MarkerOptions> mMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +49,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        TextView collectionTitleTextView = (TextView)findViewById(R.id.collectionTitleTextView);
+        collectionTitleTextView.setText("No collection selected");
+
+        mMarkers = new ArrayList<>();
+
+        /**
+         * The active collection is restored from the savedInstanceState.
+         */
+        mCollection = (Collection) savedInstanceState.get("ACTIVE COLLECTION");
+        if (mCollection != null) {
+            createMarkerList();
+            collectionTitleTextView.setText(mCollection.getName());
+        }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        // TODO: save to preferences instead?
+        outState.putFloat("ZOOM", mMap.getCameraPosition().zoom);
+        outState.putSerializable("ACTIVE COLLECTION", mCollection);
+        super.onSaveInstanceState(outState);
+    }
 
     /**
      * Manipulates the map once available.
@@ -163,6 +194,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else {
                 Toast.makeText(this, "This app is useless without loc permissions", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    /**
+     *
+     * Stuff
+     *
+     */
+    private void createMarkerList() {
+
+        if (mCollection != null) {
+            ArrayList<Element> elements = mCollection.getCollectionElements();
+            for (Element element : elements) {
+
+                MarkerOptions marker = new MarkerOptions();
+                marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
+                marker.title(element.getName());
+
+
+
+                mMarkers.add(marker);
+            }
+
+            placeMarkers();
+        }
+    }
+
+    private void placeMarkers() {
+
+        for (MarkerOptions marker : mMarkers) {
+            mMap.addMarker(marker);
         }
     }
 }
