@@ -2,8 +2,4 @@
     <string name="app_name">Magpie</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_obtainable_loc">obtainable_loc</string>
-    <string name="title_activity_badge_page">Badge_page</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

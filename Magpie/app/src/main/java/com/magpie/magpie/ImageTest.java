@@ -20,7 +20,7 @@ public class ImageTest extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            Bitmap bm = BitmapFactory.decodeStream((InputStream) new URL("http://magpiehunt.com/image/logo/8").getContent());
+            Bitmap bm = BitmapFactory.decodeStream((InputStream) new URL("https://images-na.ssl-images-amazon.com/images/I/41sv5kJZGyL._SL500_AC_SS100_.jpg").getContent());
             Intent i = new Intent("Image").putExtra("Image", bm);
             LocalBroadcastManager.getInstance(this).sendBroadcast(i);
         } catch (Exception e) {
