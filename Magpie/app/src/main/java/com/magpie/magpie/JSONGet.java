@@ -23,18 +23,38 @@ public class JSONGet extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            HttpURLConnection hurl = (HttpURLConnection) new URL("http://www.mizesolutions.com/rest/v1/ewu/?coach=Beau%20Baldwin").openConnection();
-            hurl.connect();
-            InputStream is = hurl.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder jsonBuilder = new StringBuilder();
-            String temp = "";
-            while((temp = reader.readLine()) != null){
-                jsonBuilder.append(temp);
+            String type = intent.getStringExtra("Type");
+            if(type.compareTo("All") == 0) {
+                HttpURLConnection hurl = (HttpURLConnection) new URL("http://magpiehunt.com/api/collection/").openConnection();
+                hurl.connect();
+                InputStream is = hurl.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder jsonBuilder = new StringBuilder();
+                String temp = "";
+                while ((temp = reader.readLine()) != null) {
+                    jsonBuilder.append(temp);
+                }
+                json = jsonBuilder.toString();
+                Intent local = new Intent("Passing").putExtra("JSON", json);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(local);
             }
-            json = jsonBuilder.toString();
-            Intent local = new Intent("Passing").putExtra("JSON", json);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(local);
+            else{
+                String[] selected = type.split(",");
+                for(String s : selected){
+                    HttpURLConnection hurl = (HttpURLConnection) new URL("http://magpiehunt.com/api/landmark/all/" + s).openConnection();
+                    hurl.connect();
+                    InputStream is = hurl.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                    StringBuilder jsonBuilder = new StringBuilder();
+                    String temp = "";
+                    while ((temp = reader.readLine()) != null) {
+                        jsonBuilder.append(temp);
+                    }
+                    json = jsonBuilder.toString() + "%";
+                }
+                Intent loc = new Intent("Passing").putExtra("Landmarks", json);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(loc);
+            }
         }
         catch(Exception e){
             e.printStackTrace();

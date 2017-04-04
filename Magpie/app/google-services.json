@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "113050657146",
+    "project_id": "firebase-magpie"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113050657146:android:35564dc9a648d236",
+        "android_client_info": {
+          "package_name": "com.magpie.magpie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113050657146-em9sht87vs5jdtbvh59o8tgf5r1jpsks.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.magpie.magpie",
+            "certificate_hash": "aaa454517c5901c622e4a8e0206bed864df964a5"
+          }
+        },
+        {
+          "client_id": "113050657146-0tdp401i75upmj8f6ndiqvqcf05do9cu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0DYqiQYgs69ZngFvwEpajc1fj08i5PvU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
