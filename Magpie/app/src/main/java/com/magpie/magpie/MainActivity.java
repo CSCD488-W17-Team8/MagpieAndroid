@@ -4,10 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.magpie.magpie.Obtainable_loc;
 
 import android.os.Bundle;
@@ -16,14 +12,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import junit.framework.Test;
+
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,21 +51,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(emailEditText.getText().toString().equals("admin") &&
-                        passwordEditText.getText().toString().equals("admin")) {
-                    Toast.makeText(getApplicationContext(), "Admin logging in...", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(v.getContext(), MapsActivity.class);
-                    startActivity(i);
+                try {
 
-                } else if(emailEditText.getText().toString().equals("zacharyadmin") &&
-                        passwordEditText.getText().toString().equals("admin")) {
-                    // Goes to Zachary's tester
-                    Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(v.getContext(), Obtainable_loc.class);
-                    startActivity(i);
+                    if (emailEditText.getText().toString().equals("admin") &&
+                            passwordEditText.getText().toString().equals("admin")) {
+                        Toast.makeText(getApplicationContext(), "Admin logging in...", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(v.getContext(), MapsActivity.class);
+                        startActivity(i);
+
+                    } else if (emailEditText.getText().toString().equals("zacharyadmin") &&
+                            passwordEditText.getText().toString().equals("admin")) {
+                        // Goes to Zachary's tester
+                        Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
+                        Intent i = new Intent(v.getContext(), Obtainable_loc.class);
+                        startActivity(i);
+                    }
+
+                    // TODO: implement Google SSO and create more secure login system.
+
+                } catch (NullPointerException e) {
+
+                    Toast.makeText(getApplicationContext(), "Invalid credentials.", Toast.LENGTH_LONG).show();
+
                 }
-
-                // TODO: implement Google SSO and create more secure login system.
             }
         });
 

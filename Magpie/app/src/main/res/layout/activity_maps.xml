@@ -13,13 +13,19 @@
         android:layout_weight="1"
         tools:context="com.magpie.magpie.MapsActivity" />
 
-    <TextView
-        android:id="@+id/collectionTitleTextView"
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:elevation="0dp"
-        android:text="TextView" />
+        android:layout_height="match_parent"
+        android:layout_weight="2">
+
+        <TextView
+            android:id="@+id/collectionTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:elevation="0dp"
+            android:text="TextView" />
+    </GridLayout>
 </LinearLayout>
 
 
