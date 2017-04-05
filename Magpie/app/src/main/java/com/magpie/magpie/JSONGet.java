@@ -23,13 +23,14 @@ public class JSONGet extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            HttpURLConnection hurl = (HttpURLConnection) new URL("http://www.mizesolutions.com/rest/v1/ewu/?coach=Beau%20Baldwin").openConnection();
+            String type = intent.getStringExtra("Type");
+            HttpURLConnection hurl = (HttpURLConnection) new URL("http://magpiehunt.com/api/collection/").openConnection();
             hurl.connect();
             InputStream is = hurl.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder jsonBuilder = new StringBuilder();
             String temp = "";
-            while((temp = reader.readLine()) != null){
+            while ((temp = reader.readLine()) != null) {
                 jsonBuilder.append(temp);
             }
             json = jsonBuilder.toString();

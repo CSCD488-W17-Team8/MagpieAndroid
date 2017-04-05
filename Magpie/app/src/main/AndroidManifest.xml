@@ -26,6 +26,9 @@
         <service
             android:name=".ImageTest"
             android:exported="false" />
+        <service
+            android:name=".JSONElements"
+            android:exported="false"/>
 
         <activity
             android:name=".MainActivity"
