@@ -19,6 +19,7 @@ public class Element implements Serializable {
         mName = name;
         mLatitude = lat;
         mLongitude = lon;
+        mCollected = false;
     }
 
     public String getName() {
@@ -51,5 +52,21 @@ public class Element implements Serializable {
 
     void setCollected(boolean mCollected) {
         this.mCollected = mCollected;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null)
+            return false;
+
+        if (!Element.class.isAssignableFrom(o.getClass()))
+            return false;
+
+        final Element other = (Element) o;
+        if (this.mName.equals(other.getName()))
+            return false;
+
+        return true;
     }
 }

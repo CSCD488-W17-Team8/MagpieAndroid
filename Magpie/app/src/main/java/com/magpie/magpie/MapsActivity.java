@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,6 +36,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
+    private final String ACTIVE_COLLECTION_KEY = getString(R.string.active_collection_key);
+    private final String ZOOM_KEY = getString(R.string.zoom_key);
 
     private GoogleMap mMap;
 
@@ -58,24 +61,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /**
          * The active collection is restored from the savedInstanceState.
          */
-        /*
-        if (savedInstanceState.containsKey("ACTIVE COLLECTION")) {  // checks if key is present
-            mCollection = (Collection) savedInstanceState.get("ACTIVE COLLECTION");
-            if (mCollection != null) {
-                createMarkerList();
-                collectionTitleTextView.setText(mCollection.getName());
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(ACTIVE_COLLECTION_KEY)) {  // checks if key is present
+                mCollection = (Collection) savedInstanceState.get(ACTIVE_COLLECTION_KEY);
+                if (mCollection != null) {
+                    createMarkerList();
+                    collectionTitleTextView.setText(mCollection.getName());
+                }
+            }
+            if (savedInstanceState.containsKey(ZOOM_KEY)) {
+                // set zoom
             }
         }
-        */
+
+
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
         // TODO: save to preferences instead?
-        outState.putFloat("ZOOM", mMap.getCameraPosition().zoom);
+        outState.putFloat(ZOOM_KEY, mMap.getCameraPosition().zoom);
         //if (mCollection != null)
-            outState.putSerializable("ACTIVE COLLECTION", mCollection);
+            outState.putSerializable(ACTIVE_COLLECTION_KEY, mCollection);
         super.onSaveInstanceState(outState);
     }
 
@@ -101,7 +109,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initMap() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -112,7 +122,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // we don’t yet have permission, so request it and return
 
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -146,7 +157,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         if (location==null) {
-            provider = getProvider(locManager, Criteria.ACCURACY_COARSE, locManager.NETWORK_PROVIDER) ;
+            provider = getProvider(locManager, Criteria.ACCURACY_COARSE,
+                    locManager.NETWORK_PROVIDER);
             try {
                 location = locManager.getLastKnownLocation(provider) ;
             } catch(SecurityException e) {
@@ -168,7 +180,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (!locManager.isProviderEnabled(providerName)) {
 
             View parent = findViewById(R.id.map) ;
-            Snackbar snack = Snackbar.make(parent, "Location Provider Not Enabled: Goto Settings?", Snackbar.LENGTH_LONG) ;
+            Snackbar snack = Snackbar.make(parent, "Location Provider Not Enabled: Goto Settings?",
+                    Snackbar.LENGTH_LONG) ;
             snack.setAction("Confirm", new View.OnClickListener() {
 
                 @Override
@@ -187,25 +200,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void moveToLocation(Location location) {
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),
+                location.getLongitude()), DEFAULT_ZOOM));
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
 
         if (requestCode == REQUEST_LOCATION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initMap() ;
             } else {
-                Toast.makeText(this, "This app is useless without loc permissions", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "This app is useless without loc permissions",
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     /**
-     *
-     * Stuff
-     *
+     * Creates a list of markers from the Elements in the active collection.
+     * Markers are saves in the mMarkers member variable.
      */
     private void createMarkerList() {
 
@@ -217,8 +232,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
                 marker.title(element.getName());
 
-
-
                 mMarkers.add(marker);
             }
 
@@ -226,6 +239,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Places markers on the Map after markers were made in the createMarkerList method
+     */
     private void placeMarkers() {
 
         for (MarkerOptions marker : mMarkers) {
