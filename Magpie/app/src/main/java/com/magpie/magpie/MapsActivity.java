@@ -58,11 +58,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /**
          * The active collection is restored from the savedInstanceState.
          */
-        mCollection = (Collection) savedInstanceState.get("ACTIVE COLLECTION");
-        if (mCollection != null) {
-            createMarkerList();
-            collectionTitleTextView.setText(mCollection.getName());
+        /*
+        if (savedInstanceState.containsKey("ACTIVE COLLECTION")) {  // checks if key is present
+            mCollection = (Collection) savedInstanceState.get("ACTIVE COLLECTION");
+            if (mCollection != null) {
+                createMarkerList();
+                collectionTitleTextView.setText(mCollection.getName());
+            }
         }
+        */
     }
 
     @Override
@@ -70,7 +74,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // TODO: save to preferences instead?
         outState.putFloat("ZOOM", mMap.getCameraPosition().zoom);
-        outState.putSerializable("ACTIVE COLLECTION", mCollection);
+        //if (mCollection != null)
+            outState.putSerializable("ACTIVE COLLECTION", mCollection);
         super.onSaveInstanceState(outState);
     }
 
