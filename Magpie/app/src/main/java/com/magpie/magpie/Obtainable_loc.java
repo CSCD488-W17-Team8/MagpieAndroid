@@ -93,8 +93,7 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
         }
         catch (JSONException je){
             je.printStackTrace();
-        }
-    }
+		}
 
     private void appendData(RelativeLayout temp, String[] s, String jSON) {
         String fin = s[1] + " : " + s[2] + "\r\n";
@@ -120,6 +119,7 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
     private BroadcastReceiver br = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+        if(intent.hasExtra("JSON")) {
             json = intent.getStringExtra("JSON");
             try {
                 ja = new JSONArray(json);
@@ -136,12 +136,6 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
     };
 
     private BroadcastReceiver ibr = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            bm = intent.getParcelableExtra("Image");
-            iv.setImageBitmap(bm);
-        }
-    };
 
     private BroadcastReceiver ebr = new BroadcastReceiver() {
         @Override
@@ -184,7 +178,6 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
         }
 
     }
-
     private void createElements(String[] badgeArr) {
         try {
             JSONArray ja = new JSONArray(badgeArr[0]);

@@ -13,9 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import junit.framework.Test;
 
@@ -26,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getTitle());
         setSupportActionBar(toolbar);
         Button loginButton = (Button)findViewById(R.id.loginButton);
         final EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
@@ -52,10 +48,8 @@ public class MainActivity extends AppCompatActivity {
                     Intent i = new Intent(v.getContext(), Obtainable_loc.class);
                     startActivity(i);
                 }
-
+			});
                 // TODO: implement Google SSO and create more secure login system.
-            }
-        });
     }
 
     @Override

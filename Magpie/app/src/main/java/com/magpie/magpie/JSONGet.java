@@ -33,9 +33,6 @@ public class JSONGet extends IntentService {
             while ((temp = reader.readLine()) != null) {
                 jsonBuilder.append(temp);
             }
-            json = jsonBuilder.toString();
-            Intent local = new Intent("Passing").putExtra("JSON", json);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(local);
         }
         catch(Exception e){
             e.printStackTrace();

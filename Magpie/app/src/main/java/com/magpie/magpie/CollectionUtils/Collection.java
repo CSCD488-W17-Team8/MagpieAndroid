@@ -1,8 +1,5 @@
 package com.magpie.magpie.CollectionUtils;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,12 +12,12 @@ import java.util.ArrayList;
 
 public class Collection implements Serializable{
 
-    private int mCID;
+    private ArrayList<Element> mCollectionElements;
+	private int mCID;
     private String mCity, mState, mRating, mDescription, mPicID, mName; //PicID is assumed to be associated with the URL.
     private double mDistance;
     private boolean mOrdered;
     private int mElementTotal; //May not be needed. Putting this in here as they have it on the database.
-    private ArrayList<Element> mCollectionElements;
 
     public Collection() {
         mName = "";
@@ -57,7 +54,7 @@ public class Collection implements Serializable{
         Element e = new Element(json);
         mCollectionElements.add(e);
     }
-
+	
     public ArrayList<Element> getCollectionElements() {
         return mCollectionElements;
     }
