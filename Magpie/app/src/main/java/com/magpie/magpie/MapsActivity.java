@@ -54,7 +54,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         TextView collectionTitleTextView = (TextView)findViewById(R.id.collectionTitleTextView);
-        collectionTitleTextView.setText("No collection selected");
+        collectionTitleTextView.setText(getString(R.string.no_collection_selected));
+
+        TextView tempCoordinateTextView = (TextView)findViewById(R.id.tempCoordinateTextView);
+        tempCoordinateTextView.setText(getString(R.string.no_location));
 
         mMarkers = new ArrayList<>();
 
@@ -73,7 +76,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // set zoom
             }
         }
-
 
     }
 

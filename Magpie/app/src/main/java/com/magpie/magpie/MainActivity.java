@@ -86,6 +86,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+    }
+
     private void buttonOnClick(View v) {
 
         switch (v.getId()) {

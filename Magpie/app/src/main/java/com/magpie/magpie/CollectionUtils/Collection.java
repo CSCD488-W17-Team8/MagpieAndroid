@@ -63,17 +63,20 @@ public class Collection implements Serializable{
         return true;
     }
 
-    public Collection CollectionTestBuilder() {
+    public static Collection collectionTestBuilder(double lat, double lon) {
+
         Collection collection = new Collection("Test Collection");
-
-        collection.addElement(new Element("test1", 0.0, 0.0));
-        collection.addElement(new Element("test2", 0.1, 0.1));
-        collection.addElement(new Element("test3", 0.2, 0.2));
-        collection.addElement(new Element("test4", 0.3, 0.1));
-        collection.addElement(new Element("test5", 0.1, 0.2));
-        collection.addElement(new Element("test6", 0.1, 0.3));
-
+        collection.buildTestElements(lat, lon);
         return collection;
+    }
+
+    private void buildTestElements(double lat, double lon) {
+
+        mCollectionElements.add(new Element("test1", lat+0.1, lon+0.1));
+        mCollectionElements.add(new Element("test2", lat-0.1, lon-0.1));
+        mCollectionElements.add(new Element("test3", lat-0.1, lon+0.1));
+        mCollectionElements.add(new Element("test4", lat+0.1, lon-0.1));
+        mCollectionElements.add(new Element("test5", lat+0.2, lon+0.2));
     }
 
     /**

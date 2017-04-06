@@ -15,4 +15,8 @@
     <!--- Bundle Key Strings -->
     <string name="active_collection_key">ACTIVE COLLECTION</string>
     <string name="zoom_key">ZOOM</string>
+
+    <!--- Map Activity Default Strings -->
+    <string name="no_collection_selected">No collection selected</string>
+    <string name="no_location">Location data not available</string>
 </resources>
