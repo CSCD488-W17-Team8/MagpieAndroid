@@ -48,13 +48,13 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.obtainable_loc);
-        tl = (TableLayout)findViewById(R.id.MainTable);
+        //tl = (TableLayout)findViewById(R.id.MainTable);
         b = (Button) findViewById(R.id.button1);
         sendAll = (Button) findViewById(R.id.button3);
         imageTest = (Button) findViewById(R.id.button2);
+        tl = (TableLayout) findViewById(R.id.table1);
         LocalBroadcastManager.getInstance(this).registerReceiver(br, new IntentFilter("Passing"));
         LocalBroadcastManager.getInstance(this).registerReceiver(ebr, new IntentFilter("Elements"));
-        LocalBroadcastManager.getInstance(this).registerReceiver(ibr, new IntentFilter("Image"));
         b.setOnClickListener(this);
         imageTest.setOnClickListener(this);
         sendAll.setOnClickListener(this);
@@ -65,14 +65,14 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
         collBundle = new Bundle();
         sendAll.setTag("Apply");
     }
-    private void parseJSON(){
-        try{
+    private void parseJSON() {
+        try {
             String[] s = new String[9];
             Collection c;
             JSONObject j;
-            for(int i = 0; i < ja.length(); i++){
+            for (int i = 0; i < ja.length(); i++) {
                 j = ja.getJSONObject(i);
-                if(j.getInt("IsActive") == 1){ //) is false, 1 is true
+                if (j.getInt("IsActive") == 1) { //) is false, 1 is true
                     c = new Collection(j);
                     collection.add(c);
                     s[0] = j.getString("CID");
@@ -90,10 +90,10 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
                     tl.addView(temp);
                 }
             }
-        }
-        catch (JSONException je){
+        } catch (JSONException je) {
             je.printStackTrace();
-		}
+        }
+    }
 
     private void appendData(RelativeLayout temp, String[] s, String jSON) {
         String fin = s[1] + " : " + s[2] + "\r\n";
@@ -133,9 +133,7 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
         Obtainable_loc.this.startService(parseIntent);*/
 
         }
-    };
-
-    private BroadcastReceiver ibr = new BroadcastReceiver() {
+    }};
 
     private BroadcastReceiver ebr = new BroadcastReceiver() {
         @Override

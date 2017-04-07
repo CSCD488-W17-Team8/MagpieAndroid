@@ -14,10 +14,11 @@ public class Collection implements Serializable{
 
     private ArrayList<Element> mCollectionElements;
 	private int mCID;
-    private String mCity, mState, mRating, mDescription, mPicID, mName; //PicID is assumed to be associated with the URL.
+    private String mCity, mState, mRating, mDescription, mPicID, mName; //PicID is apparently used only within context of the database.
     private double mDistance;
     private boolean mOrdered;
-    private int mElementTotal; //May not be needed. Putting this in here as they have it on the database.
+    private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
+    private int collected; //Thinking about the collection progress here.
 
     public Collection() {
         mName = "";

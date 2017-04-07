@@ -23,7 +23,6 @@ public class JSONGet extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            String type = intent.getStringExtra("Type");
             HttpURLConnection hurl = (HttpURLConnection) new URL("http://magpiehunt.com/api/collection/").openConnection();
             hurl.connect();
             InputStream is = hurl.getInputStream();
@@ -33,6 +32,9 @@ public class JSONGet extends IntentService {
             while ((temp = reader.readLine()) != null) {
                 jsonBuilder.append(temp);
             }
+            json = jsonBuilder.toString();
+            Intent back = new Intent("Passing").putExtra("JSON", json);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(back);
         }
         catch(Exception e){
             e.printStackTrace();

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,6 +36,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
+    private final String ACTIVE_COLLECTION_KEY = getString(R.string.active_collection_key);
+    private final String ZOOM_KEY = getString(R.string.zoom_key);
 
     private GoogleMap mMap;
 
