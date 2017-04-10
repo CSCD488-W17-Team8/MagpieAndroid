@@ -1,5 +1,8 @@
 package com.magpie.magpie.CollectionUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -9,8 +12,13 @@ import java.util.ArrayList;
 
 public class Collection implements Serializable{
 
-    private String mName;
     private ArrayList<Element> mCollectionElements;
+	private int mCID;
+    private String mCity, mState, mRating, mDescription, mPicID, mName; //PicID is apparently used only within context of the database.
+    private double mDistance;
+    private boolean mOrdered;
+    private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
+    private int collected; //Thinking about the collection progress here.
 
     public Collection() {
         mName = "";
@@ -22,9 +30,10 @@ public class Collection implements Serializable{
     }
 
     /**
-     * @param element the element to be added to the Collection's ArrayList of Elements.
-     * @return true if add was successful, or false if element was null or already exists in the
-     * collection.
+     * Added by Sean.
+     *
+     * This method might be temporary
+     * // TODO: evaluate nessecity
      */
     public boolean addElement(Element element) {
         if (element != null) {
@@ -36,6 +45,33 @@ public class Collection implements Serializable{
         return false;
     }
 
+    public Collection(JSONObject json){
+        try {
+            mCID = json.getInt("CID");
+            mCity = json.getString("City");
+            mState = json.getString("State");
+            mRating = json.getString("Rating");
+            mDescription = json.getString("Description");
+            mDistance = json.getDouble("CollectionLength");
+            if(json.getInt("IsOrder") == 1) //0 is false, 1 is true
+                mOrdered = true;
+            else
+                mOrdered = false;
+            mPicID = json.getString("PicID");
+            mName = json.getString("Name");
+            mElementTotal = json.getInt("NumberOfLandmarks");
+            mCollectionElements = new ArrayList<>();
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void addElement(JSONObject json){
+        Element e = new Element(json);
+        mCollectionElements.add(e);
+    }
+
     public ArrayList<Element> getCollectionElements() {
         return mCollectionElements;
     }
@@ -43,6 +79,22 @@ public class Collection implements Serializable{
     public int getCollectionSize() {
         return mCollectionElements.size();
     }
+
+    public int getCID() {return mCID;}
+
+    public String getCity(){return mCity;}
+
+    public double getDistance() {return mDistance;}
+
+    public String getDescription() {return mDescription;}
+
+    public String getRating() {return mRating;}
+
+    public String getPicID() {return mPicID;}
+
+    public String getState() {return mState;}
+
+    public boolean getOrdered(){return mOrdered;}
 
     public String getName() {
         return mName;

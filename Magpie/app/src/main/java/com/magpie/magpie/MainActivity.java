@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(getApplicationContext(), "Going to JSON test", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(v.getContext(), MapsActivity.class);
+                Toast.makeText(getApplicationContext(), "Going to Local_loc test", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(v.getContext(), Local_loc.class);
                 startActivity(i);
             }
         });

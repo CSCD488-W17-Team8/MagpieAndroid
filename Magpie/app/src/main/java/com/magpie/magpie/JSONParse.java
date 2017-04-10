@@ -26,8 +26,8 @@ public class JSONParse extends IntentService {
             json = new JSONArray(intent.getStringExtra("JSON"));
             for(int i = 0; i < json.length(); i++) {
                 current = json.getJSONObject(i);
-                temp += current.getString("YEAR")+" -- ";
-                temp += current.getString("PCT")+",";
+                temp += current.getString("Name")+" -- ";
+                temp += current.getString("CID")+",";
             }
             fin = temp;
             Intent parsed = new Intent("parsedJSONPassing").putExtra("parsed", fin);
