@@ -33,7 +33,7 @@ public class Collection implements Serializable{
      * Added by Sean.
      *
      * This method might be temporary
-     * // TODO: evaluate nessecity
+     * // TODO: evaluate necessity
      */
     public boolean addElement(Element element) {
         if (element != null) {

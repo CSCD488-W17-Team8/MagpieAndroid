@@ -36,8 +36,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
-    private final String ACTIVE_COLLECTION_KEY = getString(R.string.active_collection_key);
-    private final String ZOOM_KEY = getString(R.string.zoom_key);
+    //private final String ACTIVE_COLLECTION_KEY = getString(R.string.active_collection_key);
+    private final String ACTIVE_COLLECTION_KEY = "ACTIVE COLLECTION";
+    //private final String ZOOM_KEY = getString(R.string.zoom_key);
+    private final String ZOOM_KEY = "ZOOM";
 
     private GoogleMap mMap;
 

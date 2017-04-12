@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(getApplicationContext(), "Going to GPS test", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(v.getContext(), MapsActivity.class);
+                Toast.makeText(getApplicationContext(), "Going to Local_loc test", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(v.getContext(), Local_loc.class);
                 startActivity(i);
             }
         });
@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(getApplicationContext(), "Going to Local_loc test", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(v.getContext(), Local_loc.class);
+                Toast.makeText(getApplicationContext(), "Going to GPS test", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(i);
             }
         });
