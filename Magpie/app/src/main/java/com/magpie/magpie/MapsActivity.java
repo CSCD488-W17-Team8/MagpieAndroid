@@ -36,10 +36,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
-    //private final String ACTIVE_COLLECTION_KEY = getString(R.string.active_collection_key);
-    private final String ACTIVE_COLLECTION_KEY = "ACTIVE COLLECTION";
-    //private final String ZOOM_KEY = getString(R.string.zoom_key);
-    private final String ZOOM_KEY = "ZOOM";
+    private final String ACTIVE_COLLECTION_KEY = getResources().getString(R.string.active_collection_key);
+    private final String ZOOM_KEY = getResources().getString(R.string.zoom_key);
+    //private final String ACTIVE_COLLECTION_KEY = "ACTIVE COLLECTION";
+    //private final String ZOOM_KEY = "ZOOM";
 
     private GoogleMap mMap;
 
@@ -208,6 +208,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return providerName ;
     }
 
+    /**
+     * Relocates the camera to be centered on the user's location
+     * @param location the user's current location.
+     */
     private void moveToLocation(Location location) {
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),
@@ -222,7 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initMap() ;
             } else {
-                Toast.makeText(this, "This app is useless without loc permissions",
+                Toast.makeText(this, "Magpie requires location permissions.",
                         Toast.LENGTH_SHORT).show();
             }
         }

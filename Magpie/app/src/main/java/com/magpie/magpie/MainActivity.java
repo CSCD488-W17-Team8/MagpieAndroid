@@ -33,25 +33,25 @@ public class MainActivity extends AppCompatActivity {
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
-        Button jsonTestButton = (Button)findViewById(R.id.jsonTestViewButton);
-        jsonTestButton.setOnClickListener(new View.OnClickListener() {
+        Button sessionTestButton = (Button)findViewById(R.id.jsonTestViewButton);
+        sessionTestButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(getApplicationContext(), "Going to Local_loc test", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Beginning session test", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(v.getContext(), Local_loc.class);
                 startActivity(i);
             }
         });
 
-        Button gpsTestButton = (Button)findViewById(R.id.gpsViewTestButton);
-        gpsTestButton.setOnClickListener(new View.OnClickListener() {
+        Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton);
+        mapTestButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(getApplicationContext(), "Going to GPS test", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Beginning Map test", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(i);
             }
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
              */
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(getApplicationContext(), "Not ready yet...", Toast.LENGTH_LONG).show();
             }
         });

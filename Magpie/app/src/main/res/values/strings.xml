@@ -22,7 +22,7 @@
     <!-- Strings For Testing Functionality Only
          TODO: remove once no longer needed -->
     <string name="test_login">Test Login</string>
-    <string name="zachary_test_button_text">Zachary Test</string>
-    <string name="gps_test_button_text">GPS Test</string>
+    <string name="session_test_button_text">Session Test</string>
+    <string name="map_test_button_text">Map Test</string>
 
 </resources>

@@ -115,6 +115,15 @@ public class Collection implements Serializable{
         return true;
     }
 
+    /**
+     * Temporary method for generating a test Collection to be used when testing the Maps Activity's
+     * ability to place markers from a collection. The Maps Activity passes the user's location to
+     * collectionTestBuilder and the method will generate a list of tokens within a range of the
+     * user.
+     * @param lat user's latitude position.
+     * @param lon user's longitude position.
+     * @return a Collection to be used as a test case for the Maps Activity
+     */
     public static Collection collectionTestBuilder(double lat, double lon) {
 
         Collection collection = new Collection("Test Collection");
