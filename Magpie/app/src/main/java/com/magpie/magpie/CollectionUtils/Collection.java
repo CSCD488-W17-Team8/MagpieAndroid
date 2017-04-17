@@ -27,6 +27,7 @@ public class Collection implements Serializable{
 
     public Collection(String str) {
         mName = str;
+        mCollectionElements = new ArrayList<>();
     }
 
     /**
@@ -96,6 +97,10 @@ public class Collection implements Serializable{
 
     public boolean getOrdered(){return mOrdered;}
 
+    /**
+     * Gets the name of the Collection
+     * @return the name of the Colletion
+     */
     public String getName() {
         return mName;
     }
@@ -133,17 +138,17 @@ public class Collection implements Serializable{
 
     private void buildTestElements(double lat, double lon) {
 
-        mCollectionElements.add(new Element("test1", lat+0.1, lon+0.1));
-        mCollectionElements.add(new Element("test2", lat-0.1, lon-0.1));
-        mCollectionElements.add(new Element("test3", lat-0.1, lon+0.1));
-        mCollectionElements.add(new Element("test4", lat+0.1, lon-0.1));
-        mCollectionElements.add(new Element("test5", lat+0.2, lon+0.2));
+        mCollectionElements.add(new Element("test1", lat+0.001, lon+0.001));
+        mCollectionElements.add(new Element("test2", lat-0.001, lon-0.001));
+        mCollectionElements.add(new Element("test3", lat-0.001, lon+0.001));
+        mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
+        mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
     }
 
     /**
      * Potentially where updating the collected status of each Element could take place
      */
     public void updateFromUserProgress() {
-        // TODO:
+        // TODO: maybe here? Maybe not?
     }
 }

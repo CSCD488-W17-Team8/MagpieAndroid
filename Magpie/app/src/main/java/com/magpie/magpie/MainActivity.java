@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.magpie.magpie.CollectionUtils.Collection;
 
 public class MainActivity extends FragmentActivity { // changed to FragmentActivity from AppCompatActivity
 
@@ -54,6 +55,7 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
 
                 Toast.makeText(getApplicationContext(), "Beginning Map test", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(v.getContext(), MapsActivity.class);
+                //Bundle b = new Bundle();
                 startActivity(i);
             }
         });

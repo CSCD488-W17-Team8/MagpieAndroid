@@ -14,7 +14,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.widget.TextViewCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -36,49 +34,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
-    private final String ACTIVE_COLLECTION_KEY = getResources().getString(R.string.active_collection_key);
-    private final String ZOOM_KEY = getResources().getString(R.string.zoom_key);
-    //private final String ACTIVE_COLLECTION_KEY = "ACTIVE COLLECTION";
-    //private final String ZOOM_KEY = "ZOOM";
+
+    // Keys
+    private String bundleKey = "";
+    private String activeCollectionKey = "";
+    private String zoomKey = "";
 
     private GoogleMap mMap;
+    private TextView mCollectionTitleTextView;
+    private TextView mTempCoordinateTextView;
 
     private Collection mCollection;
     private ArrayList<MarkerOptions> mMarkers;
+    private Location mMyLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        bundleKey = getString(R.string.bundle_extra_key);
+        activeCollectionKey = getString(R.string.active_collection_key);
+        zoomKey = getString(R.string.zoom_key);
+
+        // Get intent from the previous activity if applicable
+        Intent intent = getIntent();
+
+        //super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        TextView collectionTitleTextView = (TextView)findViewById(R.id.collectionTitleTextView);
-        collectionTitleTextView.setText(getResources().getString(R.string.no_collection_selected));
-
-        TextView tempCoordinateTextView = (TextView)findViewById(R.id.tempCoordinateTextView);
-        tempCoordinateTextView.setText(getResources().getString(R.string.no_location));
+        mCollectionTitleTextView = (TextView) findViewById(R.id.collectionTitleTextView);
+        mTempCoordinateTextView = (TextView) findViewById(R.id.tempCoordinateTextView);
 
         mMarkers = new ArrayList<>();
 
-        /**
-         * The active collection is restored from the savedInstanceState.
-         */
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(ACTIVE_COLLECTION_KEY)) {  // checks if key is present
-                mCollection = (Collection) savedInstanceState.get(ACTIVE_COLLECTION_KEY);
-                if (mCollection != null) {
-                    createMarkerList();
-                    collectionTitleTextView.setText(mCollection.getName());
-                }
-            }
-            if (savedInstanceState.containsKey(ZOOM_KEY)) {
-                // set zoom
+        if (intent.hasExtra(bundleKey)) {
+
+            Bundle b = intent.getBundleExtra(bundleKey);
+            if (b.containsKey(activeCollectionKey)) {
+                // If the Intent does contain a Bundle from a previous Activity
+                mCollection = (Collection) b.getSerializable(activeCollectionKey);
+
+            } else {
+                // If the Intent does NOT contain a Bundle from a previous Activity
+                mCollectionTitleTextView.setText(getResources().getString(R.string.no_collection_selected));
+                mTempCoordinateTextView.setText(getResources().getString(R.string.no_location));
             }
         }
-
     }
 
     /**
@@ -89,10 +95,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onSaveInstanceState(Bundle outState) {
 
         // TODO: save to preferences instead?
-        outState.putFloat(ZOOM_KEY, mMap.getCameraPosition().zoom);
+        outState.putFloat(zoomKey, mMap.getCameraPosition().zoom);
         //if (mCollection != null)
-            outState.putSerializable(ACTIVE_COLLECTION_KEY, mCollection);
+            outState.putSerializable(activeCollectionKey, mCollection);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState.containsKey(activeCollectionKey)) {
+            mCollection = (Collection) savedInstanceState.get(activeCollectionKey);
+            if (mCollection != null) {
+                createMarkerList();
+                mCollectionTitleTextView.setText(mCollection.getName());
+            }
+            if (savedInstanceState.containsKey(zoomKey)) {
+                // TODO: set zoom
+            }
+        }
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     /**
@@ -115,6 +136,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         */
 
+        mMyLocation = getLocation();
+        if (mMyLocation != null) {
+            moveToLocation(mMyLocation);
+            mTempCoordinateTextView.setText(mMyLocation.getLatitude()+", "+mMyLocation.getLongitude());
+
+            // TESTING
+            mCollection = Collection.collectionTestBuilder(mMyLocation.getLatitude(), mMyLocation.getLongitude());
+            mCollectionTitleTextView.setText(mCollection.getName());
+            //placeTestMarkers();
+            createMarkerList();
+            placeMarkers();
+            // TESTING END
+        }
+
+        //placeMarkers();
+
         initMap();
     }
 
@@ -122,16 +159,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
 
-            // we don’t yet have permission, so request it and return
-
+            /**
+             * Calls ActivityCompat.requestPermissions to request missing permissions.
+             */
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
             return;
@@ -140,13 +171,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                /*
                 Location location = getLocation();
                 if (location != null)
                     moveToLocation(location);
+                */
+
+
+                mMyLocation = getLocation();
+                if (mMyLocation != null) {
+                    moveToLocation(mMyLocation);
+                    mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
+                }
+
             }
         };
         Handler handler = new Handler();
@@ -218,6 +260,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 location.getLongitude()), DEFAULT_ZOOM));
     }
 
+    /**
+     * Handles the case where the user grants location permission request
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -226,6 +274,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initMap() ;
             } else {
+                /**
+                 * TODO: Maybe a small popup warning screen?
+                 * Might take user back to either login or list screen if permission is not granted.
+                 */
                 Toast.makeText(this, "Magpie requires location permissions.",
                         Toast.LENGTH_SHORT).show();
             }
@@ -261,5 +313,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (MarkerOptions marker : mMarkers) {
             mMap.addMarker(marker);
         }
+    }
+
+    private void placeTestMarkers() {
+
+        /**
+         * EXAMPLE:
+         * LatLng sydney = new LatLng(-34, 151);
+         * mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+         */
+
+        // TODO: left off here!
+        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude()+0.001, mMyLocation.getLongitude())).title("Test 0"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()+0.001)).title("Test 1"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()-0.001)).title("Test 2"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude()-0.001, mMyLocation.getLongitude())).title("Test 3"));
     }
 }
