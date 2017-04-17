@@ -42,6 +42,22 @@ public class Element implements Serializable {
         }
     }
 
+    public Element(JSONObject json) {
+        try{
+            mLID = json.getInt("LID");
+            mDescID = json.getInt("DescID");
+            mPicID = json.getInt("PicID");
+            mCollID = json.getInt("CollectionID");
+            mQRCode = json.getString("QRCode");
+            mName = json.getString("Name");
+            mLatitude = json.getDouble("Latitude");
+            mLongitude = json.getDouble("Longitude");
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+    }
+
     public int getLID(){return mLID;}
 
     public int getDescID(){return mDescID;}

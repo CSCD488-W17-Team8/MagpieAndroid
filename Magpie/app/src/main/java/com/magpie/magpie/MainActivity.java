@@ -69,7 +69,6 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
              */
             @Override
             public void onClick(View v) {
-
                 Toast.makeText(getApplicationContext(), "Not ready yet...", Toast.LENGTH_LONG).show();
             }
         });
