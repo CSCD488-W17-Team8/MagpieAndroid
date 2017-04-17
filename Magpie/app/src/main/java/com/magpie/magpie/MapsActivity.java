@@ -56,10 +56,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         TextView collectionTitleTextView = (TextView)findViewById(R.id.collectionTitleTextView);
-        collectionTitleTextView.setText(getString(R.string.no_collection_selected));
+        collectionTitleTextView.setText(getResources().getString(R.string.no_collection_selected));
 
         TextView tempCoordinateTextView = (TextView)findViewById(R.id.tempCoordinateTextView);
-        tempCoordinateTextView.setText(getString(R.string.no_location));
+        tempCoordinateTextView.setText(getResources().getString(R.string.no_location));
 
         mMarkers = new ArrayList<>();
 
