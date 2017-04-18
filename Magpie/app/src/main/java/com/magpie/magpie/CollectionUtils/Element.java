@@ -15,7 +15,7 @@ public class Element implements Serializable {
     private String mName, mQRCode;
     private double mLatitude;
     private double mLongitude;
-    private boolean mCollected;
+    private boolean mCollected; //Assuming no user database or Requires internet connection
     // todo: image
 
     public Element(String name, double lat, double lon) {

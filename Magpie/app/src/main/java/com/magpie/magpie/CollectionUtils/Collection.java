@@ -1,9 +1,14 @@
 package com.magpie.magpie.CollectionUtils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -18,7 +23,9 @@ public class Collection implements Serializable{
     private double mDistance;
     private boolean mOrdered;
     private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
-    private int collected; //Thinking about the collection progress here.
+    private int mCollected; //Thinking about the collection progress here.
+    private boolean mSelected;
+    private Bitmap img;
 
     public Collection() {
         mName = "";
@@ -97,6 +104,15 @@ public class Collection implements Serializable{
 
     public boolean getOrdered(){return mOrdered;}
 
+    public int getCollected(){return mCollected;}
+
+    public void setCollected(Element e){
+        if(!e.isCollected()){
+            e.setCollected(true);
+            mCollected++;
+        }
+    }
+
     /**
      * Gets the name of the Collection
      * @return the name of the Colletion
@@ -120,6 +136,24 @@ public class Collection implements Serializable{
         return true;
     }
 
+    public void addBitmap(String url){
+        try {
+            img = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public Bitmap getImg(){return img;}
+
+    public void setSelected(){
+        if(mSelected){
+            mSelected = false;
+        }
+        else
+            mSelected = true;
+    }
+    
     /**
      * Temporary method for generating a test Collection to be used when testing the Maps Activity's
      * ability to place markers from a collection. The Maps Activity passes the user's location to
@@ -130,21 +164,21 @@ public class Collection implements Serializable{
      * @return a Collection to be used as a test case for the Maps Activity
      */
     public static Collection collectionTestBuilder(double lat, double lon) {
-
+        
         Collection collection = new Collection("Test Collection");
         collection.buildTestElements(lat, lon);
         return collection;
     }
-
+    
     private void buildTestElements(double lat, double lon) {
-
+        
         mCollectionElements.add(new Element("test1", lat+0.001, lon+0.001));
         mCollectionElements.add(new Element("test2", lat-0.001, lon-0.001));
         mCollectionElements.add(new Element("test3", lat-0.001, lon+0.001));
         mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
         mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
     }
-
+    
     /**
      * Potentially where updating the collected status of each Element could take place
      */
