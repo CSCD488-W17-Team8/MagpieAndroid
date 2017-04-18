@@ -2,12 +2,54 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.magpie.magpie.Badge_page">
+    android:background="#FFFFFF"
+    tools:context="com.magpie.magpie.BadgePage">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ListView
-        android:id="@+id/BadgeList"
+    <RelativeLayout
+        android:id="@+id/MainRL"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/CollectionProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/CollectionTitle"
+            android:layout_height="25dp" />
+
+        <GridView
+            android:id="@+id/BadgeGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ListSwitch"
+            android:numColumns="auto_fit"
+            android:visibility="invisible" />
+
+        <ListView
+            android:id="@+id/BadgeListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ListSwitch"/>
+
+        <Button
+            android:id="@+id/ListSwitch"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:layout_alignParentTop="false"
+            android:layout_below="@+id/CollectionProgress"
+            android:layout_centerHorizontal="true"
+            android:text="Grid View" />
+
+        <TextView
+            android:id="@+id/CollectionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="27dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
+    </RelativeLayout>
 </FrameLayout>

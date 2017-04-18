@@ -7,14 +7,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.Image;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -33,26 +38,28 @@ import com.magpie.magpie.CollectionUtils.*;
 public class Obtainable_loc extends AppCompatActivity implements View.OnClickListener{
     ArrayList<String> collections;
     ArrayList<Collection> collection;
+    ArrayList<Collection> added;
     Bundle collBundle;
     Button b;
     Button imageTest;
     Button sendAll;
     ImageView iv;
-    TableLayout tl;
     String json;
     String collect;
     String badges;
     Bitmap bm;
     JSONArray ja;
+    ListView lv;
+    ArrayAdapter<String> obtainAdapter;
+    ArrayList<String> allColl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.obtainable_loc);
-        //tl = (TableLayout)findViewById(R.id.MainTable);
+        lv = (ListView) findViewById(R.id.listView);
         b = (Button) findViewById(R.id.button1);
         sendAll = (Button) findViewById(R.id.button3);
         imageTest = (Button) findViewById(R.id.button2);
-        tl = (TableLayout) findViewById(R.id.table1);
         LocalBroadcastManager.getInstance(this).registerReceiver(br, new IntentFilter("Passing"));
         LocalBroadcastManager.getInstance(this).registerReceiver(ebr, new IntentFilter("Elements"));
         b.setOnClickListener(this);
@@ -61,9 +68,33 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
         iv = (ImageView) findViewById(R.id.imageView6);
         collections = new ArrayList<>();
         collection = new ArrayList<>();
+        added = new ArrayList<>();
         collect = "";
         collBundle = new Bundle();
         sendAll.setTag("Apply");
+        allColl = new ArrayList<>();
+        obtainAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allColl)//{
+            /*@Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                Vi
+            }
+        }*/;
+        lv.setAdapter(obtainAdapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(added.size() == 0){
+                    Collection c = collection.get(i);
+                    added.add(c);
+                }
+                else if(added.contains(collection.get(i))){
+                    added.remove(collection.get(i));
+                }
+                else{
+                    added.add(collection.get(i));
+                }
+            }
+        });
     }
     private void parseJSON() {
         try {
@@ -74,6 +105,7 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
                 j = ja.getJSONObject(i);
                 if (j.getInt("IsActive") == 1) { //) is false, 1 is true
                     c = new Collection(j);
+                    c.addBitmap("http://magpiehunt.com/image/logo/" + c.getCID());
                     collection.add(c);
                     s[0] = j.getString("CID");
                     s[1] = j.getString("Name");
@@ -84,36 +116,16 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
                     s[6] = j.getString("CollectionLength");
                     s[7] = j.getString("IsOrder");
                     s[8] = j.getString("PicID");
-                    RelativeLayout temp = new RelativeLayout(this);
-                    temp.setId(i);
-                    appendData(temp, s, j.toString());
-                    tl.addView(temp);
+                    String fin = s[1] + " : " + s[2] + "\r\n";
+                    fin += s[4] + " (" + s[3] + ")";
+                    allColl.add(fin);
+                    obtainAdapter.notifyDataSetChanged();
+
                 }
             }
         } catch (JSONException je) {
             je.printStackTrace();
         }
-    }
-
-    private void appendData(RelativeLayout temp, String[] s, String jSON) {
-        String fin = s[1] + " : " + s[2] + "\r\n";
-        fin += s[4] + " (" + s[3] + ")";
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        final TextView tv = new TextView(this);
-        tv.setId(R.id.textv1);
-        tv.setTag(s[0]);
-        Button b = new Button(this);
-        b.setId(R.id.butn1);
-        b.setText("ADD");
-        b.setTag(jSON);
-        b.setOnClickListener(this);
-
-        tv.append(fin);
-        rlp.addRule(RelativeLayout.CENTER_VERTICAL);
-        temp.addView(tv);
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, tv.getId());
-        temp.addView(b, rlp);
-
     }
 
     private BroadcastReceiver br = new BroadcastReceiver() {
@@ -151,11 +163,10 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
             getIntent.putExtra("Type", "All");
             Obtainable_loc.this.startService(getIntent);
         }
-        else if(view.getId() == imageTest.getId()){
-            Intent imageIntent = new Intent(Obtainable_loc.this, ImageTest.class);
-            Obtainable_loc.this.startService(imageIntent);
-        }
         else if(((String)(view.getTag())).compareTo("Apply") == 0) {
+            for(Collection i : added){
+                collect += i.getCID() + ",";
+            }
             sendAll.setTag("Send");
             sendAll.setText("Confirm");
             Intent collIntent = new Intent(Obtainable_loc.this, JSONElements.class);
@@ -163,27 +174,23 @@ public class Obtainable_loc extends AppCompatActivity implements View.OnClickLis
             Obtainable_loc.this.startService(collIntent);
         }
         else if(((String)(view.getTag())).compareTo("Send") == 0){
-            collBundle.putSerializable("CollectionList", collection);
+            collBundle.putSerializable("CollectionList", added);
+            //TODO: Change to onSavedInstanceState method of data passing.
             Intent local = new Intent(view.getContext(), Local_loc.class);
             local.putExtras(collBundle);
             startActivity(local);
         }
-        else if(((RelativeLayout)(ViewGroup)view.getParent()).getChildAt(0) instanceof TextView){
-            collect += (String) ((TextView) ((RelativeLayout)(ViewGroup)view.getParent()).getChildAt(0)).getTag() + ",";
-            String data = (String) ((Button) ((RelativeLayout)(ViewGroup)view.getParent()).getChildAt(1)).getTag();
-            Intent local = new Intent(view.getContext(), Local_loc.class);
-            collections.add(data);
-        }
-
     }
     private void createElements(String[] badgeArr) {
         try {
-            JSONArray ja = new JSONArray(badgeArr[0]);
-            for(int j = 0; j < collection.size(); j++){
-                for(int i = 0; i < ja.length(); i++){
-                    JSONObject json = ja.getJSONObject(i);
-                    if(json.getInt("CollectionID") == collection.get(j).getCID()){
-                        collection.get(j).addElement(json);
+            for(int k = 0; k < badgeArr.length; k++) {
+                JSONArray ja = new JSONArray(badgeArr[k]);
+                for (int j = 0; j < added.size(); j++) {
+                    for (int i = 0; i < ja.length(); i++) {
+                        JSONObject json = ja.getJSONObject(i);
+                        if (json.getInt("CollectionID") == added.get(j).getCID()) {
+                            added.get(j).addElement(json);
+                        }
                     }
                 }
             }

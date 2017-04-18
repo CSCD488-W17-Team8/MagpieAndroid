@@ -1,9 +1,14 @@
 package com.magpie.magpie.CollectionUtils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -18,7 +23,9 @@ public class Collection implements Serializable{
     private double mDistance;
     private boolean mOrdered;
     private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
-    private int collected; //Thinking about the collection progress here.
+    private int mCollected; //Thinking about the collection progress here.
+    private boolean mSelected;
+    private Bitmap img;
 
     public Collection() {
         mName = "";
@@ -80,8 +87,34 @@ public class Collection implements Serializable{
 
     public boolean getOrdered(){return mOrdered;}
 
+    public int getCollected(){return mCollected;}
+
+    public void setCollected(Element e){
+        if(!e.isCollected()){
+            e.setCollected(true);
+            mCollected++;
+        }
+    }
+
     public String getName() {
         return mName;
     }
 
+    public void addBitmap(String url){
+        try {
+            img = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public Bitmap getImg(){return img;}
+
+    public void setSelected(){
+        if(mSelected){
+            mSelected = false;
+        }
+        else
+            mSelected = true;
+    }
 }

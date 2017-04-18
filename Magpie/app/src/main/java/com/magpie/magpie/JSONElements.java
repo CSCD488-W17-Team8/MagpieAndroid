@@ -20,6 +20,7 @@ public class JSONElements extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
+            json = "";
             String type = intent.getStringExtra("Type");
             String[] selected = type.split(",");
             for(String s : selected){
@@ -32,7 +33,7 @@ public class JSONElements extends IntentService {
                 while ((temp = reader.readLine()) != null) {
                     jsonBuilder.append(temp);
                 }
-                json = jsonBuilder.toString() + "%";
+                json += jsonBuilder.toString() + "%";
             }
             Intent loc = new Intent("Elements").putExtra("Landmarks", json);
             LocalBroadcastManager.getInstance(this).sendBroadcast(loc);
