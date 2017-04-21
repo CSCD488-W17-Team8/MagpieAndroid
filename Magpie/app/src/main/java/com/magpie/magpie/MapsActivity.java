@@ -41,6 +41,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String zoomKey = "";
 
     private GoogleMap mMap;
+
+    /**
+     * I moved the LocationManager to a member variable in order to keep a persistent reference to
+     * attach a LocationListener to. LocationManager is instantiated in onMapReady().
+     */
+    private LocationManager mLocManager;
     private TextView mCollectionTitleTextView;
     private TextView mTempCoordinateTextView;
 
@@ -129,12 +135,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        /**
+         * LocationManager instantiated here. LocationListener also attached.
+         */
+        mLocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // TODO: add LocationListener
+
         /*  This portion was added by default
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         */
+
 
         mMyLocation = getLocation();
         if (mMyLocation != null) {
@@ -173,6 +186,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
+        /**
+         * After UI settings have been established and markers have been placed, the map begins
+         * running.
+         */
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -199,20 +216,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Location location = null;
 
-        LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-        String provider = getProvider(locManager, Criteria.ACCURACY_FINE, locManager.GPS_PROVIDER);
+        String provider = getProvider(Criteria.ACCURACY_FINE, mLocManager.GPS_PROVIDER);
         try {
-            location = locManager.getLastKnownLocation(provider);
+            location = mLocManager.getLastKnownLocation(provider);
         } catch (SecurityException e) {
             Log.e("Permission not granted", "Security Exception: "+e.getMessage());
         }
 
         if (location==null) {
-            provider = getProvider(locManager, Criteria.ACCURACY_COARSE,
-                    locManager.NETWORK_PROVIDER);
+            provider = getProvider(Criteria.ACCURACY_COARSE,
+                    mLocManager.NETWORK_PROVIDER);
             try {
-                location = locManager.getLastKnownLocation(provider) ;
+                location = mLocManager.getLastKnownLocation(provider) ;
             } catch(SecurityException e) {
                 Log.e("Permission not granted", "Security Exception: "+e.getMessage());
             }
@@ -221,15 +236,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return location ;
     }
 
-    private String getProvider(LocationManager locManager, int accuracy, String defProvider) {
+    /**
+     * I moved the LocationManager to a member variable. It was originally passed as the first
+     * argument in this method. I'm making this note in case I need to switch back for any reason.
+     */
+    private String getProvider(int accuracy, String defProvider) {
         Criteria criteria = new Criteria();
         criteria.setAccuracy(accuracy);
 
-        String providerName = locManager.getBestProvider(criteria, false);
+        String providerName = mLocManager.getBestProvider(criteria, false);
         if (providerName == null)
             providerName = defProvider;
 
-        if (!locManager.isProviderEnabled(providerName)) {
+        if (!mLocManager.isProviderEnabled(providerName)) {
 
             View parent = findViewById(R.id.map) ;
             Snackbar snack = Snackbar.make(parent, "Location Provider Not Enabled: Goto Settings?",
