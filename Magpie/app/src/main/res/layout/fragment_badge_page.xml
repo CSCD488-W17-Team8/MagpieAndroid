@@ -1,0 +1,68 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context="com.magpie.magpie.BadgePage">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:id="@+id/MainRL"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/CollectionProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/CollectionTitle"
+            android:layout_height="25dp" />
+
+        <GridView
+            android:id="@+id/BadgeGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ListSwitch"
+            android:numColumns="auto_fit"
+            android:visibility="invisible" />
+
+        <ListView
+            android:id="@+id/BadgeListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ListSwitch"/>
+
+        <Button
+            android:id="@+id/ListSwitch"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:text="Grid View"
+            android:layout_below="@+id/CollectionProgress"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="76dp"
+            android:layout_marginStart="76dp" />
+
+        <TextView
+            android:id="@+id/CollectionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="27dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/startButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/BadgeGridView"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/ListSwitch"
+            android:layout_toRightOf="@+id/ListSwitch"
+            android:text="@string/set_active" />
+    </RelativeLayout>
+</FrameLayout>

@@ -1,71 +1,77 @@
 package com.magpie.magpie;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.magpie.magpie.Obtainable_loc;
+import com.magpie.magpie.CollectionUtils.Collection;
 
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import junit.framework.Test;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity { // changed to FragmentActivity from AppCompatActivity
 
     private GoogleApiClient mGoogleApiClient;
 
+    /**
+     * Initializes the first view in the app for the user. User will be presented with the login
+     * screen, from which they will be directed to other vieews in the app.
+     * @param savedInstanceState the saved instance state from which any necessary data will be
+     *                           restored.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getTitle());
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
-        Button loginButton = (Button)findViewById(R.id.loginButton);
-        final EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
-        final EditText passwordEditText = (EditText)findViewById(R.id.passwordEditText);
+        Button sessionTestButton = (Button)findViewById(R.id.jsonTestViewButton);
+        sessionTestButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getApplicationContext(), "Beginning session test", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(v.getContext(), Local_loc.class);
+                startActivity(i);
+            }
+        });
+
+        Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton);
+        mapTestButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getApplicationContext(), "Beginning Map test", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(v.getContext(), MapsActivity.class);
+                //Bundle b = new Bundle();
+                startActivity(i);
+            }
+        });
+
+        Button loginButton = (Button)findViewById(R.id.loginTestButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
 
             /**
-             * Until a more secure login system is implemented, only admin passwords are used to
-             * reach Views made for testing.
+             * Until a more secure login system is implemented, this button is used to test the app
+             * in its intended functionality as if a user but when user credentials are not available.
+             * NOT INTEDNED TO BE INCLUDED IN FINAL RELEASE
              * @param v
              */
             @Override
             public void onClick(View v) {
-
-                if(emailEditText.getText().toString().equals("admin") &&
-                        passwordEditText.getText().toString().equals("admin")) {
-                    Toast.makeText(getApplicationContext(), "Admin logging in...", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(v.getContext(), MapsActivity.class);
-                    startActivity(i);
-
-                } else if(emailEditText.getText().toString().equals("zacharyadmin") &&
-                        passwordEditText.getText().toString().equals("admin")) {
-                    // Goes to Zachary's tester
-                    Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(v.getContext(), Obtainable_loc.class);
-                    startActivity(i);
-                }
-
-                // TODO: implement Google SSO and create more secure login system.
+                Toast.makeText(getApplicationContext(), "Not ready yet...", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -78,10 +84,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+    }
+
     private void buttonOnClick(View v) {
 
         switch (v.getId()) {
-            case R.id.loginButton:
+            case R.id.loginTestButton:
                 // do something
                 break;
             case R.id.sign_in_button:
