@@ -1,6 +1,7 @@
 package com.magpie.magpie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -45,10 +46,14 @@ public class BadgePage extends Fragment {
     private TextView tv;
     private ProgressBar pb;
     private Button b;
+    private Button startButton;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private String bundleKey = "";
+    private String activeCollectionKey = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -80,6 +85,9 @@ public class BadgePage extends Fragment {
         if (getArguments() != null) {
             Bundle b = getArguments();
             c = (Collection) b.getSerializable("TheCollection");
+
+            bundleKey = getString(R.string.bundle_extra_key);
+            activeCollectionKey = getString(R.string.active_collection_key);
         }
     }
 
@@ -97,6 +105,8 @@ public class BadgePage extends Fragment {
         tv.setText(c.getName());
         b = (Button) v.findViewById(R.id.ListSwitch);
         b.setOnClickListener(butnClick);
+        startButton = (Button) v.findViewById(R.id.startButton);
+        startButton.setOnClickListener(startButtonClick);
         ArrayList<String> elementNames = elementToString(c);
         ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
         lv.setAdapter(badgeAdapter);
@@ -140,6 +150,17 @@ public class BadgePage extends Fragment {
                 gv.setVisibility(View.INVISIBLE);
                 b.setText("Grid View");
             }
+        }
+    };
+
+    View.OnClickListener startButtonClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i =  new Intent(v.getContext(), MapsActivity.class);
+            Bundle b = new Bundle();
+            b.putSerializable(activeCollectionKey, c);
+            i.putExtra(bundleKey, b);
+            startActivity(i);
         }
     };
 

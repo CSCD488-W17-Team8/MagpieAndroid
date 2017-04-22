@@ -10,6 +10,7 @@
 
     <string name="title_activity_obtainable_loc">obtainable_loc</string>
     <string name="title_activity_maps">Map</string>
+    <string name="set_active">Start</string>
 
     <!-- Bundle Key Strings -->
     <string name="bundle_extra_key">bundle extra</string>
