@@ -31,9 +31,6 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         Button sessionTestButton = (Button)findViewById(R.id.jsonTestViewButton);
         sessionTestButton.setOnClickListener(new View.OnClickListener() {
@@ -44,6 +41,7 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
                 Toast.makeText(getApplicationContext(), "Beginning session test", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(v.getContext(), Local_loc.class);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -57,6 +55,7 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
                 Intent i = new Intent(v.getContext(), MapsActivity.class);
                 //Bundle b = new Bundle();
                 startActivity(i);
+                finish();
             }
         });
 

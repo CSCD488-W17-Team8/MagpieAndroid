@@ -60,7 +60,7 @@ public class Collection implements Serializable{
             mState = json.getString("State");
             mRating = json.getString("Rating");
             mDescription = json.getString("Description");
-            mDistance = json.getDouble("CollectionLength");
+            //mDistance = json.getDouble("CollectionLength");
             if(json.getInt("IsOrder") == 1) //0 is false, 1 is true
                 mOrdered = true;
             else

@@ -2,6 +2,7 @@ package com.magpie.magpie;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -14,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -122,6 +124,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.leaving_map_alert)
+                .setMessage("Are you sure you want to return to My Collections?")
+                .setPositiveButton(R.string.yes_confirmation, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(MapsActivity.this, Local_loc.class));
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.no_confirmation, null)
+                .show();
     }
 
     /**
