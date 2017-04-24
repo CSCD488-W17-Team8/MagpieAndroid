@@ -3,6 +3,7 @@ package com.magpie.magpie;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -33,11 +34,11 @@ public class JSONGet extends IntentService {
                 jsonBuilder.append(temp);
             }
             json = jsonBuilder.toString();
-            Intent back = new Intent("Passing").putExtra("JSON", json);
+            Intent back = new Intent("FromCMS").putExtra("JSONFromCMS", json);
             LocalBroadcastManager.getInstance(this).sendBroadcast(back);
         }
         catch(Exception e){
-            e.printStackTrace();
+            Log.d("Error: ", e.getMessage());
         }
     }
 }

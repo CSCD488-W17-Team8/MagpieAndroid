@@ -34,4 +34,18 @@
     <string name="test_login">Test Login</string>
     <string name="session_test_button_text">Session Test</string>
     <string name="map_test_button_text">Map Test</string>
+
+    <!-- Obtainable_loc Strings -->
+    <string name="obtainConfirm">Confirm</string>
+    <string name="getElements">Apply</string>
+    <string name="returnToLocal">Cancel</string>
+    <string name="pullJSON">Search</string>
+
+    <!-- Local_loc Strings -->
+
+
+    <!-- fragment_badge_page Strings-->
+    <string name="gridLabel">Grid</string>
+    <string name="listLabel">List</string>
+
 </resources>

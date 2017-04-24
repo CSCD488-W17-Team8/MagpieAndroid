@@ -2,12 +2,23 @@ package com.magpie.magpie;
 
 import android.content.Intent;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -17,7 +28,8 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.magpie.magpie.CollectionUtils.Collection;
 
-public class MainActivity extends FragmentActivity { // changed to FragmentActivity from AppCompatActivity
+
+public class MainActivity extends AppCompatActivity implements BadgePage.OnFragmentInteractionListener {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -39,9 +51,16 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
             public void onClick(View v) {
 
                 Toast.makeText(getApplicationContext(), "Beginning session test", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(v.getContext(), Local_loc.class);
-                startActivity(i);
-                finish();
+                
+                Fragment fr = new Local_loc();
+                android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.Main_Activity, fr);
+                ft.commit();
+                
+                //Intent i = new Intent(v.getContext(), Local_loc.class);
+                //startActivity(i);
+                //finish();
             }
         });
 
@@ -71,6 +90,27 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "Not ready yet...", Toast.LENGTH_LONG).show();
+
+                /*
+                if(emailEditText.getText().toString().equals("admin") &&
+                        passwordEditText.getText().toString().equals("admin")) {
+                    Toast.makeText(getApplicationContext(), "Admin logging in...", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(v.getContext(), MapsActivity.class);
+                    startActivity(i);
+
+                } else if(emailEditText.getText().toString().equals("zacharyadmin") &&
+                        passwordEditText.getText().toString().equals("admin")) {
+                    // Goes to Zachary's tester
+                    Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
+                    Fragment fr = new Local_loc();
+                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                    ft.replace(R.id.Main_Activity, fr);
+                    ft.commit();
+                }
+                */
+
+                // TODO: implement Google SSO and create more secure login system.
             }
         });
 
@@ -126,5 +166,10 @@ public class MainActivity extends FragmentActivity { // changed to FragmentActiv
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

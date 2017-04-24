@@ -33,7 +33,7 @@ public class CustomListAdapter extends BaseAdapter {
 
     public CustomListAdapter(Local_loc local, ArrayList<Collection> cs){
         collections = cs;
-        context = local;
+        //context = local;
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
