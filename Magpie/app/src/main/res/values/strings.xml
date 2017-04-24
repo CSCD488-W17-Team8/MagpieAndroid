@@ -21,6 +21,14 @@
     <string name="no_collection_selected">No collection selected</string>
     <string name="no_location">Location data not available</string>
 
+    <!-- Confirmation Strings -->
+    <string name="yes_confirmation">Yes</string>
+    <string name="no_confirmation">No</string>
+    <string name="cancel_confirmation">Cancel</string>
+
+    <!-- Alert string -->
+    <string name="leaving_map_alert">Leaving the map</string>
+
     <!-- Strings For Testing Functionality Only
          TODO: remove once no longer needed -->
     <string name="test_login">Test Login</string>
