@@ -22,4 +22,18 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Obtainable_loc Strings -->
+    <string name="obtainConfirm">Confirm</string>
+    <string name="getElements">Apply</string>
+    <string name="returnToLocal">Cancel</string>
+    <string name="pullJSON">Search</string>
+
+    <!-- Local_loc Strings -->
+
+
+    <!-- fragment_badge_page Strings-->
+    <string name="gridLabel">Grid</string>
+    <string name="listLabel">List</string>
+
 </resources>

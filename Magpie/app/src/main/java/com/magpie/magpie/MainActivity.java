@@ -10,12 +10,15 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.magpie.magpie.Obtainable_loc;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +28,7 @@ import android.widget.Toast;
 
 import junit.framework.Test;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BadgePage.OnFragmentInteractionListener {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -61,8 +64,11 @@ public class MainActivity extends AppCompatActivity {
                         passwordEditText.getText().toString().equals("admin")) {
                     // Goes to Zachary's tester
                     Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(v.getContext(), Local_loc.class);
-                    startActivity(i);
+                    Fragment fr = new Local_loc();
+                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                    ft.replace(R.id.Main_Activity, fr);
+                    ft.commit();
                 }
 
                 // TODO: implement Google SSO and create more secure login system.
@@ -115,5 +121,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

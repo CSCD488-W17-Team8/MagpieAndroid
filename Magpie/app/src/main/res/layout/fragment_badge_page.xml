@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,18 +13,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <RelativeLayout
+            android:id="@+id/TabRL"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_below="@+id/CollectionProgress">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/ViewTabs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.design.widget.TabItem
+                    android:id="@+id/ListTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/listLabel"/>
+
+                <android.support.design.widget.TabItem
+                    android:id="@+id/GridTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gridLabel"/>
+
+            </android.support.design.widget.TabLayout>
+        </RelativeLayout>
+
         <ProgressBar
             android:id="@+id/CollectionProgress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_below="@+id/CollectionTitle"
-            android:layout_height="25dp" />
+            android:layout_height="25dp"
+            android:layout_below="@+id/CollectionTitle" />
 
         <GridView
             android:id="@+id/BadgeGridView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/ListSwitch"
+            android:layout_below="@+id/TabRL"
             android:numColumns="auto_fit"
             android:visibility="invisible" />
 
@@ -31,16 +58,7 @@
             android:id="@+id/BadgeListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/ListSwitch"/>
-
-        <Button
-            android:id="@+id/ListSwitch"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_alignParentTop="false"
-            android:layout_below="@+id/CollectionProgress"
-            android:layout_centerHorizontal="true"
-            android:text="Grid View" />
+            android:layout_below="@+id/TabRL" />
 
         <TextView
             android:id="@+id/CollectionTitle"
@@ -52,4 +70,5 @@
             android:textColor="@android:color/black"
             android:textSize="24sp" />
     </RelativeLayout>
+
 </FrameLayout>

@@ -25,6 +25,18 @@ public class Element implements Serializable {
         mLongitude = lon;
     }
 
+    public Element(String fromFile){
+        String[] data = fromFile.split("%");
+        mName = data[0];
+        mLID = Integer.parseInt(data[1]);
+        mDescID = Integer.parseInt(data[2]);
+        mPicID =  Integer.parseInt(data[3]);
+        mCollID = Integer.parseInt(data[4]);
+        mQRCode = data[5];
+        mLatitude = Double.parseDouble(data[6]);
+        mLongitude = Double.parseDouble(data[7]);
+    }
+
     public Element(JSONObject json) {
         try{
             mLID = json.getInt("LID");
@@ -76,5 +88,12 @@ public class Element implements Serializable {
     }
 
     void setCollected(boolean mCollected) {this.mCollected = mCollected;}
+
+    @Override
+    public String toString(){
+        String ret = mName + "%" + mLID + "%" + mDescID + "%" + mPicID + "%" +
+                mCollID + "%" + mQRCode + "%" + mLatitude + "%" + mLongitude;
+        return ret;
+    }
 }
 

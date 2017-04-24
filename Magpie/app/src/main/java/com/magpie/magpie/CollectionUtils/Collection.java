@@ -32,8 +32,24 @@ public class Collection implements Serializable{
         mCollectionElements = new ArrayList<>();
     }
 
-    public Collection(String str) {
-        mName = str;
+    public Collection(String fromFile) {
+        String [] elementSplit = fromFile.split("%%");
+        String [] elements = elementSplit[11].split(",");
+        mCollectionElements = new ArrayList<>();
+        for(String e : elements){
+            mCollectionElements.add(new Element(e));
+        }
+        mName = elementSplit[0];
+        mCID = Integer.parseInt(elementSplit[1]);
+        mCity = elementSplit[2];
+        mState = elementSplit[3];
+        mRating = elementSplit[4];
+        mDescription = elementSplit[5];
+        mPicID = elementSplit[6];
+        mDistance = Double.parseDouble(elementSplit[7]);
+        mOrdered = Boolean.parseBoolean(elementSplit[8]);
+        mElementTotal = Integer.parseInt(elementSplit[9]);
+        mSelected = Boolean.parseBoolean(elementSplit[10]);
     }
 
     public Collection(JSONObject json){
@@ -43,7 +59,6 @@ public class Collection implements Serializable{
             mState = json.getString("State");
             mRating = json.getString("Rating");
             mDescription = json.getString("Description");
-            mDistance = json.getDouble("CollectionLength");
             if(json.getInt("IsOrder") == 1) //0 is false, 1 is true
                 mOrdered = true;
             else
@@ -116,5 +131,17 @@ public class Collection implements Serializable{
         }
         else
             mSelected = true;
+    }
+
+    @Override
+    public String toString(){
+        String elementStr= "";
+        for(Element e : mCollectionElements){
+            elementStr += e.toString() + ",";
+        }
+        String fin = mName + "%%" + mCID + "%%" + mCity + "%%" + mState + "%%" + mRating
+                + "%%" + mDescription + "%%" + mPicID + "%%" + mDistance + "%%" + mOrdered
+                + "%%" + mElementTotal + "%%" + mSelected + "%%" + elementStr;
+        return fin;
     }
 }

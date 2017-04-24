@@ -3,6 +3,7 @@ package com.magpie.magpie;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +45,9 @@ public class BadgePage extends Fragment {
     private ListView lv;
     private GridView gv;
     private TextView tv;
+    private TabLayout viewTabs;
+    private TabLayout.Tab listTab, gridTab;
     private ProgressBar pb;
-    private Button b;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -91,12 +94,14 @@ public class BadgePage extends Fragment {
         tv = (TextView) v.findViewById(R.id.CollectionTitle);
         gv = (GridView) v.findViewById(R.id.BadgeGridView);
         lv = (ListView) v.findViewById(R.id.BadgeListView);
+        viewTabs = (TabLayout) v.findViewById(R.id.ViewTabs);
+        listTab = viewTabs.getTabAt(0);
+        gridTab = viewTabs.getTabAt(1);
+        viewTabs.setOnTabSelectedListener(tlSelected);
         pb = (ProgressBar) v.findViewById(R.id.CollectionProgress);
         pb.setMax(c.getCollectionSize());
         pb.setProgress(c.getCollected());
         tv.setText(c.getName());
-        b = (Button) v.findViewById(R.id.ListSwitch);
-        b.setOnClickListener(butnClick);
         ArrayList<String> elementNames = elementToString(c);
         ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
         lv.setAdapter(badgeAdapter);
@@ -107,6 +112,32 @@ public class BadgePage extends Fragment {
         return v;
     }
 
+    TabLayout.OnTabSelectedListener tlSelected = new TabLayout.OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            if(tab.getPosition() == 0)
+                lv.setVisibility(View.VISIBLE);
+            else
+                gv.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+            if(tab.getPosition() == 0)
+                lv.setVisibility(View.INVISIBLE);
+            else
+                gv.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+            if(tab.getPosition() == 0)
+                lv.setVisibility(View.VISIBLE);
+            else
+                gv.setVisibility(View.VISIBLE);
+        }
+    };
+
     AdapterView.OnItemClickListener onLVClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -114,6 +145,7 @@ public class BadgePage extends Fragment {
             c.setCollected(e);
             pb.setProgress(c.getCollected());
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
+            //Ultimately, will be sending the whole collection
         }
     };
 
@@ -124,22 +156,7 @@ public class BadgePage extends Fragment {
             c.setCollected(e);
             pb.setProgress(c.getCollected());
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
-        }
-    };
-
-    View.OnClickListener butnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if(gv.getVisibility() != View.VISIBLE) {
-                lv.setVisibility(View.INVISIBLE);
-                gv.setVisibility(View.VISIBLE);
-                b.setText("List View");
-            }
-            else{
-                lv.setVisibility(View.VISIBLE);
-                gv.setVisibility(View.INVISIBLE);
-                b.setText("Grid View");
-            }
+            //Ultimately, will be sending the whole collection
         }
     };
 

@@ -21,7 +21,7 @@ public class JSONElements extends IntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             json = "";
-            String type = intent.getStringExtra("Type");
+            String type = intent.getStringExtra("SelectedCollectionCIDs");
             String[] selected = type.split(",");
             for(String s : selected){
                 HttpURLConnection hurl = (HttpURLConnection) new URL("http://magpiehunt.com/api/landmark/all/" + s).openConnection();
@@ -35,7 +35,7 @@ public class JSONElements extends IntentService {
                 }
                 json += jsonBuilder.toString() + "%";
             }
-            Intent loc = new Intent("Elements").putExtra("Landmarks", json);
+            Intent loc = new Intent("Elements").putExtra("CollectionElements", json);
             LocalBroadcastManager.getInstance(this).sendBroadcast(loc);
         }
         catch(Exception e){
