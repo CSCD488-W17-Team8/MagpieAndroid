@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 import junit.framework.Test;
 
-public class MainActivity extends AppCompatActivity implements BadgePage.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements Local_loc.OnFragmentInteractionListener, BadgePage.OnFragmentInteractionListener {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements BadgePage.OnFragm
         //toolbar.setTitle(getTitle());
         //setSupportActionBar(toolbar);
 
-        Button loginButton = (Button)findViewById(R.id.loginButton);
+        final Button loginButton = (Button)findViewById(R.id.loginButton);
         final EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
         final EditText passwordEditText = (EditText)findViewById(R.id.passwordEditText);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements BadgePage.OnFragm
                 } else if(emailEditText.getText().toString().equals("zacharyadmin") &&
                         passwordEditText.getText().toString().equals("admin")) {
                     // Goes to Zachary's tester
+                    emailEditText.setEnabled(false);
+                    passwordEditText.setEnabled(false);
+                    loginButton.setEnabled(false);
                     Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
                     Fragment fr = new Local_loc();
                     android.support.v4.app.FragmentManager fm = getSupportFragmentManager();

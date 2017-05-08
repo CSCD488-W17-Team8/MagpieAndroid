@@ -1,5 +1,7 @@
 package com.magpie.magpie.CollectionUtils;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 import org.json.JSONException;
@@ -16,7 +18,8 @@ public class Element implements Serializable {
     private double mLatitude;
     private double mLongitude;
     private boolean mCollected; //Assuming no user database or Requires internet connection
-    // todo: image
+    private Bitmap mBadge;
+    private Bitmap mActualImage; //Assuming that there is a real world image associated with this.
 
     public Element(String name, double lat, double lon) {
 
@@ -88,6 +91,10 @@ public class Element implements Serializable {
     }
 
     void setCollected(boolean mCollected) {this.mCollected = mCollected;}
+
+    public Bitmap getBadge(){return mBadge;}
+
+    public void setBadge(Bitmap fromZIP){mBadge = fromZIP;}
 
     @Override
     public String toString(){

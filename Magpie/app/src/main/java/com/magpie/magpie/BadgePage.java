@@ -5,27 +5,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -41,13 +36,15 @@ public class BadgePage extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private Collection c;
-    private ListView lv;
-    private GridView gv;
-    private TextView tv;
+    private Collection selectedColl;
+    private ListView badgeList;
+    private GridView badgeGrid;
+    private TextView collTitle;
     private TabLayout viewTabs;
     private TabLayout.Tab listTab, gridTab;
-    private ProgressBar pb;
+    private ProgressBar collectionProgress;
+    private CustomBadgeListAdapter cbla;
+    private CustomBadgeListAdapter cbga;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -77,96 +74,131 @@ public class BadgePage extends Fragment {
         return fragment;
     }
 
+    /*
+     * Method onCreate: Handles the obtaining of the Collection to be used in the fragment.
+     * It is assumed that there will always be a Collection to use.
+     *
+     */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle b = getArguments();
-            c = (Collection) b.getSerializable("TheCollection");
+            selectedColl = (Collection) b.getSerializable("TheCollection");
         }
     }
+
+    /*
+     * Method onCreateView: Creates the visual that the user interacts with.
+     * Note that there are two different lists "active" when the fragment is launched.
+     * As a result, both are instantiated on launch, and never again until relaunch.
+     *
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_badge_page, container, false);
-        tv = (TextView) v.findViewById(R.id.CollectionTitle);
-        gv = (GridView) v.findViewById(R.id.BadgeGridView);
-        lv = (ListView) v.findViewById(R.id.BadgeListView);
+        collTitle = (TextView) v.findViewById(R.id.CollectionTitle);
+        badgeGrid = (GridView) v.findViewById(R.id.BadgeGridView);
+        badgeList = (ListView) v.findViewById(R.id.BadgeListView);
         viewTabs = (TabLayout) v.findViewById(R.id.ViewTabs);
         listTab = viewTabs.getTabAt(0);
         gridTab = viewTabs.getTabAt(1);
         viewTabs.setOnTabSelectedListener(tlSelected);
-        pb = (ProgressBar) v.findViewById(R.id.CollectionProgress);
-        pb.setMax(c.getCollectionSize());
-        pb.setProgress(c.getCollected());
-        tv.setText(c.getName());
-        ArrayList<String> elementNames = elementToString(c);
-        ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
-        lv.setAdapter(badgeAdapter);
-        gv.setAdapter(badgeAdapter);
-        lv.setOnItemClickListener(onLVClick);
-        gv.setOnItemClickListener(onGVClick);
-        badgeAdapter.notifyDataSetChanged();
+        collectionProgress = (ProgressBar) v.findViewById(R.id.CollectionProgress);
+        collectionProgress.setMax(selectedColl.getCollectionSize());
+        collectionProgress.setProgress(selectedColl.getCollected());
+        collTitle.setText(selectedColl.getName());
+        //ArrayList<String> elementNames = elementToString(selectedColl);
+        cbla = new CustomBadgeListAdapter(this, selectedColl.getCollectionElements(), "List");
+        cbga = new CustomBadgeListAdapter(this, selectedColl.getCollectionElements(), "Grid");
+        //ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
+        badgeList.setAdapter(cbla);
+        badgeGrid.setAdapter(cbga);
+        badgeList.setOnItemClickListener(onLVClick);
+        badgeGrid.setOnItemClickListener(onGVClick);
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
         return v;
     }
+
+    /*
+     * TabLayout.onTabSelectedListener tlSelected: Handles the switching between the list and the grid visual. Self-explanatory code.
+     *
+     */
 
     TabLayout.OnTabSelectedListener tlSelected = new TabLayout.OnTabSelectedListener() {
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
             if(tab.getPosition() == 0)
-                lv.setVisibility(View.VISIBLE);
+                badgeList.setVisibility(View.VISIBLE);
             else
-                gv.setVisibility(View.VISIBLE);
+                badgeGrid.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onTabUnselected(TabLayout.Tab tab) {
             if(tab.getPosition() == 0)
-                lv.setVisibility(View.INVISIBLE);
+                badgeList.setVisibility(View.INVISIBLE);
             else
-                gv.setVisibility(View.INVISIBLE);
+                badgeGrid.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onTabReselected(TabLayout.Tab tab) {
             if(tab.getPosition() == 0)
-                lv.setVisibility(View.VISIBLE);
+                badgeList.setVisibility(View.VISIBLE);
             else
-                gv.setVisibility(View.VISIBLE);
+                badgeGrid.setVisibility(View.VISIBLE);
         }
     };
+
+    /*
+     * AdapterView.OnItemClickListener onLVClick: handles the selecting of any ListView Item and performs and action on it.
+     * It is expected that the action will be to go the the Information Page of the associated Badge/Element.
+     *
+     */
 
     AdapterView.OnItemClickListener onLVClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Element e = c.getCollectionElements().get(i);
-            c.setCollected(e);
-            pb.setProgress(c.getCollected());
+            Element e = selectedColl.getCollectionElements().get(i);
+            selectedColl.setCollected(e);
+            collectionProgress.setProgress(selectedColl.getCollected());
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
             //Ultimately, will be sending the whole collection
         }
     };
+
+    /*
+     * AdapterView.OnItemClickListener onGVClick: handles the selecting of any GridView Item and performs and action on it.
+     * It is expected that the action will be to go the the Information Page of the associated Badge/Element.
+     *
+     */
 
     AdapterView.OnItemClickListener onGVClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Element e = c.getCollectionElements().get(i);
-            c.setCollected(e);
-            pb.setProgress(c.getCollected());
+            Element e = selectedColl.getCollectionElements().get(i);
+            selectedColl.setCollected(e);
+            collectionProgress.setProgress(selectedColl.getCollected());
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
             //Ultimately, will be sending the whole collection
         }
     };
 
-    private ArrayList<String> elementToString(Collection c) {
+
+
+    /*private ArrayList<String> elementToString(Collection selectedCollPassed) {
         ArrayList<String> temp = new ArrayList<>();
-        for(Element e : c.getCollectionElements()){
+        for(Element e : selectedCollPassed.getCollectionElements()){
             temp.add(e.getName());
         }
         return temp;
-    }
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

@@ -71,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        // TODO: save to preferences instead?
+        // TODO: saveToFile to preferences instead?
         outState.putFloat("ZOOM", mMap.getCameraPosition().zoom);
         outState.putSerializable("ACTIVE COLLECTION", mCollection);
         super.onSaveInstanceState(outState);

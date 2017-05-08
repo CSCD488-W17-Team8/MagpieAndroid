@@ -14,6 +14,14 @@ import java.net.URL;
  * Created by Zachary Arrasmith on 4/5/2017.
  */
 
+/*
+ * Class JSONElements: Handles the JSON pull for the Badges/Elements for the passed in Collection(s).
+ *                     The Badges/Elements are found at the fixed URL(s):
+ *                     http://magpiehunt.com/api/landmark/all/{CID}, where CID is the ID of the passed Collection, as specified by the CMS.
+ *                     NOTE: Any changes to related CMS URLs must be reflected here to allow for proper functioning of the app.
+ *
+ */
+
 public class JSONElements extends IntentService {
     private String json;
     public JSONElements(){super("JSONElements");}

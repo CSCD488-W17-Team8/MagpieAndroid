@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/GridImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@android:drawable/menuitem_background"
+        android:layout_marginLeft="53dp"
+        android:layout_marginStart="53dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/GridTitle"
+        android:layout_width="100dp"
+        android:layout_height="25dp"
+        android:layout_below="@+id/GridImage"
+        android:layout_alignLeft="@+id/GridImage"
+        android:layout_alignStart="@+id/GridImage" />
+
+    <TextView
+        android:id="@+id/GridDistance"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/GridTime"
+        android:layout_alignBottom="@+id/GridTime"
+        android:layout_alignLeft="@+id/GridTitle"
+        android:layout_alignStart="@+id/GridTitle" />
+
+    <TextView
+        android:id="@+id/GridTime"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/GridTitle"
+        android:layout_alignRight="@+id/GridTitle"
+        android:layout_alignEnd="@+id/GridTitle" />
+</RelativeLayout>

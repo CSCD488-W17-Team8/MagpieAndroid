@@ -51,6 +51,14 @@
         app:fabSize="mini"
         app:srcCompat="@android:drawable/ic_menu_save" />
 
+    <Button
+        android:id="@+id/Removebutn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/saveButton"
+        android:layout_centerHorizontal="true"
+        android:text="Remove" />
+
     <!--
     <fragment
         android:name="com.magpie.magpie.BadgePage"
