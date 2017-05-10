@@ -59,4 +59,20 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Nav drawer strings -->
+    <array name="Nav_list">
+        <item name="menu_collection">YOUR COLLECTIONS</item>
+        <item name="menu_qr">QR READER</item>
+        <item name="menu_map">MAP</item>
+        <item name="menu_progress">PROGRESS</item>
+        <item name="menu_close">CLOSE MENU</item>
+    </array>
+    <integer-array name="Icon_list">
+        <item>@drawable/icon_home</item>
+        <item>@drawable/icon_qrcode</item>
+        <item>@drawable/icon_map</item>
+        <item>@drawable/icon_progress</item>
+        <item>@drawable/icon_close</item>
+    </integer-array>
+
 </resources>
