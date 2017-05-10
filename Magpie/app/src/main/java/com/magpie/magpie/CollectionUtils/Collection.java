@@ -19,12 +19,13 @@ public class Collection implements Serializable{
 
     private ArrayList<Element> mCollectionElements;
 	private int mCID;
-    private String mCity, mState, mRating, mDescription, mPicID, mName; //PicID is apparently used only within context of the database.
+    //PicID is apparently used only within context of the database. We can use it to store the path to the zip file containing all the pictures related to the Collection.
+    private String mCity, mState, mRating, mDescription, mPicZip, mName;
     private double mDistance;
     private boolean mOrdered;
     private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
     private int mCollected; //Thinking about the collection progress here.
-    private boolean mSelected;
+    private boolean mSelected, mDownloaded; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully.
     private Bitmap img;
 
     public Collection() {
@@ -50,7 +51,7 @@ public class Collection implements Serializable{
         
     public Collection(String fromFile) {
         String [] elementSplit = fromFile.split("%%");
-        String [] elements = elementSplit[11].split(",");
+        String [] elements = elementSplit[12].split(",");
         mCollectionElements = new ArrayList<>();
         for(String e : elements){
             mCollectionElements.add(new Element(e));
@@ -61,11 +62,11 @@ public class Collection implements Serializable{
         mState = elementSplit[3];
         mRating = elementSplit[4];
         mDescription = elementSplit[5];
-        mPicID = elementSplit[6];
         mDistance = Double.parseDouble(elementSplit[7]);
         mOrdered = Boolean.parseBoolean(elementSplit[8]);
         mElementTotal = Integer.parseInt(elementSplit[9]);
         mSelected = Boolean.parseBoolean(elementSplit[10]);
+        mDownloaded = Boolean.parseBoolean(elementSplit[11]);
     }
 
     public Collection(JSONObject json){
@@ -79,7 +80,6 @@ public class Collection implements Serializable{
                 mOrdered = true;
             else
                 mOrdered = false;
-            mPicID = json.getString("PicID");
             mName = json.getString("Name");
             mElementTotal = json.getInt("NumberOfLandmarks");
             mCollectionElements = new ArrayList<>();
@@ -112,7 +112,7 @@ public class Collection implements Serializable{
 
     public String getRating() {return mRating;}
 
-    public String getPicID() {return mPicID;}
+    public String getPicZip() {return mPicZip;}
 
     public String getState() {return mState;}
 
@@ -150,13 +150,8 @@ public class Collection implements Serializable{
         return true;
     }
 
-    public void addBitmap(String url){
-        try {
-            img = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    public void addBitmap(Bitmap bm){
+        img = bm;
     }
     public Bitmap getImg(){return img;}
 
@@ -197,13 +192,12 @@ public class Collection implements Serializable{
         mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
         mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
     }
-    
-    /**
-     * Potentially where updating the collected status of each Element could take place
-     */
-    public void updateFromUserProgress() {
-        // TODO: maybe here? Maybe not?
-    }
+
+    public boolean getDownloaded(){return mDownloaded;}
+
+    public void setDownloaded(){mDownloaded = true;}
+
+    public void setPicZip(String path){mPicZip = path;}
 
     @Override
     public String toString(){
@@ -212,8 +206,8 @@ public class Collection implements Serializable{
             elementStr += e.toString() + ",";
         }
         String fin = mName + "%%" + mCID + "%%" + mCity + "%%" + mState + "%%" + mRating
-                + "%%" + mDescription + "%%" + mPicID + "%%" + mDistance + "%%" + mOrdered
-                + "%%" + mElementTotal + "%%" + mSelected + "%%" + elementStr;
+                + "%%" + mDescription + "%%" + mPicZip + "%%" + mDistance + "%%" + mOrdered
+                + "%%" + mElementTotal + "%%" + mSelected + "%%" + mDownloaded + "%%" + elementStr;
         return fin;
     }
 }

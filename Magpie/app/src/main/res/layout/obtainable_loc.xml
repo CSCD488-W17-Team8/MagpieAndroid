@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_test"
+    android:id="@+id/fragment_obtainable_loc"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -12,23 +12,14 @@
     android:background="#FFFFFF"
     tools:context="com.magpie.magpie.Obtainable_loc">
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/pullJSON" />
-
     <ImageView
-        app:srcCompat="@android:color/transparent"
-        android:id="@+id/imageView6"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:id="@+id/FromZip"
+        android:layout_width="1000dp"
+        android:layout_height="200dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="108dp" />
+        android:layout_marginTop="108dp"
+        app:srcCompat="@android:color/transparent" />
 
     <Button
         android:id="@+id/button3"
@@ -36,10 +27,8 @@
         android:layout_height="wrap_content"
         android:text="@string/getElements"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/imageView6"
-        android:layout_alignEnd="@+id/imageView6"
-        android:layout_alignLeft="@+id/imageView6"
-        android:layout_alignStart="@+id/imageView6" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <ListView
         android:id="@+id/listView"

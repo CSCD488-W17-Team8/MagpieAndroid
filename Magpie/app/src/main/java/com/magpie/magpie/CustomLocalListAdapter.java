@@ -1,9 +1,11 @@
 package com.magpie.magpie;
 
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,16 +28,17 @@ import org.w3c.dom.Text;
  * Created by Zachary Arrasmith on 4/17/2017.
  */
 
-public class CustomListAdapter extends BaseAdapter {
+public class CustomLocalListAdapter extends BaseAdapter {
 
     private ArrayList<Collection> collections;
     private Context context;
     private static LayoutInflater inflater;
 
-    public CustomListAdapter(Local_loc local, ArrayList<Collection> cs){
-        collections = cs;
-        //context = local;
-        inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public CustomLocalListAdapter(Local_loc local, ArrayList<Collection> cs){
+
+            collections = cs;
+            context = local.getContext();
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -53,8 +57,10 @@ public class CustomListAdapter extends BaseAdapter {
     }
 
     public class Item{
+        boolean downloadFinished;
         ImageView iv;
         TextView tv;
+        public void setDownloadFinished(){downloadFinished = true;}
     }
 
     @Override
@@ -70,6 +76,7 @@ public class CustomListAdapter extends BaseAdapter {
         catch(Exception e){
             e.printStackTrace();
         }
-        return null;
+        listItem.setTag(collections.get(i).getCID());
+        return listItem;
     }
 }

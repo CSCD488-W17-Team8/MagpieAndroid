@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton);
-        Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton);
+        Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton); // TODO: remove when testing is done
+        Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton); // TODO: remove when testing is done
 
         SignInButton googleSignInButton = (SignInButton)findViewById(R.id.sign_in_button);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        Button signOutButton = (Button)findViewById(R.id.sign_out_button);
+        Button signOutButton = (Button)findViewById(R.id.sign_out_button); // TODO: remove when testing is done
 
 
     }
@@ -55,29 +55,25 @@ public class MainActivity extends AppCompatActivity {
         Intent i;
 
         switch (v.getId()) {
+
             case R.id.sessionTestButton:
                 Toast.makeText(getApplicationContext(), "Starting session test", Toast.LENGTH_SHORT).show();
-
-                //Fragment fr = new Local_loc();
-                //android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                //android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                //ft.replace(R.id.Main_Activity, fr);
-                //ft.commit();
-
                 i = new Intent(v.getContext(), NavActivity.class);
                 startActivity(i);
                 finish();
                 break;
-            case R.id.mapViewTestButton:
+
+            case R.id.mapViewTestButton: // TODO: remove when testing is done
                 Toast.makeText(getApplicationContext(), "Starting Map test", Toast.LENGTH_SHORT).show();
                 i = new Intent(v.getContext(), MapsActivity.class);
-                //Bundle b = new Bundle();
                 startActivity(i);
                 finish();
                 break;
+
             case R.id.sign_in_button:
                 signIn();
                 break;
+
             case R.id.sign_out_button:
                 signOut();
                 break;
@@ -128,34 +124,5 @@ public class MainActivity extends AppCompatActivity {
             // TODO: send token to server and validate server-side
             //beginSession(); Not ready for this here yet TODO: test sign-in functionality first
         }
-    }
-
-    private void beginSession() {
-
-        Intent i = new Intent(this, NavActivity.class);
-        startActivity(i);
-        finish();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

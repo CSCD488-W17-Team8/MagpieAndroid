@@ -18,6 +18,13 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by Zachary Arrasmith on 3/3/2017.
  */
 
+/*
+ * Class JSONGet: Handles the obtaining of the initial JSON pull from the CMS. This is specified by the fixed URL(s):
+ *                http://magpiehunt.com/api/collection/
+ *                NOTE: Any changes to related CMS URLs must be reflected here to allow for proper functioning of the app.
+ *
+ */
+
 public class JSONGet extends IntentService {
     private String json;
     public JSONGet(){super("JSONGet");}
