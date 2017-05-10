@@ -164,26 +164,36 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
     private BroadcastReceiver ebr = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            strBadges = intent.getStringExtra("CollectionElements");
-            String[] badgeArr = strBadges.split("%");
-            createElements(badgeArr);
-            Fragment fr = new Local_loc();
-            Bundle coll = new Bundle();
-            if (added.size() != 0) {
-                coll.putSerializable("NewlyAddedCollections", added);
+            try {
+                strBadges = intent.getStringExtra("CollectionElements");
+                String[] badgeArr = strBadges.split("%");
+                createElements(badgeArr);
+                Fragment fr = new Local_loc();
+                Bundle coll = new Bundle();
+                if (added.size() != 0) {
+                    coll.putSerializable("NewlyAddedCollections", added);
+                }
+                if(isAdded()) {
+                    fr.setArguments(coll);
+                    android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+                    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                    ft.replace(R.id.Main_Activity, fr);
+                    ft.commit();
+                }
+                else{
+                    Toast.makeText(getContext(), "There was an error adding a collection", Toast.LENGTH_SHORT).show();
+                }
             }
-            fr.setArguments(coll);
-            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Main_Activity, fr);
-            ft.commit();
+            catch(Exception e){
+                Log.d("UNIQUERECEIVE", e.getMessage());
+            }
         }
     };
 
     /*
      * Method onClick: Handles the separate button clicks that can happen --
      * Cancel: Returns the user to the local list
-     * Apply, adds all selected Collections to the local side.
+     * Apply: adds all selected Collections to the local side.
      *
      */
 
@@ -197,14 +207,19 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
             ft.commit();
         }
         else if(((String)(view.getTag())).compareTo("Apply") == 0) {
-            sendAll.setEnabled(false);
-            if (added.size() != 0) {
-                for (Collection i : added) {
-                    collectionsToElements += i.getCID() + ",";
+            try {
+                sendAll.setEnabled(false);
+                if (added.size() != 0) {
+                    for (Collection i : added) {
+                        collectionsToElements += i.getCID() + ",";
+                    }
+                    Intent collIntent = new Intent(getContext(), JSONElements.class);
+                    collIntent.putExtra("SelectedCollectionCIDs", collectionsToElements);
+                    getContext().startService(collIntent);
                 }
-                Intent collIntent = new Intent(getContext(), JSONElements.class);
-                collIntent.putExtra("SelectedCollectionCIDs", collectionsToElements);
-                getContext().startService(collIntent);
+            }
+            catch (Exception e){
+                Log.d("PULLERROR", e.getMessage());
             }
         }
     }
