@@ -32,13 +32,6 @@ public class Collection implements Serializable{
         mCollectionElements = new ArrayList<>();
     }
 
-    /*
-    public Collection(String str) {
-        mName = str;
-        mCollectionElements = new ArrayList<>();
-    }
-     */
-
     /**
      * Added by Sean.
      *
@@ -174,6 +167,11 @@ public class Collection implements Serializable{
         else
             mSelected = true;
     }
+
+    public Collection(boolean isTest) {
+        mName = "Test Collection";
+        mCollectionElements = new ArrayList<>();
+    }
     
     /**
      * Temporary method for generating a test Collection to be used when testing the Maps Activity's
@@ -186,7 +184,7 @@ public class Collection implements Serializable{
      */
     public static Collection collectionTestBuilder(double lat, double lon) {
         
-        Collection collection = new Collection("Test Collection");
+        Collection collection = new Collection(true);
         collection.buildTestElements(lat, lon);
         return collection;
     }
@@ -205,6 +203,7 @@ public class Collection implements Serializable{
      */
     public void updateFromUserProgress() {
         // TODO: maybe here? Maybe not?
+    }
 
     @Override
     public String toString(){

@@ -134,8 +134,18 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
             //b.setEnabled(false);
         }
         else if(view.getId() == cancel.getId()){
-            Intent ret = new Intent(view.getContext(), Local_loc.class);
-            startActivity(ret);
+            // BEGIN: ADDED BY SEAN 2/1/2017
+            Fragment fr = new Local_loc();
+            //fr.setArguments(b);
+            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.Nav_Activity, fr);
+            ft.commit();
+            // END: ADDED BY SEAN 2/1/2017
+
+            //Intent ret = new Intent(view.getContext(), Local_loc.class);
+            //startActivity(ret);
+
             /*DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             DownloadManager.Request zipReq = new DownloadManager.Request(Uri.parse("https://snippets.khromov.se/wp-content/uploads/2013/08/stock_pictures_from_morguefile.zip"));
             zipReq.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "test.zip");
@@ -163,7 +173,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
             fr.setArguments(coll);
             android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
             android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Main_Activity, fr);
+            ft.replace(R.id.Nav_Activity, fr);
             ft.commit();
         }
     }

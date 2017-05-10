@@ -28,13 +28,13 @@
                     android:id="@+id/ListTab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/listLabel"/>
+                    android:text="@string/listLabel" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/GridTab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/gridLabel"/>
+                    android:text="@string/gridLabel" />
 
             </android.support.design.widget.TabLayout>
         </RelativeLayout>
@@ -44,7 +44,9 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="25dp"
-            android:layout_below="@+id/CollectionTitle" />
+            android:layout_below="@+id/startButton"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <GridView
             android:id="@+id/BadgeGridView"
@@ -74,12 +76,10 @@
             android:id="@+id/startButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/BadgeGridView"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_toEndOf="@+id/ListSwitch"
-            android:layout_toRightOf="@+id/ListSwitch"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:text="@string/set_active" />
+
     </RelativeLayout>
 
 </FrameLayout>

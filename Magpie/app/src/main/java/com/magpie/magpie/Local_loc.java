@@ -62,8 +62,16 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
             Bundle b = getArguments();
-            collections = (ArrayList<Collection>) b.getSerializable("CollectionList");
+            //collections = (ArrayList<Collection>) b.getSerializable("CollectionList");
+
+            // BEGIN: ADDED BY SEAN 5/2/2017
+            ((NavActivity)getActivity()).setCollections((ArrayList<Collection>) b.getSerializable("CollectionList"));
+            // END: ADDED BY SEAN 5/2/2017
         }
+
+        // BEGIN: ADDED BY SEAN 5/2/2017
+
+        // END: ADDED BY SEAN 5/2/2017
     }
 
     public void fillTable(){
@@ -88,7 +96,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                 fr.setArguments(b);
                 android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
                 android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.Main_Activity, fr);
+                ft.replace(R.id.Nav_Activity, fr);
                 ft.commit();
             } catch (Exception e){
                 Log.d("Stuff", "Error: ", e);
@@ -168,10 +176,8 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                         coll.putSerializable("TheCollection", send);
                         Fragment fr = new BadgePage();
                         fr.setArguments(coll);
-                        android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                        ft.replace(R.id.Main_Activity, fr);
-                        ft.commit();
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fr).commit();
                     }
                     catch(Exception e){
                         Log.d("Error: ", e.getMessage());

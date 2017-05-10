@@ -25,7 +25,7 @@
             android:exported="false" />
         <service
             android:name=".JSONElements"
-            android:exported="false"/>
+            android:exported="false" />
         <service
             android:name=".ImageGet"
             android:exported="false" />
@@ -61,10 +61,14 @@
         <activity
             android:name=".Local_loc"
             android:screenOrientation="portrait"/>
-         -->
+        -->
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
+        <activity
+            android:name=".NavActivity"
+            android:label="@string/title_activity_nav"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
