@@ -14,7 +14,7 @@ import org.json.JSONObject;
 public class Element implements Serializable {
 
     private int mLID, mDescID, mPicID, mCollID;
-    private String mName, mQRCode;
+    private String mName, mQRCode, mCreator, mInfoLink;
     private double mLatitude;
     private double mLongitude;
     private boolean mCollected; //Assuming no user database or Requires internet connection
@@ -29,7 +29,7 @@ public class Element implements Serializable {
     }
 
     public Element(String fromFile){
-        String[] data = fromFile.split("%");
+        String[] data = fromFile.split("÷");
         mName = data[0];
         mLID = Integer.parseInt(data[1]);
         mDescID = Integer.parseInt(data[2]);
@@ -50,6 +50,9 @@ public class Element implements Serializable {
             mName = json.getString("Name");
             mLatitude = json.getDouble("Latitude");
             mLongitude = json.getDouble("Longitude");
+            mCreator = json.getString("Creator");
+            mInfoLink = json.getString("InfoLink");
+
         }
         catch(JSONException e){
             e.printStackTrace();
@@ -98,8 +101,8 @@ public class Element implements Serializable {
 
     @Override
     public String toString(){
-        String ret = mName + "%" + mLID + "%" + mDescID + "%" + mPicID + "%" +
-                mCollID + "%" + mQRCode + "%" + mLatitude + "%" + mLongitude;
+        String ret = mName + "÷" + mLID + "÷" + mDescID + "÷" + mPicID + "÷" +
+                mCollID + "÷" + mQRCode + "÷" + mLatitude + "÷" + mLongitude;
         return ret;
     }
 }

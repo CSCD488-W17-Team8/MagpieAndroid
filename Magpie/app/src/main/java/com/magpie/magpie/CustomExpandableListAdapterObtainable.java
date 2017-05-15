@@ -121,9 +121,10 @@ public class CustomExpandableListAdapterObtainable extends BaseExpandableListAda
         return acronymConstructor.toString();
     }
 
+    //Credit for Search: http://www.mysamplecode.com/2012/11/android-expandablelistview-search.html
     public void filterData(String cityOrState){
         ArrayList<Collection> mediator = new ArrayList<>();
-        display.clear();
+        display = new ArrayList<>();
         if(!cityOrState.isEmpty()){
             String toFilter = cityOrState.toLowerCase();
             for(Collection c : jsonCollections){

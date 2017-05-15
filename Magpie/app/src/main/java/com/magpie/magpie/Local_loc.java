@@ -135,7 +135,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                     readCollectionsFromFile = getActivity().openFileOutput("SavedCollections.txt", Context.MODE_PRIVATE);
                     for(Collection c : localCollections){
                         readCollectionsFromFile.write(c.toString().getBytes());
-                        readCollectionsFromFile.write("%%%".getBytes());
+                        readCollectionsFromFile.write("÷÷÷".getBytes());
                     }
                     readCollectionsFromFile.close();
                     Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
@@ -183,7 +183,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                 InputStreamReader inRead = new InputStreamReader(fin);
                 BufferedReader bufRead = new BufferedReader(inRead);
                 String s = bufRead.readLine();
-                String[] allColl = s.split("%%%");
+                String[] allColl = s.split("÷÷÷");
                 for(String coll : allColl){
                     localCollections.add(new Collection(coll));
                 }

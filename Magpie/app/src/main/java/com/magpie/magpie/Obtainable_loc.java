@@ -216,7 +216,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
         }
         else if(((String)(view.getTag())).compareTo("Apply") == 0) {
             try {
-                sendAll.setEnabled(false);
                 if (added.size() != 0) {
                     for (Collection i : added) {
                         collectionsToElements += i.getCID() + ",";
@@ -336,7 +335,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
             String strRemoved = " removed";
             Collection c = collection.get(i);
             try {
-                sendAll.setEnabled(false);
                 Intent collIntent = new Intent(getContext(), JSONElements.class);
                 collIntent.putExtra("SelectedCollectionCIDs", c.getCID() + "");
                 getContext().startService(collIntent);
