@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton); // TODO: remove when testing is done
         Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton); // TODO: remove when testing is done
 
-        SignInButton googleSignInButton = (SignInButton)findViewById(R.id.sign_in_button);
+        SignInButton googleSignInButton = (SignInButton)findViewById(R.id.google_sign_in_button);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, null)
@@ -70,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 break;
 
-            case R.id.sign_in_button:
+            case R.id.google_sign_in_button:
                 signIn();
                 break;
 
@@ -99,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
-                //...
+                // TODO: implement sign out for testing purposes.
             }
         });
     }
