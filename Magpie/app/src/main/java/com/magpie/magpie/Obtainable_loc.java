@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.hardware.display.DisplayManager;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
@@ -21,14 +23,18 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.SearchView;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -68,8 +74,11 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
     Bitmap bm;
     JSONArray cmsColl;
     ListView collectionDisplay;
+    ExpandableListView obtainExpandList;
     ArrayAdapter<String> obtainable_loc_Adapter;
     ArrayList<String> allColl;
+    CustomExpandableListAdapterObtainable celao;
+    SearchView searchList;
 
     /*
      * Method onCreate: Handles the sending in of the Collections that are on the local side.
@@ -105,10 +114,11 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
                     String fin = j.getString("CID") + " : " + j.getString("Name") + "\r\n";
                     fin += j.getString("Description") + " (" + j.getString("Rating") + ")";
                     allColl.add(fin);
-                    obtainable_loc_Adapter.notifyDataSetChanged();
+                    //obtainable_loc_Adapter.notifyDataSetChanged();
 
                 }
             }
+            celao.notifyDataSetChanged();
         } catch (JSONException je) {
             je.printStackTrace();
         }
@@ -170,9 +180,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
                 createElements(badgeArr);
                 Fragment fr = new Local_loc();
                 Bundle coll = new Bundle();
-                if (added.size() != 0) {
-                    coll.putSerializable("NewlyAddedCollections", added);
-                }
+                coll.putSerializable("NewlyAddedCollections", added);
                 if(isAdded()) {
                     fr.setArguments(coll);
                     android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -232,20 +240,25 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
 
     private void createElements(String[] badgeArr) {
         try {
+            int x = 0;
             for(int k = 0; k < badgeArr.length; k++) {
                 JSONArray ja = new JSONArray(badgeArr[k]);
-                for (int j = 0; j < added.size(); j++) {
-                    for (int i = 0; i < ja.length(); i++) {
-                        JSONObject json = ja.getJSONObject(i);
-                        if (json.getInt("CollectionID") == added.get(j).getCID()) {
-                            added.get(j).addElement(json);
-                        }
+                for (int i = 0; i < ja.length(); i++) {
+                    JSONObject json = ja.getJSONObject(i);
+                    int number = json.getInt("CollectionID");
+                    Collection coll;
+                    while (number != collection.get(x).getCID()) {
+                        coll = collection.get(x);
+                        if(number != collection.get(x).getCID())
+                            x++;
                     }
+                    collection.get(x).addElement(json);
                 }
             }
+            added.add(collection.get(x));
         }
-        catch(JSONException e){
-            e.printStackTrace();
+        catch(Exception e){
+            Log.v("CREATEELEMENTSEXCEP", e.getMessage());
         }
     }
 
@@ -273,40 +286,79 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
         if (intent.hasExtra("LocalCollections")) {
             fromFile = (ArrayList<Collection>) intent.getSerializableExtra("Collections");
         }
-        collectionDisplay = (ListView) v.findViewById(R.id.listView);
-        sendAll = (Button) v.findViewById(R.id.button3);
-        sendAll.setEnabled(false);
+        //collectionDisplay = (ListView) v.findViewById(R.id.listView);
         cancel = (Button) v.findViewById(R.id.Return);
-        iv = (ImageView) v.findViewById(R.id.FromZip);
         LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(br, new IntentFilter("FromCMS"));
         LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(ebr, new IntentFilter("Elements"));
-        //LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(zbr, new IntentFilter("ImageZIP"));
-        /*try {
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-            String file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).list()[5];
-            ZipFile zipImages = new ZipFile(path + "/" + file);
-            ZipEntry firstImage = zipImages.entries().nextElement();
-            InputStream zin = zipImages.getInputStream(firstImage);
-            bm = BitmapFactory.decodeStream(zin);
-        }
-        catch(Exception e){
-            Log.d("IOException", e.getMessage());
-        }*/
-        sendAll.setOnClickListener(this);
+        obtainExpandList = (ExpandableListView) v.findViewById(R.id.ObtainableExpandList);
+        searchList = (SearchView) v.findViewById(R.id.SearchList);
+        setUpSearch();
         cancel.setOnClickListener(this);
         collection = new ArrayList<>();
         collectionsToElements = "";
         collBundle = new Bundle();
-        sendAll.setTag("Apply");
         allColl = new ArrayList<>();
-        obtainable_loc_Adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, allColl)//{
+        Display d = getActivity().getWindowManager().getDefaultDisplay();
+        Point p = new Point();
+        d.getSize(p);
+        celao = new CustomExpandableListAdapterObtainable(this, collection, p.x);
+        obtainExpandList.setAdapter(celao);
+        obtainExpandList.setIndicatorBounds(obtainExpandList.getRight() + 1150, obtainExpandList.getWidth());
+        obtainExpandList.setOnChildClickListener(childClick);
+        return v;
+    }
+
+    private void setUpSearch() {
+        searchList.setIconifiedByDefault(false);
+        searchList.setOnQueryTextListener(queryListener);
+        searchList.setSubmitButtonEnabled(true);
+        searchList.setQueryHint("City or State");
+    }
+
+    SearchView.OnQueryTextListener queryListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            celao.filterData(query);
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            celao.filterData(newText);
+            return true;
+        }
+    };
+
+    ExpandableListView.OnChildClickListener childClick = new ExpandableListView.OnChildClickListener() {
+        @Override
+        public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
+            String strAdded = " added";
+            String strRemoved = " removed";
+            Collection c = collection.get(i);
+            try {
+                sendAll.setEnabled(false);
+                Intent collIntent = new Intent(getContext(), JSONElements.class);
+                collIntent.putExtra("SelectedCollectionCIDs", c.getCID() + "");
+                getContext().startService(collIntent);
+            }
+            catch (Exception e){
+                Log.d("PULLERROR", e.getMessage());
+            }
+
+            return true;
+        }
+    };
+
+}
+
+//obtainable_loc_Adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, allColl)//{
         /*@Override
         public View getView(int position, View convertView, ViewGroup parent){
             Vi
         }
-    }*/;
-        collectionDisplay.setAdapter(obtainable_loc_Adapter);
-        collectionDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    //}*/;
+//collectionDisplay.setAdapter(obtainable_loc_Adapter);
+        /*collectionDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (added.size() == 0) {
@@ -325,7 +377,4 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
                     view.setBackgroundColor(Color.GREEN);
                 }
             }
-        });
-        return v;
-    }
-}
+        });*/

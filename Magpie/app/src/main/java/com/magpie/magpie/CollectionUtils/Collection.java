@@ -94,6 +94,8 @@ public class Collection implements Serializable{
 
     public String getDescription() {return mDescription;}
 
+    public int getElementTotal() {return mElementTotal;}
+
     public String getRating() {return mRating;}
 
     public String getPicZip() {return mPicZip;}

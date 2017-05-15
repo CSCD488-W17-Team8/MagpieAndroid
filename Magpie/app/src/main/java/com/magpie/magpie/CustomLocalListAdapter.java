@@ -65,7 +65,7 @@ public class CustomLocalListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        Item item = new Item();
+        /*Item item = new Item();
         View listItem = inflater.inflate(R.layout.local_collection_display, null);
         item.iv = (ImageView) listItem.findViewById(R.id.imageViewLocal);
         item.tv = (TextView) listItem.findViewById(R.id.textViewLocal);
@@ -77,6 +77,7 @@ public class CustomLocalListAdapter extends BaseAdapter {
             e.printStackTrace();
         }
         listItem.setTag(collections.get(i).getCID());
-        return listItem;
+        return listItem;*/
+        return null;
     }
 }
