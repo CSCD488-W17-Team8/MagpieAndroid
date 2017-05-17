@@ -168,8 +168,16 @@ public class BadgePage extends Fragment {
             Element e = selectedColl.getCollectionElements().get(i);
             selectedColl.setCollected(e);
             collectionProgress.setProgress(selectedColl.getCollected());
-            Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
             //Ultimately, will be sending the whole collection
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("CurElement", e);
+            Fragment frag = new InfoPage();
+            frag.setArguments(bundle);
+
+
+
         }
     };
 

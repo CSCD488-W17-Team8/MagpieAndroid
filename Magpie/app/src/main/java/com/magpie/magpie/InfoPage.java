@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.magpie.magpie.CollectionUtils.Element;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,6 +41,7 @@ public class InfoPage extends Fragment implements View.OnClickListener {
     /**       CONSTANTS          */
     private final double RANGE = 20;
 
+    private Element curElement;
     private final long MIN_TIME_BW_UPDATES = 2000;
     private final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 1;
     private final double METERS_TO_FEET = 3.28084;
@@ -55,8 +58,8 @@ public class InfoPage extends Fragment implements View.OnClickListener {
 
     String result_text;
     private TrackGPS gps;
-    double longitude_user, longitude_dest = -117.583700;
-    double latitude_user, latitude_dest = 47.490508;
+    double longitude_user, longitude_dest;
+    double latitude_user, latitude_dest;
     Location user_location = new Location("user_location");
     Location dest_location = new Location("dest_location");
 
@@ -90,7 +93,17 @@ public class InfoPage extends Fragment implements View.OnClickListener {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
+            Bundle bundle = getArguments();
+            ////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+            curElement = (Element) bundle.getSerializable("Cur_Element");
+
+            latitude_dest  = curElement.getLatitude();
+            longitude_dest = curElement.getLatitude();
         }
+
+
+
 
         gps = new TrackGPS(getContext());
 
