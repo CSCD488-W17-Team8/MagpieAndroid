@@ -65,10 +65,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * attach a LocationListener to. LocationManager is instantiated in onMapReady().
      */
     private LocationManager mLocManager;
-    private TextView mCollectionTitleTextView;
-    private TextView mTempCoordinateTextView;
-    private TextView mDistanceTextView;
-    private TextView mTimeTextView;
+    //private TextView mCollectionTitleTextView;
+    //private TextView mTempCoordinateTextView;
+    //private TextView mDistanceTextView;
+    //private TextView mTimeTextView;
 
     private Collection mCollection;
     private Marker mSelectedMarker;
@@ -97,10 +97,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mCollectionTitleTextView = (TextView) findViewById(R.id.collectionTitleTextView);
-        mTempCoordinateTextView = (TextView) findViewById(R.id.tempCoordinateTextView);
-        mDistanceTextView = (TextView) findViewById(R.id.distanceTextView);
-        mTimeTextView = (TextView) findViewById(R.id.minutesTextView);
+        //mCollectionTitleTextView = (TextView) findViewById(R.id.collectionTitleTextView);
+        //mTempCoordinateTextView = (TextView) findViewById(R.id.tempCoordinateTextView);
+        //mDistanceTextView = (TextView) findViewById(R.id.distanceTextView);
+        //mTimeTextView = (TextView) findViewById(R.id.minutesTextView);
 
         mMarkers = new ArrayList<>();
 
@@ -109,12 +109,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Bundle b = intent.getBundleExtra(mBundleExtraKey);
             if (b.containsKey(mActiveCollectionKey)) {
                 // If the Intent does contain a Bundle from a previous Activity
-                mCollection = (Collection) b.getSerializable(mActiveCollectionKey);
+                //mCollection = (Collection) b.getSerializable(mActiveCollectionKey);
+                //mCollection = ((NavActivity).g
 
             } else {
                 // If the Intent does NOT contain a Bundle from a previous Activity
-                mCollectionTitleTextView.setText(getResources().getString(R.string.no_collection_selected));
-                mTempCoordinateTextView.setText(getResources().getString(R.string.no_location));
+                //mCollectionTitleTextView.setText(getResources().getString(R.string.no_collection_selected));
+                //mTempCoordinateTextView.setText(getResources().getString(R.string.no_location));
             }
         }
     }
@@ -139,7 +140,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCollection = (Collection) savedInstanceState.get(mActiveCollectionKey);
             if (mCollection != null) {
                 createMarkerList();
-                mCollectionTitleTextView.setText(mCollection.getName());
+                //mCollectionTitleTextView.setText(mCollection.getName());
             }
             if (savedInstanceState.containsKey(zoomKey)) {
                 // TODO: set zoom
@@ -198,11 +199,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMyLocation = getLocation();
         if (mMyLocation != null) {
             moveToLocation(mMyLocation);
-            mTempCoordinateTextView.setText(mMyLocation.getLatitude()+", "+mMyLocation.getLongitude());
+            //mTempCoordinateTextView.setText(mMyLocation.getLatitude()+", "+mMyLocation.getLongitude());
 
             // TESTING
             mCollection = Collection.collectionTestBuilder(mMyLocation.getLatitude(), mMyLocation.getLongitude());
-            mCollectionTitleTextView.setText(mCollection.getName());
+            //mCollectionTitleTextView.setText(mCollection.getName());
             //placeTestMarkers();
             createMarkerList();
             placeMarkers();
@@ -257,7 +258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMyLocation = getLocation();
                 if (mMyLocation != null) {
                     moveToLocation(mMyLocation);
-                    mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
+                    //mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
 
                 }
 
@@ -407,7 +408,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void updateUI() {
-        mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
+        //mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
     }
 
 
@@ -461,8 +462,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mSelectedMarker = marker;
         float[] results = new float[1];
         Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
-        mDistanceTextView.setText("Distance: "+results[0]);
-        mTimeTextView.setText("Time: "+(results[0]/1.4)+"s");
+        //mDistanceTextView.setText("Distance: "+results[0]);
+        //mTimeTextView.setText("Time: "+(results[0]/1.4)+"s");
         // TODO: fill in UI elements pertaining to marker.
     }
 }

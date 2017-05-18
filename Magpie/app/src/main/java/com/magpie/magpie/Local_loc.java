@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+//import android.app.Fragment; // TODO: trying this out
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -49,6 +50,10 @@ import com.magpie.magpie.CollectionUtils.*;
  */
 
 public class Local_loc extends Fragment implements View.OnClickListener{
+
+    // Reference to containing activity
+    private NavActivity navActivity;
+
     FloatingActionButton saveToFile;
     FileOutputStream readCollectionsFromFile;
     ArrayList<Collection> localCollections;
@@ -61,6 +66,8 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     boolean removeMode;
     Button removeButton;
     final String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,7 +87,10 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         }
 
         // BEGIN: ADDED BY SEAN 5/2/2017
+        navActivity = (NavActivity) getActivity();
 
+        // TODO: debug this. Gets a NullPointerReference
+        navActivity.setTitle(getString(R.string.toolbar_my_collections));
         // END: ADDED BY SEAN 5/2/2017
     }
 
@@ -231,6 +241,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         localList.setOnItemClickListener(localListItemClick);
         removeButton = (Button)v.findViewById(R.id.Removebutn);
         removeButton.setOnClickListener(this);
+
         return v;
     }
 
@@ -301,6 +312,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                         obtainable_loc_Start.hide();
                         saveToFile.hide();
                         Collection send = localCollections.get(i);
+                        ((NavActivity)getActivity()).setActiveCollection(localCollections.get(i));
                         send.setSelected();
                         Bundle coll = new Bundle();
                         coll.putSerializable("TheCollection", send);

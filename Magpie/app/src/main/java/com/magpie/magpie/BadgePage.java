@@ -130,6 +130,11 @@ public class BadgePage extends Fragment {
         badgeGrid.setOnItemClickListener(onGVClick);
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
+
+        // Added by Sean 5/16/2017
+        // TODO: debug null pointer exception
+        //((NavActivity)getActivity()).setActiveCollection(selectedColl);
+
         return v;
     }
 
