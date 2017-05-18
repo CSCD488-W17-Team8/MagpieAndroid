@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton); // TODO: remove when testing is done
 
         SignInButton googleSignInButton = (SignInButton)findViewById(R.id.google_sign_in_button);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, null)

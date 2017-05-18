@@ -130,7 +130,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // TODO: save to preferences instead?
         outState.putFloat(zoomKey, mMap.getCameraPosition().zoom);
         //if (mCollection != null)
+
             outState.putSerializable(mActiveCollectionKey, mCollection);
+
         super.onSaveInstanceState(outState);
     }
 

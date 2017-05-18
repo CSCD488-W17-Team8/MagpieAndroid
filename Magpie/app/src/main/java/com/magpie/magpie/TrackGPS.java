@@ -91,6 +91,8 @@ public class TrackGPS extends Service implements LocationListener {
                         }
                     } catch (SecurityException e) {
 
+                        Log.d("GPSTRACKEXECEPTION", e.getMessage());
+
                     }
                 }
             }

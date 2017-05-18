@@ -30,7 +30,6 @@
     <string name="unavailable_distance">Dist. unavailable</string>
     <string name="back_button_text">Back</string>
     <string name="next_button_text">Next</string>
-    
 
     <!-- Confirmation Strings -->
     <string name="yes_confirmation">Yes</string>
@@ -52,6 +51,10 @@
     <string name="getElements">Apply</string>
     <string name="returnToLocal">Cancel</string>
     <string name="pullJSON">Search</string>
+    <array name="ObtainSort">
+        <item name="BadgeNumber">Number of Badges</item>
+        <item name="Distance">Collection Length</item>
+    </array>
 
     <!-- Local_loc Strings -->
 
@@ -59,6 +62,7 @@
     <!-- fragment_badge_page Strings-->
     <string name="gridLabel">Grid</string>
     <string name="listLabel">List</string>
+
     <string name="title_activity_nav">NavActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -79,5 +83,14 @@
         <item>@drawable/icon_progress</item>
         <item>@drawable/icon_close</item>
     </integer-array>
+
+    <array name="BadgeFilterArray">
+        <item name="Unachieved">Unachieved Badges</item>
+        <item name="Achieved">Achieved Badges</item>
+        <item name="FiveMinutes">Less than 5 minutes away</item>
+        <item name="TenMinutes">Less than 10 minutes away</item>
+        <item name="FifteenMinutes">Less than 15 minutes away</item>
+        <item name="MoreThanFifteen">More than 15 minutes away</item>
+    </array>
 
 </resources>

@@ -3,6 +3,7 @@ package com.magpie.magpie;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -41,13 +42,13 @@ public class JSONElements extends IntentService {
                 while ((temp = reader.readLine()) != null) {
                     jsonBuilder.append(temp);
                 }
-                json += jsonBuilder.toString() + "%";
+                json += jsonBuilder.toString();
             }
             Intent loc = new Intent("Elements").putExtra("CollectionElements", json);
             LocalBroadcastManager.getInstance(this).sendBroadcast(loc);
         }
         catch(Exception e){
-            e.printStackTrace();
+            Log.d("ELEMENTSERROR", e.getMessage());
         }
     }
 }

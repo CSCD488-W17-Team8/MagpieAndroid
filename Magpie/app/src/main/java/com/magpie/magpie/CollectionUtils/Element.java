@@ -14,9 +14,8 @@ import org.json.JSONObject;
 public class Element implements Serializable {
 
     private int mLID, mDescID, mPicID, mCollID;
-    private String mName, mQRCode;
-    private double mLatitude;
-    private double mLongitude;
+    private String mName, mQRCode, mCreator, mInfoLink;
+    private double mLatitude, mLongitude, mTime;
     private boolean mCollected; //Assuming no user database or Requires internet connection
     private Bitmap mBadge;
     private Bitmap mActualImage; //Assuming that there is a real world image associated with this.
@@ -30,7 +29,7 @@ public class Element implements Serializable {
     }
 
     public Element(String fromFile){
-        String[] data = fromFile.split("%");
+        String[] data = fromFile.split("÷");
         mName = data[0];
         mLID = Integer.parseInt(data[1]);
         mDescID = Integer.parseInt(data[2]);
@@ -39,6 +38,8 @@ public class Element implements Serializable {
         mQRCode = data[5];
         mLatitude = Double.parseDouble(data[6]);
         mLongitude = Double.parseDouble(data[7]);
+        mCreator = data[8];
+        mInfoLink = data[9];
     }
 
     public Element(JSONObject json) {
@@ -51,6 +52,9 @@ public class Element implements Serializable {
             mName = json.getString("Name");
             mLatitude = json.getDouble("Latitude");
             mLongitude = json.getDouble("Longitude");
+            mCreator = json.getString("Creator");
+            mInfoLink = json.getString("InfoLink");
+
         }
         catch(JSONException e){
             e.printStackTrace();
@@ -91,10 +95,26 @@ public class Element implements Serializable {
         return mCollected;
     }
 
-    void setCollected(boolean mCollected) {
-        this.mCollected = mCollected;
-    }
+    void setCollected(boolean mCollected) {this.mCollected = mCollected;}
 
+    public Bitmap getBadge(){return mBadge;}
+
+    public void setBadge(Bitmap fromZIP){mBadge = fromZIP;}
+
+    public String getCreator(){return mCreator;}
+
+    public String getInfoLink(){return mInfoLink;}
+
+    public double getTime(){return mTime;}
+
+    public void setTime(double time){mTime = time;}
+
+    @Override
+    public String toString(){
+        String ret = mName + "÷" + mLID + "÷" + mDescID + "÷" + mPicID + "÷" +
+                mCollID + "÷" + mQRCode + "÷" + mLatitude + "÷" + mLongitude + "÷" + mCreator + "÷" + mInfoLink;
+        return ret;
+    }
     @Override
     public boolean equals(Object o) {
 
@@ -109,17 +129,6 @@ public class Element implements Serializable {
             return false;
 
         return true;
-    }
-
-    public Bitmap getBadge(){return mBadge;}
-
-    public void setBadge(Bitmap fromZIP){mBadge = fromZIP;}
-
-    @Override
-    public String toString(){
-        String ret = mName + "%" + mLID + "%" + mDescID + "%" + mPicID + "%" +
-                mCollID + "%" + mQRCode + "%" + mLatitude + "%" + mLongitude;
-        return ret;
     }
 }
 

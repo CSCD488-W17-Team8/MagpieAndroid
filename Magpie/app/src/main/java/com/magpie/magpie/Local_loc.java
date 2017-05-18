@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
@@ -19,14 +21,20 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Display;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -37,10 +45,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.magpie.magpie.CollectionUtils.*;
+import com.magpie.magpie.UserProgress.SendProgress;
+
+import org.json.JSONObject;
 
 /*
  * Class Local_loc: The programmatic representation of the Local List of Collections, Local_loc mainly handles the path to
@@ -60,6 +72,8 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     ArrayList<Collection> addedFromCMS;
     FloatingActionButton obtainable_loc_Start;
     ListView localList;
+    ExpandableListView localExpandList;
+    CustomExpandableListAdapterLocal celal;
     ArrayAdapter<String> localAdapter;
     ArrayList<String> addToList;
     ArrayList<Bitmap> images;
@@ -92,6 +106,24 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         // TODO: debug this. Gets a NullPointerReference
         navActivity.setTitle(getString(R.string.toolbar_my_collections));
         // END: ADDED BY SEAN 5/2/2017
+    }
+
+    BroadcastReceiver pbr = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String progress = intent.getStringExtra("ProgressJSONFromCMS");
+            parseProgress(progress);
+        }
+    };
+
+    private void parseProgress(String progress) {
+        try {
+            JSONObject jsonProgress = new JSONObject(progress);
+
+        }
+        catch (Exception e){
+            Log.d("PARSEPROGRESSEXCEP", e.getMessage());
+        }
     }
 
     /*
@@ -144,13 +176,18 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         }
         //Saves all current collections to a text file.
         else if(view.getId() == R.id.saveButton){
-            File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
+
+            Intent intent = new Intent(getContext(), SendProgress.class);
+            intent.putExtra("UserID", "test");
+            intent.putExtra("UserProgressCollection", localCollections);
+            getContext().startService(intent);
+            /*File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
             try {
                 if (f.exists()) {
                     readCollectionsFromFile = getActivity().openFileOutput("SavedCollections.txt", Context.MODE_PRIVATE);
                     for(Collection c : localCollections){
                         readCollectionsFromFile.write(c.toString().getBytes());
-                        readCollectionsFromFile.write("%%%".getBytes());
+                        readCollectionsFromFile.write("÷÷÷".getBytes());
                     }
                     readCollectionsFromFile.close();
                     Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
@@ -158,7 +195,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                 /*else if(f.exists() && localCollections.size() == 0){
                     f.delete();
                 }*/
-                else {
+               /* else {
                     f.createNewFile();
                     readCollectionsFromFile = getActivity().openFileOutput("SavedCollections.txt", Context.MODE_PRIVATE);
                     readCollectionsFromFile.write("".getBytes());
@@ -171,7 +208,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
             }
             catch (IOException e){
                 e.printStackTrace();
-            }
+            }*/
         }
         //Activates remove mode.
         else if(view.getId() == R.id.Removebutn){
@@ -192,13 +229,14 @@ public class Local_loc extends Fragment implements View.OnClickListener{
      */
     private void readFile(){
         File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
+        f.delete();
         try {
             if (f.exists() && f.length() != 0) {
                 InputStream fin = getActivity().openFileInput("SavedCollections.txt");
                 InputStreamReader inRead = new InputStreamReader(fin);
                 BufferedReader bufRead = new BufferedReader(inRead);
                 String s = bufRead.readLine();
-                String[] allColl = s.split("%%%");
+                String[] allColl = s.split("÷÷÷");
                 for(String coll : allColl){
                     localCollections.add(new Collection(coll));
                 }
@@ -218,9 +256,11 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         View v = inflater.inflate(R.layout.activity_local_loc, container, false);
         obtainable_loc_Start = (FloatingActionButton) v.findViewById(R.id.ToObtainable);
         addToList = new ArrayList<>();
-        localList = (ListView) v.findViewById(R.id.list);
-        localAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, addToList);
-        localList.setAdapter(localAdapter);
+        LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(pbr, new IntentFilter("ProgressFromCMS"));
+        //localList = (ListView) v.findViewById(R.id.list);
+        localExpandList = (ExpandableListView) v.findViewById(R.id.expandList);
+        //localAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, addToList);
+        //localList.setAdapter(localAdapter);
         obtainable_loc_Start.setOnClickListener(this);
         saveToFile = (FloatingActionButton) v.findViewById(R.id.saveButton);
         saveToFile.setOnClickListener(this);
@@ -238,10 +278,13 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         else {
             fillTable();
         }
-        localList.setOnItemClickListener(localListItemClick);
+        celal = new CustomExpandableListAdapterLocal(this, localCollections);
+        localExpandList.setAdapter(celal);
+        //localList.setOnItemClickListener(localListItemClick);
         removeButton = (Button)v.findViewById(R.id.Removebutn);
         removeButton.setOnClickListener(this);
-
+        localExpandList.setIndicatorBounds(localExpandList.getRight() + 1150, localExpandList.getWidth());
+        localExpandList.setOnChildClickListener(childClick);
         return v;
     }
 
@@ -262,19 +305,11 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         getContext().startService(download);
     }
 
-    /*
-     * OnItemClickListener localListItemClick: Handles what happens when a particular item in the ListView is selected.
-     * The boolean removeMode is used to determine whether or not the user is attempting to remove a Collection or not.
-     * Otherwise, the user is sent to the Badge Page of the selected Collection. The user will be warned about removing
-     * a Collection.
-     *
-     */
-    AdapterView.OnItemClickListener localListItemClick = new AdapterView.OnItemClickListener() {
+    ExpandableListView.OnChildClickListener childClick = new ExpandableListView.OnChildClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
-            //String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        public boolean onChildClick(ExpandableListView expandableListView, View view, final int i, int i1, long l) {
             //We need to access the location of the downloaded zip files and determine if they do indeed exist.
-            String [] downloadFiles = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).list();
+            String[] downloadFiles = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).list();
             for (String zipName : downloadFiles) {
               /*Should we find a match, the Collection will be ready for use by the user.
                 As such, we also want to store the path to the zip file for later use.
@@ -286,60 +321,83 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                 }
             }
             //Because we want the user to be prevented from accessing a Collection until we have access to images, we will have an if statement check for the completion of the download.
-            localCollections.get(i).setDownloaded();
-            if(localCollections.get(i).getDownloaded()) {
+            if (localCollections.get(i).getDownloaded()) {
                 if (removeMode) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Remove");
-                    builder.setMessage("Are you sure you want to remove this Collection?");
-                    builder.setIcon(android.R.drawable.ic_dialog_alert);
-                    builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which) {
-                            localAdapter.remove(addToList.get(i));
-                            localCollections.remove(i);
-                        }
-                    });
-                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which) {
-
-                        }
-                    });
-                    builder.show();
+                    removeFromExpandList(i);
                 } else {
-                    try {
-                        obtainable_loc_Start.hide();
-                        saveToFile.hide();
-                        Collection send = localCollections.get(i);
-                        ((NavActivity)getActivity()).setActiveCollection(localCollections.get(i));
-                        send.setSelected();
-                        Bundle coll = new Bundle();
-                        coll.putSerializable("TheCollection", send);
-                        Fragment fr = new BadgePage();
-                        fr.setArguments(coll);
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fr).commit();
-                    }
-                    catch(Exception e){
-                        Log.d("Error: ", e.getMessage());
-                    }
+
+                    toBadgePage(i);
+
                 }
-            }
-            else {
+            } else {
                 Toast.makeText(getContext(), "The selected Collection has not finished downloading images.", Toast.LENGTH_SHORT).show();
             }
+            return true;
         }
     };
+
+    private void toBadgePage(int i) {
+        try {
+            obtainable_loc_Start.hide();
+            saveToFile.hide();
+            Collection send = localCollections.get(i);
+            send.setSelected();
+            Bundle coll = new Bundle();
+            coll.putSerializable("TheCollection", send);
+            Fragment fr = new BadgePage();
+            fr.setArguments(coll);
+            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.Main_Activity, fr);
+            ft.commit();
+        } catch (Exception e) {
+            Log.d("Error: ", "There was a problem with the operation.");
+        }
+    }
+
+    private void removeFromExpandList(final int i) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Remove");
+        builder.setMessage("Are you sure you want to remove this Collection?");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                localCollections.remove(i);
+                celal.notifyDataSetChanged();
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+
+            }
+        });
+        builder.show();
+    }
 
     private void addImagesToElements(int index){
         try {
             ZipFile zipImages = new ZipFile(localCollections.get(index).getPicZip());
-            ZipEntry firstImage = zipImages.entries().nextElement();
-            InputStream zin = zipImages.getInputStream(firstImage);
-            Bitmap bm = BitmapFactory.decodeStream(zin);
+            Enumeration<? extends ZipEntry> entries = zipImages.entries();
+            ZipEntry curImage = entries.nextElement();
+            ZipEntry defaultImage = curImage;
+            int count = 0;
             for(Element element : localCollections.get(index).getCollectionElements()){
+                InputStream zin = zipImages.getInputStream(curImage);
+                Bitmap bm = BitmapFactory.decodeStream(zin);
                 element.setBadge(bm);
+                if(entries.hasMoreElements()) {
+                    curImage = entries.nextElement();
+                    String elementName = curImage.getName();
+                    String extension = elementName.substring(elementName.length() - 3);
+                    if (extension.compareTo("zip") == 0) {
+                        curImage = zipImages.entries().nextElement();
+                    }
+                }
+                else{
+                    curImage = defaultImage;
+                }
             }
         }
         catch (Exception e){
@@ -351,4 +409,79 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     public void onDestroy(){
         super.onDestroy();
     }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
 }
+
+    /*
+     * OnItemClickListener localListItemClick: Handles what happens when a particular item in the ListView is selected.
+     * The boolean removeMode is used to determine whether or not the user is attempting to remove a Collection or not.
+     * Otherwise, the user is sent to the Badge Page of the selected Collection. The user will be warned about removing
+     * a Collection.
+     *
+     */
+/*AdapterView.OnItemClickListener localListItemClick = new AdapterView.OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+        //String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        //We need to access the location of the downloaded zip files and determine if they do indeed exist.
+        String [] downloadFiles = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).list();
+        for (String zipName : downloadFiles) {
+              /*Should we find a match, the Collection will be ready for use by the user.
+                As such, we also want to store the path to the zip file for later use.
+                To do that, we want to build the path here and store it in the Collection object.*/
+/*            if (zipName.compareTo("imagesCID" + localCollections.get(i).getCID() + ".zip") == 0) {
+                localCollections.get(i).setDownloaded();
+                localCollections.get(i).setPicZip(path + "/" + zipName);
+                addImagesToElements(i);
+            }
+        }
+        //Because we want the user to be prevented from accessing a Collection until we have access to images, we will have an if statement check for the completion of the download.
+        localCollections.get(i).setDownloaded();
+        if(localCollections.get(i).getDownloaded()) {
+            if (removeMode) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Remove");
+                builder.setMessage("Are you sure you want to remove this Collection?");
+                builder.setIcon(android.R.drawable.ic_dialog_alert);
+                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        localAdapter.remove(addToList.get(i));
+                        localCollections.remove(i);
+                    }
+                });
+                builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+
+                    }
+                });
+                builder.show();
+            } else {
+                try {
+                    obtainable_loc_Start.hide();
+                    saveToFile.hide();
+                    Collection send = localCollections.get(i);
+                    send.setSelected();
+                    Bundle coll = new Bundle();
+                    coll.putSerializable("TheCollection", send);
+                    Fragment fr = new BadgePage();
+                    fr.setArguments(coll);
+                    android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+                    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                    ft.replace(R.id.Main_Activity, fr);
+                    ft.commit();
+                } catch (Exception e) {
+                    Log.d("Error: ", "There was a problem with the operation.");
+                }
+            }
+        }
+        else {
+            Toast.makeText(getContext(), "The selected Collection has not finished downloading images.", Toast.LENGTH_SHORT).show();
+        }
+    }
+};*/

@@ -31,12 +31,10 @@ public class ZIPDownload extends IntentService {
     public ZIPDownload(){super("ZIPDownload");}
     @Override
     protected void onHandleIntent(Intent intent) {
-        //We need to know what the basic URL scheme is before we can mov forward with downloads.
-        //Currently, This service will use the test zip file provided. As such, the same two images will be used for everything.
         ArrayList<Integer> CIDs = intent.getIntegerArrayListExtra("TheCIDs");
         DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         for(Integer i : CIDs){
-            DownloadManager.Request zipReq = new DownloadManager.Request(Uri.parse("http://magpiehunt.com/test/zip"));
+            DownloadManager.Request zipReq = new DownloadManager.Request(Uri.parse("http://magpiehunt.com/images/collection/" + i));
             zipReq.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "imagesCID" + i.toString() + ".zip");
             uriID = dm.enqueue(zipReq);
         }
