@@ -1,7 +1,5 @@
 package com.magpie.magpie;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 
 import com.google.android.gms.auth.api.Auth;
@@ -22,59 +20,54 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import junit.framework.Test;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.magpie.magpie.CollectionUtils.Collection;
 
-public class MainActivity extends AppCompatActivity implements Local_loc.OnFragmentInteractionListener, BadgePage.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     private GoogleApiClient mGoogleApiClient;
 
+    /**
+     * Initializes the first view in the app for the user. User will be presented with the login
+     * screen, from which they will be directed to other vieews in the app.
+     * @param savedInstanceState the saved instance state from which any necessary data will be
+     *                           restored.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle(getTitle());
-        //setSupportActionBar(toolbar);
-
-        final Button loginButton = (Button)findViewById(R.id.loginButton);
-        final EditText emailEditText = (EditText)findViewById(R.id.emailEditText);
-        final EditText passwordEditText = (EditText)findViewById(R.id.passwordEditText);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-
-            /**
-             * Until a more secure login system is implemented, only admin passwords are used to
-             * reach Views made for testing.
-             * @param v
-             */
+        Button sessionTestButton = (Button)findViewById(R.id.jsonTestViewButton);
+        sessionTestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(emailEditText.getText().toString().equals("admin") &&
-                        passwordEditText.getText().toString().equals("admin")) {
-                    Toast.makeText(getApplicationContext(), "Admin logging in...", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(v.getContext(), MapsActivity.class);
-                    startActivity(i);
+                Toast.makeText(getApplicationContext(), "Beginning session test", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(v.getContext(), Local_loc.class);
+                startActivity(i);
+                finish();
+            }
+        });
 
-                } else if(emailEditText.getText().toString().equals("zacharyadmin") &&
-                        passwordEditText.getText().toString().equals("admin")) {
-                    // Goes to Zachary's tester
-                    emailEditText.setEnabled(false);
-                    passwordEditText.setEnabled(false);
-                    loginButton.setEnabled(false);
-                    Toast.makeText(getApplicationContext(), "Zachary admin logging in...", Toast.LENGTH_LONG).show();
-                    Fragment fr = new Local_loc();
-                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                    ft.replace(R.id.Main_Activity, fr);
-                    ft.commit();
-                }
+        Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton);
+        mapTestButton.setOnClickListener(new View.OnClickListener() {
 
-                // TODO: implement Google SSO and create more secure login system.
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getApplicationContext(), "Beginning Map test", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(v.getContext(), MapsActivity.class);
+                //Bundle b = new Bundle();
+                startActivity(i);
+                finish();
             }
         });
 
@@ -87,10 +80,16 @@ public class MainActivity extends AppCompatActivity implements Local_loc.OnFragm
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+    }
+
     private void buttonOnClick(View v) {
 
         switch (v.getId()) {
-            case R.id.loginButton:
+            case R.id.loginTestButton:
                 // do something
                 break;
             case R.id.sign_in_button:
@@ -124,10 +123,5 @@ public class MainActivity extends AppCompatActivity implements Local_loc.OnFragm
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }

@@ -1,6 +1,7 @@
 package com.magpie.magpie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -51,6 +52,9 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private String bundleKey = "";
+    private String activeCollectionKey = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -194,9 +198,21 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         }
     };
 
-
-
     /*private ArrayList<String> elementToString(Collection selectedCollPassed) {
+=======
+    View.OnClickListener startButtonClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i =  new Intent(v.getContext(), MapsActivity.class);
+            Bundle b = new Bundle();
+            b.putSerializable(activeCollectionKey, c);
+            i.putExtra(bundleKey, b);
+            startActivity(i);
+        }
+    };
+
+    private ArrayList<String> elementToString(Collection c) {
+>>>>>>> refs/remotes/origin/beta
         ArrayList<String> temp = new ArrayList<>();
         for(Element e : selectedCollPassed.getCollectionElements()){
             temp.add(e.getName());

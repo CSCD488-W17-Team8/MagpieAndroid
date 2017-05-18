@@ -25,6 +25,7 @@ public class Element implements Serializable {
         mName = name;
         mLatitude = lat;
         mLongitude = lon;
+        mCollected = false;
     }
 
     public Element(String fromFile){
@@ -113,6 +114,21 @@ public class Element implements Serializable {
         String ret = mName + "÷" + mLID + "÷" + mDescID + "÷" + mPicID + "÷" +
                 mCollID + "÷" + mQRCode + "÷" + mLatitude + "÷" + mLongitude + "÷" + mCreator + "÷" + mInfoLink;
         return ret;
+    }
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null)
+            return false;
+
+        if (!Element.class.isAssignableFrom(o.getClass()))
+            return false;
+
+        final Element other = (Element) o;
+        if (this.mName.equals(other.getName()))
+            return false;
+
+        return true;
     }
 }
 

@@ -92,7 +92,7 @@ public class Collection implements Serializable{
         Element e = new Element(json);
         mCollectionElements.add(e);
     }
-	
+
     public ArrayList<Element> getCollectionElements() {
         return mCollectionElements;
     }
@@ -138,6 +138,10 @@ public class Collection implements Serializable{
         }
     }
 
+    /**
+     * Gets the name of the Collection
+     * @return the name of the Colletion
+     */
     public String getName() {
         return mName;
     }
@@ -172,5 +176,29 @@ public class Collection implements Serializable{
                 + "÷÷" + mElementTotal + "÷÷" + mSelected + "÷÷" + mDownloaded + "÷÷" + mHour + "÷÷" + mMin + "÷÷"
                 + mSec + "÷÷" + mZIPCode + "÷÷" + mAbbrev + "÷÷" + elementStr;
         return fin;
+    }
+    /**
+     * Temporary method for generating a test Collection to be used when testing the Maps Activity's
+     * ability to place markers from a collection. The Maps Activity passes the user's location to
+     * collectionTestBuilder and the method will generate a list of tokens within a range of the
+     * user.
+     * @param lat user's latitude position.
+     * @param lon user's longitude position.
+     * @return a Collection to be used as a test case for the Maps Activity
+     */
+    public static Collection collectionTestBuilder(double lat, double lon) {
+
+        Collection collection = new Collection("Test Collection");
+        collection.buildTestElements(lat, lon);
+        return collection;
+    }
+
+    private void buildTestElements(double lat, double lon) {
+
+        mCollectionElements.add(new Element("test1", lat+0.001, lon+0.001));
+        mCollectionElements.add(new Element("test2", lat-0.001, lon-0.001));
+        mCollectionElements.add(new Element("test3", lat-0.001, lon+0.001));
+        mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
+        mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
     }
 }

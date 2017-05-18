@@ -22,7 +22,7 @@
             android:id="@+id/tempCoordinateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_collection_selected" />
+            android:text="@string/no_location" />
 
         <TextView
             android:id="@+id/collectionTitleTextView"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_column="0"
             android:layout_row="1"
-            android:text="@string/no_location" />
+            android:text="@string/no_collection_selected" />
     </GridLayout>
 </LinearLayout>
 
