@@ -443,4 +443,3 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 }
             }
         });*/
->>>>>>> ArrasmithBetaBranch
