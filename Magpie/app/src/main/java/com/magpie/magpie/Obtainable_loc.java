@@ -171,6 +171,11 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
             catch(Exception e){
                 Log.d("UNIQUERECEIVE", e.getMessage());
             }
+            fr.setArguments(coll);
+            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.Nav_Activity, fr);
+            ft.commit();
         }
     };
 
@@ -183,11 +188,12 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
 
     @Override
     public void onClick(View view) {
+
         if(view.getId() == cancel.getId()){
             Fragment fr = new Local_loc();
             android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
             android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Main_Activity, fr);
+            ft.replace(R.id.Nav_Activity, fr);
             ft.commit();
         }
         else if(((String)(view.getTag())).compareTo("Apply") == 0) {
@@ -205,6 +211,20 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 Log.d("PULLERROR", e.getMessage());
             }
         }
+        /*
+        else if(((String)(view.getTag())).compareTo("Send") == 0) {
+            Fragment fr = new Local_loc();
+            Bundle coll = new Bundle();
+            if (added.size() != 0) {
+                coll.putSerializable("CollectionList", added);
+            }
+            fr.setArguments(coll);
+            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.Nav_Activity, fr);
+            ft.commit();
+        }
+        */
     }
 
     /*
@@ -426,5 +446,4 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                     added.add(collection.get(i));
                     view.setBackgroundColor(Color.GREEN);
                 }
-            }
-        });*/
+            }*/

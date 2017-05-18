@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -21,26 +23,39 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener {
+
+    /**
+     * TODO:
+     * Go from badge info screen to map, centered on marker
+     * Go from badge screen to map, centered on user
+     * Swipe right to go from map back to badge screen
+     * Access to
+     */
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
 
     // Keys
-    private String bundleKey = "";
-    private String activeCollectionKey = "";
+    private String mBundleExtraKey = "";
+    private String mActiveCollectionKey = "";
     private String zoomKey = "";
 
     private GoogleMap mMap;
@@ -52,18 +67,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager mLocManager;
     private TextView mCollectionTitleTextView;
     private TextView mTempCoordinateTextView;
+    private TextView mDistanceTextView;
+    private TextView mTimeTextView;
 
     private Collection mCollection;
+    private Marker mSelectedMarker;
     private ArrayList<MarkerOptions> mMarkers;
     private Location mMyLocation;
+    private String mLastUpdateTime;
+    private boolean mRequestingLocationUpdates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        bundleKey = getString(R.string.bundle_extra_key);
-        activeCollectionKey = getString(R.string.active_collection_key);
+        mBundleExtraKey = getString(R.string.bundle_extra_key);
+        mActiveCollectionKey = getString(R.string.active_collection_key);
         zoomKey = getString(R.string.zoom_key);
 
         // Get intent from the previous activity if applicable
@@ -79,15 +99,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mCollectionTitleTextView = (TextView) findViewById(R.id.collectionTitleTextView);
         mTempCoordinateTextView = (TextView) findViewById(R.id.tempCoordinateTextView);
+        mDistanceTextView = (TextView) findViewById(R.id.distanceTextView);
+        mTimeTextView = (TextView) findViewById(R.id.minutesTextView);
 
         mMarkers = new ArrayList<>();
 
-        if (intent.hasExtra(bundleKey)) {
+        if (intent.hasExtra(mBundleExtraKey)) {
 
-            Bundle b = intent.getBundleExtra(bundleKey);
-            if (b.containsKey(activeCollectionKey)) {
+            Bundle b = intent.getBundleExtra(mBundleExtraKey);
+            if (b.containsKey(mActiveCollectionKey)) {
                 // If the Intent does contain a Bundle from a previous Activity
-                mCollection = (Collection) b.getSerializable(activeCollectionKey);
+                mCollection = (Collection) b.getSerializable(mActiveCollectionKey);
 
             } else {
                 // If the Intent does NOT contain a Bundle from a previous Activity
@@ -107,14 +129,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // TODO: save to preferences instead?
         outState.putFloat(zoomKey, mMap.getCameraPosition().zoom);
         //if (mCollection != null)
-            outState.putSerializable(activeCollectionKey, mCollection);
+            outState.putSerializable(mActiveCollectionKey, mCollection);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState.containsKey(activeCollectionKey)) {
-            mCollection = (Collection) savedInstanceState.get(activeCollectionKey);
+        if (savedInstanceState.containsKey(mActiveCollectionKey)) {
+            mCollection = (Collection) savedInstanceState.get(mActiveCollectionKey);
             if (mCollection != null) {
                 createMarkerList();
                 mCollectionTitleTextView.setText(mCollection.getName());
@@ -130,11 +152,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onBackPressed() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.leaving_map_alert)
-                .setMessage("Are you sure you want to return to My Collections?")
+                .setMessage("Are you sure you want to return to Your Collections?")
                 .setPositiveButton(R.string.yes_confirmation, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(MapsActivity.this, Local_loc.class));
+                        Bundle b = new Bundle();
+                        b.putSerializable(mActiveCollectionKey, mCollection);
+                        Intent i = new Intent(MapsActivity.this, NavActivity.class);
+                        i.putExtra(mBundleExtraKey, b);
+                        startActivity(i);
                         finish();
                     }
                 })
@@ -208,6 +234,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         /**
+         * Register the map as a Marker click listener. This is so when a marker is clicked, it will
+         * be set as the currently tracked Marker the user will be given relative info for in the
+         * map UI
+         */
+        mMap.setOnMarkerClickListener(this);
+
+        /**
          * After UI settings have been established and markers have been placed, the map begins
          * running.
          */
@@ -225,6 +258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (mMyLocation != null) {
                     moveToLocation(mMyLocation);
                     mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
+
                 }
 
             }
@@ -342,6 +376,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMarkers.add(marker);
             }
 
+
             placeMarkers();
         }
     }
@@ -369,5 +404,65 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()+0.001)).title("Test 1"));
         mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()-0.001)).title("Test 2"));
         mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude()-0.001, mMyLocation.getLongitude())).title("Test 3"));
+    }
+
+    private void updateUI() {
+        mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
+    }
+
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mMyLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    protected void startLocationUpdates() {
+        //LocationServices.FusedLocationApi.
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        onMarkerSelected(marker);
+        return true;
+    }
+
+    private void onMarkerSelected(Marker marker) {
+
+        mSelectedMarker = marker;
+        float[] results = new float[1];
+        Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
+        mDistanceTextView.setText("Distance: "+results[0]);
+        mTimeTextView.setText("Time: "+(results[0]/1.4)+"s");
+        // TODO: fill in UI elements pertaining to marker.
     }
 }

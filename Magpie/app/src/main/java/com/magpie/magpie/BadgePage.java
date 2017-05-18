@@ -56,7 +56,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     private String bundleKey = "";
     private String activeCollectionKey = "";
 
-    private OnFragmentInteractionListener mListener;
+    //private OnFragmentInteractionListener mListener;
 
     public BadgePage() {
         // Required empty public constructor
@@ -198,28 +198,37 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         }
     };
 
+//<<<<<<< HEAD
     /*private ArrayList<String> elementToString(Collection selectedCollPassed) {
 =======
+=======
+>>>>>>> refs/remotes/origin/sean-branch-beta
     View.OnClickListener startButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent i =  new Intent(v.getContext(), MapsActivity.class);
             Bundle b = new Bundle();
-            b.putSerializable(activeCollectionKey, c);
+            b.putSerializable(activeCollectionKey, selectedColl);
             i.putExtra(bundleKey, b);
             startActivity(i);
         }
     };
 
+<<<<<<< HEAD
     private ArrayList<String> elementToString(Collection c) {
 >>>>>>> refs/remotes/origin/beta
+=======
+
+    private ArrayList<String> elementToString(Collection selectedCollPassed) {
+>>>>>>> refs/remotes/origin/sean-branch-beta
         ArrayList<String> temp = new ArrayList<>();
         for(Element e : selectedCollPassed.getCollectionElements()){
             temp.add(e.getName());
         }
         return temp;
-    }*/
+    }
 
+    /*
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -243,6 +252,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         super.onDetach();
         mListener = null;
     }
+    */
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -346,8 +356,10 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+    /*
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+    */
 }

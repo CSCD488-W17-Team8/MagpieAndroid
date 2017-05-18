@@ -145,6 +145,20 @@ public class Collection implements Serializable{
     public String getName() {
         return mName;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+
+        if (!Collection.class.isAssignableFrom(o.getClass()))
+            return false;
+
+        final Collection other = (Collection) o;
+        if (this.mName.equals(other.getName()))
+            return false;
+
+        return true;
+    }
 
     public void addBitmap(Bitmap bm){
         img = bm;
@@ -177,6 +191,11 @@ public class Collection implements Serializable{
                 + mSec + "÷÷" + mZIPCode + "÷÷" + mAbbrev + "÷÷" + elementStr;
         return fin;
     }
+    public Collection(boolean isTest) {
+        mName = "Test Collection";
+        mCollectionElements = new ArrayList<>();
+    }
+    
     /**
      * Temporary method for generating a test Collection to be used when testing the Maps Activity's
      * ability to place markers from a collection. The Maps Activity passes the user's location to
