@@ -27,13 +27,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="440dp"
-        android:id="@+id/relativeLayout">
+        android:id="@+id/relativeLayout"
+        android:layout_above="@id/ToObtainable">
 
         <ExpandableListView
             android:id="@+id/expandList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/ToObtainable" />
+            android:layout_height="match_parent"/>
 
         <ListView
             android:id="@+id/list"
