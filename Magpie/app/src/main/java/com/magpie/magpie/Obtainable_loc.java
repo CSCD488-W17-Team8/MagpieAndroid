@@ -161,7 +161,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                     fr.setArguments(coll);
                     android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
                     android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                    ft.replace(R.id.Main_Activity, fr);
+                    ft.replace(R.id.Nav_Activity, fr);
                     ft.commit();
                 }
                 else{
@@ -171,11 +171,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
             catch(Exception e){
                 Log.d("UNIQUERECEIVE", e.getMessage());
             }
-            fr.setArguments(coll);
-            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Nav_Activity, fr);
-            ft.commit();
         }
     };
 
@@ -446,4 +441,4 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                     added.add(collection.get(i));
                     view.setBackgroundColor(Color.GREEN);
                 }
-            }*/
+*/

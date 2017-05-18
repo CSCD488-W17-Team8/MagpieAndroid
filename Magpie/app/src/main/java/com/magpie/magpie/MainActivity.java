@@ -1,6 +1,5 @@
 package com.magpie.magpie;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,10 +32,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton); // TODO: remove when testing is done
         Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton); // TODO: remove when testing is done
 
         SignInButton googleSignInButton = (SignInButton)findViewById(R.id.google_sign_in_button);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, null)
@@ -63,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.mapViewTestButton: // TODO: remove when testing is done
                 Toast.makeText(getApplicationContext(), "Starting Map test", Toast.LENGTH_SHORT).show();
-                i = new Intent(v.getContext(), MapsActivity.class);
+                i = new Intent(v.getContext(), NavActivity.class);
+                i.putExtra("MAP_TEST", true);
                 startActivity(i);
                 finish();
                 break;

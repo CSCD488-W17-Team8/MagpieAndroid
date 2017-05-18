@@ -159,7 +159,6 @@ public class Collection implements Serializable{
 
         return true;
     }
-
     public void addBitmap(Bitmap bm){
         img = bm;
     }
@@ -191,11 +190,7 @@ public class Collection implements Serializable{
                 + mSec + "÷÷" + mZIPCode + "÷÷" + mAbbrev + "÷÷" + elementStr;
         return fin;
     }
-    public Collection(boolean isTest) {
-        mName = "Test Collection";
-        mCollectionElements = new ArrayList<>();
-    }
-    
+
     /**
      * Temporary method for generating a test Collection to be used when testing the Maps Activity's
      * ability to place markers from a collection. The Maps Activity passes the user's location to

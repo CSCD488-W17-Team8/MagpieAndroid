@@ -132,6 +132,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         badgeGrid.setOnItemClickListener(onGVClick);
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
+
         return v;
     }
 
@@ -198,61 +199,6 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         }
     };
 
-//<<<<<<< HEAD
-    /*private ArrayList<String> elementToString(Collection selectedCollPassed) {
-=======
-=======
->>>>>>> refs/remotes/origin/sean-branch-beta
-    View.OnClickListener startButtonClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent i =  new Intent(v.getContext(), MapsActivity.class);
-            Bundle b = new Bundle();
-            b.putSerializable(activeCollectionKey, selectedColl);
-            i.putExtra(bundleKey, b);
-            startActivity(i);
-        }
-    };
-
-<<<<<<< HEAD
-    private ArrayList<String> elementToString(Collection c) {
->>>>>>> refs/remotes/origin/beta
-=======
-
-    private ArrayList<String> elementToString(Collection selectedCollPassed) {
->>>>>>> refs/remotes/origin/sean-branch-beta
-        ArrayList<String> temp = new ArrayList<>();
-        for(Element e : selectedCollPassed.getCollectionElements()){
-            temp.add(e.getName());
-        }
-        return temp;
-    }
-
-    /*
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-    */
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
