@@ -17,34 +17,36 @@
             android:id="@+id/TabRL"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_below="@+id/CollectionProgress">
+            android:layout_below="@+id/CollectionTitle">
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/ViewTabs"
-                android:layout_width="match_parent"
+                android:layout_width="200dp"
                 android:layout_height="match_parent">
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/ListTab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/listLabel"/>
+                    android:text="@string/listLabel" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/GridTab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/gridLabel"/>
+                    android:text="@string/gridLabel" />
 
             </android.support.design.widget.TabLayout>
-        </RelativeLayout>
 
-        <ProgressBar
-            android:id="@+id/CollectionProgress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_below="@+id/CollectionTitle" />
+            <Spinner
+                android:id="@+id/BadgeFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/ViewTabs"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_toRightOf="@+id/ViewTabs" />
+        </RelativeLayout>
 
         <GridView
             android:id="@+id/BadgeGridView"

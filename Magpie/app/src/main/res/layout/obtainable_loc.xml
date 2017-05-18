@@ -21,13 +21,22 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:id="@+id/SortByText"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/Return"
+        android:text="Sort By: "
+        android:textSize="30sp" />
     <ExpandableListView
         android:id="@+id/ObtainableExpandList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/SortByText"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/Return" />
+        android:layout_alignParentStart="true" />
 
     <SearchView
         android:id="@+id/SearchList"
@@ -35,8 +44,16 @@
         android:layout_height="130dp"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/Return"
-        android:layout_above="@+id/ObtainableExpandList"
+        android:layout_alignBottom="@+id/Return"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
-
+    <Spinner
+        android:id="@+id/SortByDropDown"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/SearchList"
+        android:layout_toRightOf="@+id/SortByText"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/ObtainableExpandList" />
 </RelativeLayout>

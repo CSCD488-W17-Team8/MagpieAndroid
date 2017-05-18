@@ -15,8 +15,7 @@ public class Element implements Serializable {
 
     private int mLID, mDescID, mPicID, mCollID;
     private String mName, mQRCode, mCreator, mInfoLink;
-    private double mLatitude;
-    private double mLongitude;
+    private double mLatitude, mLongitude, mTime;
     private boolean mCollected; //Assuming no user database or Requires internet connection
     private Bitmap mBadge;
     private Bitmap mActualImage; //Assuming that there is a real world image associated with this.
@@ -38,6 +37,8 @@ public class Element implements Serializable {
         mQRCode = data[5];
         mLatitude = Double.parseDouble(data[6]);
         mLongitude = Double.parseDouble(data[7]);
+        mCreator = data[8];
+        mInfoLink = data[9];
     }
 
     public Element(JSONObject json) {
@@ -99,10 +100,18 @@ public class Element implements Serializable {
 
     public void setBadge(Bitmap fromZIP){mBadge = fromZIP;}
 
+    public String getCreator(){return mCreator;}
+
+    public String getInfoLink(){return mInfoLink;}
+
+    public double getTime(){return mTime;}
+
+    public void setTime(double time){mTime = time;}
+
     @Override
     public String toString(){
         String ret = mName + "÷" + mLID + "÷" + mDescID + "÷" + mPicID + "÷" +
-                mCollID + "÷" + mQRCode + "÷" + mLatitude + "÷" + mLongitude;
+                mCollID + "÷" + mQRCode + "÷" + mLatitude + "÷" + mLongitude + "÷" + mCreator + "÷" + mInfoLink;
         return ret;
     }
 }

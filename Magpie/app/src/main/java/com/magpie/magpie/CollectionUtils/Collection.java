@@ -28,7 +28,7 @@ public class Collection implements Serializable{
     private int mCollected; //Thinking about the collection progress here.
     private boolean mSelected, mDownloaded; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully.
     private Bitmap img;
-    private int mHour, mMin, mSec;
+    private int mHour, mMin, mSec, mZIPCode;
 
     public Collection() {
         mName = "";
@@ -37,7 +37,7 @@ public class Collection implements Serializable{
 
     public Collection(String fromFile) {
         String [] elementSplit = fromFile.split("÷÷");
-        String [] elements = elementSplit[12].split(",");
+        String [] elements = elementSplit[17].split(",");
         mCollectionElements = new ArrayList<>();
         for(String e : elements){
             mCollectionElements.add(new Element(e));
@@ -53,6 +53,11 @@ public class Collection implements Serializable{
         mElementTotal = Integer.parseInt(elementSplit[9]);
         mSelected = Boolean.parseBoolean(elementSplit[10]);
         mDownloaded = Boolean.parseBoolean(elementSplit[11]);
+        mHour = Integer.parseInt(elementSplit[12]);
+        mMin = Integer.parseInt(elementSplit[13]);
+        mSec = Integer.parseInt(elementSplit[14]);
+        mZIPCode = Integer.parseInt(elementSplit[15]);
+        mAbbrev = elementSplit[15];
     }
 
     public Collection(JSONObject json){
@@ -67,6 +72,7 @@ public class Collection implements Serializable{
             mHour = Integer.parseInt(time[0]);
             mMin = Integer.parseInt(time[1]);
             mSec = Integer.parseInt(time[2]);
+            mZIPCode = json.getInt("Zip Code");
             mDistance = json.getDouble("Distance");
             if(json.getInt("IsOrder") == 1) //0 is false, 1 is true
                 mOrdered = true;
@@ -115,6 +121,16 @@ public class Collection implements Serializable{
 
     public int getCollected(){return mCollected;}
 
+    public int getHour(){return mHour;}
+
+    public int getMinute(){return mMin;}
+
+    public int getSecond(){return mSec;}
+
+    public int getZIPCode(){return mZIPCode;}
+
+    public String getAbbrev(){return mAbbrev;}
+
     public void setCollected(Element e){
         if(!e.isCollected()){
             e.setCollected(true);
@@ -153,7 +169,8 @@ public class Collection implements Serializable{
         }
         String fin = mName + "÷÷" + mCID + "÷÷" + mCity + "÷÷" + mState + "÷÷" + mRating
                 + "÷÷" + mDescription + "÷÷" + mPicZip + "÷÷" + mDistance + "÷÷" + mOrdered
-                + "÷÷" + mElementTotal + "÷÷" + mSelected + "÷÷" + mDownloaded + "÷÷" + elementStr;
+                + "÷÷" + mElementTotal + "÷÷" + mSelected + "÷÷" + mDownloaded + "÷÷" + mHour + "÷÷" + mMin + "÷÷"
+                + mSec + "÷÷" + mZIPCode + "÷÷" + mAbbrev + "÷÷" + elementStr;
         return fin;
     }
 }

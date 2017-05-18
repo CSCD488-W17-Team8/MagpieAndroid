@@ -1,67 +1,42 @@
 package com.magpie.magpie;
 
 import android.Manifest;
-import android.app.ActionBar;
-import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
-import android.hardware.display.DisplayManager;
-import android.media.Image;
-import android.net.Uri;
-import android.os.Environment;
-import android.renderscript.ScriptGroup;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.AdapterView;
 import android.widget.SearchView;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import com.magpie.magpie.CollectionUtils.*;
 
-public class Obtainable_loc extends Fragment implements View.OnClickListener{
+public class Obtainable_loc extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener{
     ArrayList<Collection> collection;
     ArrayList<Collection> added;
     ArrayList<Collection> fromFile;
@@ -76,6 +51,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
     ListView collectionDisplay;
     ExpandableListView obtainExpandList;
     ArrayAdapter<String> obtainable_loc_Adapter;
+    Spinner sort;
     ArrayList<String> allColl;
     CustomExpandableListAdapterObtainable celao;
     SearchView searchList;
@@ -297,6 +273,11 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
         collectionsToElements = "";
         collBundle = new Bundle();
         allColl = new ArrayList<>();
+        sort = (Spinner) v.findViewById(R.id.SortByDropDown);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this.getContext(), R.array.ObtainSort, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sort.setAdapter(spinnerAdapter);
+        sort.setOnItemSelectedListener(this);
         Display d = getActivity().getWindowManager().getDefaultDisplay();
         Point p = new Point();
         d.getSize(p);
@@ -347,6 +328,77 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
         }
     };
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(position == 0){
+            sortListByNumberOfBadges();
+        }
+        else if(position == 1){
+            sortListByCollectionLength();
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    public void sortListByNumberOfBadges(){
+        Collection[] sortTemp = new Collection[collection.size()];
+        Object[] tempArray = collection.toArray();
+        for(int i = 0; i < tempArray.length; i++){
+            sortTemp[i] = (Collection)tempArray[i];
+        }
+        Collection cur;
+        Collection next;
+        int leftToSort = collection.size();
+        while(leftToSort > 0){
+            for(int i = 1; i < leftToSort; i++) {
+                cur = sortTemp[i];
+                next = sortTemp[i - 1];
+                if (cur.getElementTotal() < next.getElementTotal()) {
+                    Collection temp = cur;
+                    sortTemp[i] = next;
+                    sortTemp[i - 1] = temp;
+                }
+            }
+            leftToSort--;
+        }
+        collection.clear();
+        for(Collection c : sortTemp){
+            collection.add(c);
+        }
+        celao.notifyDataSetChanged();
+    }
+
+    public void sortListByCollectionLength(){
+        Collection[] sortTemp = new Collection[collection.size()];
+        Object[] tempArray = collection.toArray();
+        for(int i = 0; i < tempArray.length; i++){
+            sortTemp[i] = (Collection)tempArray[i];
+        }
+        Collection cur;
+        Collection next;
+        int leftToSort = collection.size();
+        while(leftToSort > 0){
+            for(int i = 1; i < leftToSort; i++) {
+                cur = sortTemp[i];
+                next = sortTemp[i - 1];
+                if (cur.getDistance() < next.getDistance()) {
+                    Collection temp = cur;
+                    sortTemp[i] = next;
+                    sortTemp[i - 1] = temp;
+                }
+            }
+            leftToSort--;
+        }
+        collection.clear();
+        for(Collection c : sortTemp){
+            collection.add(c);
+        }
+        celao.notifyDataSetChanged();
+    }
 }
 
 //obtainable_loc_Adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, allColl)//{

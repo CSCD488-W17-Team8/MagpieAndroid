@@ -21,7 +21,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -47,6 +49,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.magpie.magpie.CollectionUtils.*;
+import com.magpie.magpie.UserProgress.SendProgress;
+
+import org.json.JSONObject;
 
 /*
  * Class Local_loc: The programmatic representation of the Local List of Collections, Local_loc mainly handles the path to
@@ -76,6 +81,24 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         if(getArguments() != null){
             Bundle b = getArguments();
             addedFromCMS = (ArrayList<Collection>) b.getSerializable("NewlyAddedCollections");
+        }
+    }
+
+    BroadcastReceiver pbr = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String progress = intent.getStringExtra("ProgressJSONFromCMS");
+            parseProgress(progress);
+        }
+    };
+
+    private void parseProgress(String progress) {
+        try {
+            JSONObject jsonProgress = new JSONObject(progress);
+
+        }
+        catch (Exception e){
+            Log.d("PARSEPROGRESSEXCEP", e.getMessage());
         }
     }
 
@@ -129,7 +152,12 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         }
         //Saves all current collections to a text file.
         else if(view.getId() == R.id.saveButton){
-            File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
+
+            Intent intent = new Intent(getContext(), SendProgress.class);
+            intent.putExtra("UserID", "test");
+            intent.putExtra("UserProgressCollection", localCollections);
+            getContext().startService(intent);
+            /*File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
             try {
                 if (f.exists()) {
                     readCollectionsFromFile = getActivity().openFileOutput("SavedCollections.txt", Context.MODE_PRIVATE);
@@ -143,7 +171,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                 /*else if(f.exists() && localCollections.size() == 0){
                     f.delete();
                 }*/
-                else {
+               /* else {
                     f.createNewFile();
                     readCollectionsFromFile = getActivity().openFileOutput("SavedCollections.txt", Context.MODE_PRIVATE);
                     readCollectionsFromFile.write("".getBytes());
@@ -156,7 +184,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
             }
             catch (IOException e){
                 e.printStackTrace();
-            }
+            }*/
         }
         //Activates remove mode.
         else if(view.getId() == R.id.Removebutn){
@@ -177,6 +205,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
      */
     private void readFile(){
         File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
+        f.delete();
         try {
             if (f.exists() && f.length() != 0) {
                 InputStream fin = getActivity().openFileInput("SavedCollections.txt");
@@ -203,6 +232,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         View v = inflater.inflate(R.layout.activity_local_loc, container, false);
         obtainable_loc_Start = (FloatingActionButton) v.findViewById(R.id.ToObtainable);
         addToList = new ArrayList<>();
+        LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(pbr, new IntentFilter("ProgressFromCMS"));
         //localList = (ListView) v.findViewById(R.id.list);
         localExpandList = (ExpandableListView) v.findViewById(R.id.expandList);
         //localAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, addToList);

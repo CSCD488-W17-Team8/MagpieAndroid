@@ -22,6 +22,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service android:name=".UserProgress.SendProgress"
+            android:exported="true"/>
         <service
             android:name=".JSONGet"
             android:exported="false" />
@@ -36,6 +38,8 @@
             android:exported="false" />
         <service android:name=".ZIPDownload"
             android:exported="true"/>
+        <service android:name=".UserProgress.GetProgress" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

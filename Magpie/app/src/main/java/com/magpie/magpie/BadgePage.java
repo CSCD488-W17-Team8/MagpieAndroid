@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,20 +32,21 @@ import java.util.ArrayList;
  * Use the {@link BadgePage#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BadgePage extends Fragment {
+public class BadgePage extends Fragment implements AdapterView.OnItemSelectedListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private Collection selectedColl;
+    ArrayList<Element> displayElements;
     private ListView badgeList;
     private GridView badgeGrid;
     private TextView collTitle;
     private TabLayout viewTabs;
     private TabLayout.Tab listTab, gridTab;
-    private ProgressBar collectionProgress;
     private CustomBadgeListAdapter cbla;
     private CustomBadgeListAdapter cbga;
+    private Spinner filter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -108,13 +110,17 @@ public class BadgePage extends Fragment {
         listTab = viewTabs.getTabAt(0);
         gridTab = viewTabs.getTabAt(1);
         viewTabs.setOnTabSelectedListener(tlSelected);
-        collectionProgress = (ProgressBar) v.findViewById(R.id.CollectionProgress);
-        collectionProgress.setMax(selectedColl.getCollectionSize());
-        collectionProgress.setProgress(selectedColl.getCollected());
         collTitle.setText(selectedColl.getName());
+        filter = (Spinner) v.findViewById(R.id.BadgeFilter);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this.getContext(), R.array.BadgeFilterArray, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filter.setAdapter(spinnerAdapter);
+        filter.setOnItemSelectedListener(this);
         //ArrayList<String> elementNames = elementToString(selectedColl);
-        cbla = new CustomBadgeListAdapter(this, selectedColl.getCollectionElements(), "List");
-        cbga = new CustomBadgeListAdapter(this, selectedColl.getCollectionElements(), "Grid");
+        displayElements = new ArrayList<>();
+        displayElements.addAll(selectedColl.getCollectionElements());
+        cbla = new CustomBadgeListAdapter(this, displayElements, "List");
+        cbga = new CustomBadgeListAdapter(this, displayElements, "Grid");
         //ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
         badgeList.setAdapter(cbla);
         badgeGrid.setAdapter(cbga);
@@ -167,7 +173,6 @@ public class BadgePage extends Fragment {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Element e = selectedColl.getCollectionElements().get(i);
             selectedColl.setCollected(e);
-            collectionProgress.setProgress(selectedColl.getCollected());
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
             //Ultimately, will be sending the whole collection
         }
@@ -184,7 +189,6 @@ public class BadgePage extends Fragment {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Element e = selectedColl.getCollectionElements().get(i);
             selectedColl.setCollected(e);
-            collectionProgress.setProgress(selectedColl.getCollected());
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
             //Ultimately, will be sending the whole collection
         }
@@ -222,6 +226,98 @@ public class BadgePage extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(position == 0){
+            filterUnachieved();
+        }
+        else if(position == 1){
+            filterAchieved();
+        }
+        else if(position == 2){
+            filterFive();
+        }
+        else if(position == 3){
+            filterTen();
+        }
+        else if(position == 4){
+            filterFifteen();
+        }
+        else if(position == 5){
+            filterMoreThanFifteen();
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    private void filterUnachieved(){
+        displayElements.clear();
+        for(Element e : selectedColl.getCollectionElements()){
+            if(!e.isCollected()){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
+    }
+
+    private void filterAchieved(){
+        displayElements.clear();
+        for(Element e : selectedColl.getCollectionElements()){
+            if(e.isCollected()){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
+    }
+
+    private void filterFive(){
+        displayElements.clear();
+        for(Element e : selectedColl.getCollectionElements()){
+            if(Double.compare(e.getTime(), 5.0) < 0){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
+    }
+
+    private void filterTen(){
+        displayElements.clear();
+        for(Element e : selectedColl.getCollectionElements()){
+            if(Double.compare(e.getTime(), 10.0) < 0){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
+    }
+
+    private void filterFifteen(){
+        displayElements.clear();
+        for(Element e : selectedColl.getCollectionElements()){
+            if(Double.compare(e.getTime(), 15.0) < 0){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
+    }
+    private void filterMoreThanFifteen(){
+        displayElements.clear();
+        for(Element e : selectedColl.getCollectionElements()){
+            if(Double.compare(e.getTime(), 15.0) >= 0){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
     }
 
     /**
