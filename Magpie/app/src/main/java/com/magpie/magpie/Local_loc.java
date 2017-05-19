@@ -85,7 +85,9 @@ public class Local_loc extends Fragment implements View.OnClickListener{
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         if(getArguments() != null){
             Bundle b = getArguments();
             //collections = (ArrayList<Collection>) b.getSerializable("CollectionList");
@@ -99,13 +101,6 @@ public class Local_loc extends Fragment implements View.OnClickListener{
             // END: ADDED BY SEAN 5/2/2017
             addedFromCMS = (ArrayList<Collection>) b.getSerializable("NewlyAddedCollections");
         }
-
-        // BEGIN: ADDED BY SEAN 5/2/2017
-        navActivity = (NavActivity) getActivity();
-
-        // TODO: debug this. Gets a NullPointerReference
-        navActivity.setTitle(getString(R.string.toolbar_my_collections));
-        // END: ADDED BY SEAN 5/2/2017
     }
 
     BroadcastReceiver pbr = new BroadcastReceiver() {
@@ -337,6 +332,11 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     };
 
     private void toBadgePage(int i) {
+
+        navActivity.setActiveCollection(navActivity.getCollections().get(i));
+        navActivity.startNewFragment(new BadgePage());
+
+        /*
         try {
             obtainable_loc_Start.hide();
             saveToFile.hide();
@@ -353,6 +353,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         } catch (Exception e) {
             Log.d("Error: ", "There was a problem with the operation.");
         }
+        */
     }
 
     private void removeFromExpandList(final int i) {

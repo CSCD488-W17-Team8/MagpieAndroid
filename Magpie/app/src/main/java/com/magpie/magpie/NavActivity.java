@@ -50,6 +50,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private ArrayList<Collection> mCollections;
     private Collection mActiveCollection;
+    private MarkerOptions mActiveMarker;
 
     /**
      * Map-related member variables
@@ -95,6 +96,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mCollections = new ArrayList<>();
         mActiveCollection = new Collection();
+        mActiveMarker = new MarkerOptions();
 
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
@@ -131,10 +133,15 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             Intent i = getIntent();
 
             if (i.hasExtra("MAP_TEST")) {
+
                 getFragmentManager().beginTransaction().add(R.id.fragment_container, new MapFragment()).commit();
+                //startCollectionMapFragment();
+
             } else {
+
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
             }
+
 
         }
 
@@ -156,20 +163,24 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
             case R.id.list_button:
                 // TODO: ensure starting in list view
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BadgePage()).commit();
+                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BadgePage()).commit();
                 break;
 
             case R.id.grid_button:
                 // TODO: BadgePage in grid view
+                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.map_button:
                 // TODO: open map with current collection
+                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 startCollectionMapFragment();
                 break;
 
             case R.id.map_nav_button:
                 // TODO: open map with all collections
+                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.qr_nav_button:
@@ -177,7 +188,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
 
             case R.id.home_nav_button:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
+                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
                 break;
 
             case R.id.search_nav_button:
@@ -477,9 +489,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void startMarkerMapFragment() {
         // TODO: map showing ONE marker from ONE collection
 
-        MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
-        mapFragment.getMapAsync(this);
+        startMapFragment();
     }
 
     /**
@@ -489,9 +499,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void startCollectionMapFragment() {
         // TODO: map showing ALL markers from ONE collection
 
-        MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
-        mapFragment.getMapAsync(this);
+        startMapFragment();
     }
 
     /**
@@ -501,12 +509,27 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void startAllCollectionMapFragment() {
         // TODO: map showing ALL markers from ALL collections
 
-        MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
-        mapFragment.getMapAsync(this);
+        startMapFragment();
     }
 
+    /**
+     * Changes the fragment currently active in the fragment container
+     * @param fr the fragment to be started.
+     */
     public void startNewFragment(Fragment fr) {
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).commit();
+
+    }
+
+    /**
+     * Starts the Map fragment.
+     */
+    public void startMapFragment() {
+
+        MapFragment mapFragment = new MapFragment();
+        getFragmentManager().beginTransaction().add(R.id.fragment_container, mapFragment).commit();
+        mapFragment.getMapAsync(this);
 
     }
 
@@ -531,8 +554,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void setTitle(String title) {
-        //mTitleBar.setTitle(title.toUpperCase());
-        ((Toolbar)findViewById(R.id.nav_toolbar)).setTitle(title);
+        mTitleBar.setTitle(title.toUpperCase());
     }
 
 
