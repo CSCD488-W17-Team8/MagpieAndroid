@@ -39,6 +39,11 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * TODO: remove this file.
+ * This Activity is no longer needed. All map functionality is now in NavActivity
+ */
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener {
 

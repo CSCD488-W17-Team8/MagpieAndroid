@@ -139,7 +139,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             if (i.hasExtra("MAP_TEST")) {
 
                 startTestMap();
-                //startCollectionMapFragment();
 
             } else {
 
@@ -236,18 +235,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mMyLocation = getLocation();
         if (mMyLocation != null) {
             moveToLocation(mMyLocation);
-            //mTempCoordinateTextView.setText(mMyLocation.getLatitude()+", "+mMyLocation.getLongitude());
 
             // TESTING. TODO: remove testing parts
-            mActiveCollection = Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude());
-            //mCollectionTitleTextView.setText(mCollection.getName());
-            //placeTestMarkers();
+            setActiveCollection(Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude()));
+            // TESTING END
             createMarkerList();
             placeMarkers();
-            // TESTING END
-        }
 
-        //placeMarkers();
+        }
 
         initMap();
     }
@@ -302,7 +297,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         };
         Handler handler = new Handler();
-        handler.postDelayed(runnable, 200);
+        handler.postDelayed(runnable, 1);
     }
 
     private Location getLocation() {
@@ -492,6 +487,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startMarkerMapFragment() {
         // TODO: map showing ONE marker from ONE collection
+        setTitle(mActiveMarker.getTitle());
 
         startMapFragment();
     }
@@ -502,6 +498,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startCollectionMapFragment() {
         // TODO: map showing ALL markers from ONE collection
+        setTitle(mActiveCollection.getName());
 
         startMapFragment();
     }
@@ -564,8 +561,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // TODO: remove this method once testing is done
     private void startTestMap() {
+
+
         MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_container, mapFragment).commit();
         mapFragment.getMapAsync(this);
         //mActiveCollection = Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude());
     }
