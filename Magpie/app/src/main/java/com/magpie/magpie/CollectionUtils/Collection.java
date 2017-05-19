@@ -145,7 +145,20 @@ public class Collection implements Serializable{
     public String getName() {
         return mName;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
 
+        if (!Collection.class.isAssignableFrom(o.getClass()))
+            return false;
+
+        final Collection other = (Collection) o;
+        if (this.mName.equals(other.getName()))
+            return false;
+
+        return true;
+    }
     public void addBitmap(Bitmap bm){
         img = bm;
     }
@@ -158,7 +171,6 @@ public class Collection implements Serializable{
         else
             mSelected = true;
     }
-
 
     public boolean getDownloaded(){return mDownloaded;}
 

@@ -87,20 +87,16 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+            Log.d("NAVACTIVITYSIZEONCREATE", ((NavActivity)getActivity()).getCollections().size()+"");
+        navActivity = (NavActivity) getActivity();
+        navActivity.setTitle(getString(R.string.toolbar_my_collections));
 
-        if(getArguments() != null){
-            Bundle b = getArguments();
-            //collections = (ArrayList<Collection>) b.getSerializable("CollectionList");
+        //readFile();
 
-            // BEGIN: ADDED BY SEAN 5/2/2017
-            try {
-                ((NavActivity) getActivity()).setCollections((ArrayList<Collection>) b.getSerializable("CollectionList"));
-            } catch (ClassCastException cce) {
-                Log.d("ClassCastException", cce.getMessage());
-            }
-            // END: ADDED BY SEAN 5/2/2017
-            addedFromCMS = (ArrayList<Collection>) b.getSerializable("NewlyAddedCollections");
-        }
+        // BEGIN: ADDED BY SEAN 5/2/2017
+
+        // TODO: debug this. Gets a NullPointerReference
+        // END: ADDED BY SEAN 5/2/2017
     }
 
     BroadcastReceiver pbr = new BroadcastReceiver() {
@@ -127,10 +123,10 @@ public class Local_loc extends Fragment implements View.OnClickListener{
      *
      */
 
-    public void fillTable(){
+    public void fillTable(ArrayList<Collection> toDisplay){
         try {
             String visual;
-            for (Collection co : localCollections) {
+            for (Collection co : toDisplay) {
                 //Remove the line below for the eventual addition of the download complete receiver.
                 //co.setDownloaded();
                 visual = co.getName() + "\r\n Number of Landmarks: " + co.getCollected() + " / " + co.getCollectionSize() +
@@ -157,14 +153,8 @@ public class Local_loc extends Fragment implements View.OnClickListener{
             try {
                 obtainable_loc_Start.hide();
                 saveToFile.hide();
-                Bundle b = new Bundle();
-                b.putSerializable("CurrentCollections", localCollections);
                 Fragment fr = new Obtainable_loc();
-                fr.setArguments(b);
-                android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.Nav_Activity, fr);
-                ft.commit();
+                navActivity.startNewFragment(fr);
             } catch (Exception e){
                 Log.d("Stuff", "Error: ", e);
             }
@@ -207,6 +197,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         }
         //Activates remove mode.
         else if(view.getId() == R.id.Removebutn){
+            ArrayList<Collection> temp = navActivity.getCollections();
             if(removeMode) {
                 removeMode = false;
                 removeButton.setText("Remove");
@@ -223,8 +214,8 @@ public class Local_loc extends Fragment implements View.OnClickListener{
      *
      */
     private void readFile(){
+        ArrayList<Collection> fromFile = new ArrayList<>();
         File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
-        f.delete();
         try {
             if (f.exists() && f.length() != 0) {
                 InputStream fin = getActivity().openFileInput("SavedCollections.txt");
@@ -233,9 +224,10 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                 String s = bufRead.readLine();
                 String[] allColl = s.split("÷÷÷");
                 for(String coll : allColl){
-                    localCollections.add(new Collection(coll));
+                    fromFile.add(new Collection(coll));
                 }
             }
+            navActivity.setCollections(fromFile);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -262,18 +254,18 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         if(addedFromCMS != null){
             downloadZIPs();
         }
-        if(localCollections == null){
+        fillTable(navActivity.getCollections());
+        /*if(localCollections == null){
             localCollections = new ArrayList<>();
             if(addedFromCMS != null){
                 localCollections.addAll(addedFromCMS);
             }
-            readFile();
             fillTable();
         }
         else {
             fillTable();
-        }
-        celal = new CustomExpandableListAdapterLocal(this, localCollections);
+        }*/
+        celal = new CustomExpandableListAdapterLocal(this, navActivity.getCollections());
         localExpandList.setAdapter(celal);
         //localList.setOnItemClickListener(localListItemClick);
         removeButton = (Button)v.findViewById(R.id.Removebutn);
@@ -309,20 +301,18 @@ public class Local_loc extends Fragment implements View.OnClickListener{
               /*Should we find a match, the Collection will be ready for use by the user.
                 As such, we also want to store the path to the zip file for later use.
                 To do that, we want to build the path here and store it in the Collection object.*/
-                if (zipName.compareTo("imagesCID" + localCollections.get(i).getCID() + ".zip") == 0) {
-                    localCollections.get(i).setDownloaded();
-                    localCollections.get(i).setPicZip(path + "/" + zipName);
+                if (zipName.compareTo("test.zip") == 0) {
+                    navActivity.getCollections().get(i).setDownloaded();
+                    navActivity.getCollections().get(i).setPicZip(path + "/" + zipName);
                     addImagesToElements(i);
                 }
             }
             //Because we want the user to be prevented from accessing a Collection until we have access to images, we will have an if statement check for the completion of the download.
-            if (localCollections.get(i).getDownloaded()) {
+            if (navActivity.getCollections().get(i).getDownloaded()) {
                 if (removeMode) {
                     removeFromExpandList(i);
                 } else {
-
                     toBadgePage(i);
-
                 }
             } else {
                 Toast.makeText(getContext(), "The selected Collection has not finished downloading images.", Toast.LENGTH_SHORT).show();
@@ -340,16 +330,10 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         try {
             obtainable_loc_Start.hide();
             saveToFile.hide();
-            Collection send = localCollections.get(i);
-            send.setSelected();
-            Bundle coll = new Bundle();
-            coll.putSerializable("TheCollection", send);
+            Collection send = navActivity.getCollections().get(i);
+            navActivity.setActiveCollection(send);
             Fragment fr = new BadgePage();
-            fr.setArguments(coll);
-            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Main_Activity, fr);
-            ft.commit();
+            navActivity.startNewFragment(fr);
         } catch (Exception e) {
             Log.d("Error: ", "There was a problem with the operation.");
         }
@@ -411,10 +395,6 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         super.onDestroy();
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }
 
     /*

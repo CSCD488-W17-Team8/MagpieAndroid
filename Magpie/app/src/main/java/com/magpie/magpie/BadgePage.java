@@ -1,12 +1,9 @@
 package com.magpie.magpie;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.magpie.magpie.CollectionUtils.Collection;
@@ -38,16 +33,15 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private Collection selectedColl;
     ArrayList<Element> displayElements;
     private ListView badgeList;
     private GridView badgeGrid;
-    private TextView collTitle;
     private TabLayout viewTabs;
     private TabLayout.Tab listTab, gridTab;
     private CustomBadgeListAdapter cbla;
     private CustomBadgeListAdapter cbga;
     private Spinner filter;
+    private NavActivity navActivity;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -89,10 +83,8 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            Bundle b = getArguments();
-            selectedColl = (Collection) b.getSerializable("TheCollection");
-        }
+        navActivity = (NavActivity)getActivity();
+        navActivity.setTitle(navActivity.getActiveCollection().getName());
     }
 
     /*
@@ -107,14 +99,12 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_badge_page, container, false);
-        collTitle = (TextView) v.findViewById(R.id.CollectionTitle);
         badgeGrid = (GridView) v.findViewById(R.id.BadgeGridView);
         badgeList = (ListView) v.findViewById(R.id.BadgeListView);
         viewTabs = (TabLayout) v.findViewById(R.id.ViewTabs);
         listTab = viewTabs.getTabAt(0);
         gridTab = viewTabs.getTabAt(1);
         viewTabs.setOnTabSelectedListener(tlSelected);
-        collTitle.setText(selectedColl.getName());
         filter = (Spinner) v.findViewById(R.id.BadgeFilter);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this.getContext(), R.array.BadgeFilterArray, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -122,7 +112,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         filter.setOnItemSelectedListener(this);
         //ArrayList<String> elementNames = elementToString(selectedColl);
         displayElements = new ArrayList<>();
-        displayElements.addAll(selectedColl.getCollectionElements());
+        displayElements.addAll(navActivity.getActiveCollection().getCollectionElements());
         cbla = new CustomBadgeListAdapter(this, displayElements, "List");
         cbga = new CustomBadgeListAdapter(this, displayElements, "Grid");
         //ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
@@ -176,10 +166,11 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     AdapterView.OnItemClickListener onLVClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Element e = selectedColl.getCollectionElements().get(i);
-            selectedColl.setCollected(e);
+            Element e = navActivity.getActiveCollection().getCollectionElements().get(i);
+            navActivity.getActiveCollection().setCollected(e);
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
-            //Ultimately, will be sending the whole collection
+            //Fragment fr = new InformationPage;
+            //navActivity.startNewFragment(fr);
         }
     };
 
@@ -192,69 +183,13 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     AdapterView.OnItemClickListener onGVClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Element e = selectedColl.getCollectionElements().get(i);
-            selectedColl.setCollected(e);
+            Element e = navActivity.getActiveCollection().getCollectionElements().get(i);
+            navActivity.getActiveCollection().setCollected(e);
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
             //Ultimately, will be sending the whole collection
         }
     };
 
-    /*
-<<<<<<< HEAD
-=======
-    /*private ArrayList<String> elementToString(Collection selectedCollPassed) {
-=======
->>>>>>> ArrasmithBetaBranch
-    View.OnClickListener startButtonClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent i =  new Intent(v.getContext(), MapsActivity.class);
-            Bundle b = new Bundle();
-            b.putSerializable(activeCollectionKey, selectedColl);
-            i.putExtra(bundleKey, b);
-            startActivity(i);
-        }
-    };
-
-<<<<<<< HEAD
-
-    private ArrayList<String> elementToString(Collection selectedCollPassed) {
-=======
-    private ArrayList<String> elementToString(Collection c) {
->>>>>>> refs/remotes/origin/beta
->>>>>>> ArrasmithBetaBranch
-        ArrayList<String> temp = new ArrayList<>();
-        for(Element e : selectedCollPassed.getCollectionElements()){
-            temp.add(e.getName());
-        }
-        return temp;
-    }
-
-    /*
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-    */
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -264,17 +199,8 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         else if(position == 1){
             filterAchieved();
         }
-        else if(position == 2){
-            filterFive();
-        }
-        else if(position == 3){
-            filterTen();
-        }
-        else if(position == 4){
-            filterFifteen();
-        }
-        else if(position == 5){
-            filterMoreThanFifteen();
+        else {
+            filterTime(position);
         }
     }
 
@@ -285,7 +211,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
 
     private void filterUnachieved(){
         displayElements.clear();
-        for(Element e : selectedColl.getCollectionElements()){
+        for(Element e : navActivity.getActiveCollection().getCollectionElements()){
             if(!e.isCollected()){
                 displayElements.add(e);
             }
@@ -296,7 +222,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
 
     private void filterAchieved(){
         displayElements.clear();
-        for(Element e : selectedColl.getCollectionElements()){
+        for(Element e : navActivity.getActiveCollection().getCollectionElements()){
             if(e.isCollected()){
                 displayElements.add(e);
             }
@@ -305,43 +231,37 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         cbga.notifyDataSetChanged();
     }
 
-    private void filterFive(){
-        displayElements.clear();
-        for(Element e : selectedColl.getCollectionElements()){
-            if(Double.compare(e.getTime(), 5.0) < 0){
-                displayElements.add(e);
+    public void filterTime(int pos) {
+        if (pos == 2) {
+            displayElements.clear();
+            for (Element e : navActivity.getActiveCollection().getCollectionElements()) {
+                if (Double.compare(e.getTime(), 5.0) < 0) {
+                    displayElements.add(e);
+                }
             }
         }
-        cbla.notifyDataSetChanged();
-        cbga.notifyDataSetChanged();
-    }
-
-    private void filterTen(){
-        displayElements.clear();
-        for(Element e : selectedColl.getCollectionElements()){
-            if(Double.compare(e.getTime(), 10.0) < 0){
-                displayElements.add(e);
+        else if(pos == 3){
+            displayElements.clear();
+            for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+                if(Double.compare(e.getTime(), 10.0) < 0){
+                    displayElements.add(e);
+                }
             }
         }
-        cbla.notifyDataSetChanged();
-        cbga.notifyDataSetChanged();
-    }
-
-    private void filterFifteen(){
-        displayElements.clear();
-        for(Element e : selectedColl.getCollectionElements()){
-            if(Double.compare(e.getTime(), 15.0) < 0){
-                displayElements.add(e);
+        else if(pos == 4){
+            displayElements.clear();
+            for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+                if(Double.compare(e.getTime(), 15.0) < 0){
+                    displayElements.add(e);
+                }
             }
         }
-        cbla.notifyDataSetChanged();
-        cbga.notifyDataSetChanged();
-    }
-    private void filterMoreThanFifteen(){
-        displayElements.clear();
-        for(Element e : selectedColl.getCollectionElements()){
-            if(Double.compare(e.getTime(), 15.0) >= 0){
-                displayElements.add(e);
+        else {
+            displayElements.clear();
+            for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+                if(Double.compare(e.getTime(), 15.0) >= 0){
+                    displayElements.add(e);
+                }
             }
         }
         cbla.notifyDataSetChanged();

@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, Obtainable_loc.CollectionsFromObtain {
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
@@ -89,6 +89,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private ImageButton mAccountNavButton;
 
     private boolean showingBadgePage = false;
+    Obtainable_loc fob = new Obtainable_loc();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +119,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         // TODO: set visibility of view_bar
 
         mFragmentMngr = getSupportFragmentManager(); // TODO: test this
-
+        fob.setListener(this);
         if (findViewById(R.id.fragment_container) != null) {
 
             /**
@@ -559,6 +560,13 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mTitleBar.setTitle(title.toUpperCase());
     }
 
+    public Collection getActiveCollection(){return mActiveCollection;}
+
+    @Override
+    public void setAddedCollections(ArrayList<Collection> added) {
+        addNewCollections(added);
+    }
+
     // TODO: remove this method once testing is done
     private void startTestMap() {
 
@@ -568,7 +576,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         //mActiveCollection = Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude());
     }
-
 
     /*
     @Override

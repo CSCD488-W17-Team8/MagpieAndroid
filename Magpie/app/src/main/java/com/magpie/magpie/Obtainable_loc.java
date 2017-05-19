@@ -55,6 +55,17 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     ArrayList<String> allColl;
     CustomExpandableListAdapterObtainable celao;
     SearchView searchList;
+    NavActivity navActivity;
+
+    public interface CollectionsFromObtain{
+        void setAddedCollections(ArrayList<Collection> added);
+    }
+
+    private CollectionsFromObtain collectionsFromObtain;
+
+    public void setListener(CollectionsFromObtain fob2 ){
+        collectionsFromObtain = fob2;
+    }
 
     /*
      * Method onCreate: Handles the sending in of the Collections that are on the local side.
@@ -65,10 +76,9 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null){
-            Bundle b = getArguments();
-            fromFile = (ArrayList<Collection>)b.getSerializable("CurrentCollections");
-        }
+        collectionsFromObtain = (CollectionsFromObtain)getActivity();
+        navActivity = (NavActivity)getActivity();
+        navActivity.setTitle(getString(R.string.toolbar_add_collection));
     }
 
     /*
@@ -107,9 +117,9 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
      */
 
     private boolean checkCID(int CID) {
-        if (fromFile.size() != 0) {
-            for (Collection fileColl : fromFile){
-                if(fileColl.getCID() == CID){
+        if (navActivity.getCollections().size() != 0) {
+            for (Collection exist : navActivity.getCollections()){
+                if(exist.getCID() == CID){
                     return false;
                 }
             }
@@ -154,15 +164,11 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 strBadges = intent.getStringExtra("CollectionElements");
                 String[] badgeArr = strBadges.split("%");
                 createElements(badgeArr);
-                Fragment fr = new Local_loc();
-                Bundle coll = new Bundle();
-                coll.putSerializable("NewlyAddedCollections", added);
                 if(isAdded()) {
-                    fr.setArguments(coll);
-                    android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-                    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                    ft.replace(R.id.Nav_Activity, fr);
-                    ft.commit();
+                    ArrayList<Collection> temp = navActivity.getCollections();
+                    collectionsFromObtain.setAddedCollections(added);
+                    Fragment fr = new Local_loc();
+                    navActivity.startNewFragment(fr);
                 }
                 else{
                     Toast.makeText(getContext(), "There was an error adding a collection", Toast.LENGTH_SHORT).show();
@@ -186,10 +192,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
 
         if(view.getId() == cancel.getId()){
             Fragment fr = new Local_loc();
-            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Nav_Activity, fr);
-            ft.commit();
+            navActivity.startNewFragment(fr);
         }
         else if(((String)(view.getTag())).compareTo("Apply") == 0) {
             try {
@@ -414,6 +417,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
         }
         celao.notifyDataSetChanged();
     }
+
 }
 
 //obtainable_loc_Adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, allColl)//{
@@ -441,5 +445,4 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                     added.add(collection.get(i));
                     view.setBackgroundColor(Color.GREEN);
                 }
-            }
-        });*/
+*/
