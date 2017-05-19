@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
 
-            case R.id.sessionTestButton:
+            case R.id.sessionTestButton: // TODO: ensure other fragments work well with NavActivity
                 Toast.makeText(getApplicationContext(), "Starting session test", Toast.LENGTH_SHORT).show();
                 i = new Intent(v.getContext(), NavActivity.class);
                 startActivity(i);

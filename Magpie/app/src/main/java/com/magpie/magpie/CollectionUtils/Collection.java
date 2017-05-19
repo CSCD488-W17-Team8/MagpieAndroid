@@ -188,9 +188,10 @@ public class Collection implements Serializable{
      * @param lon user's longitude position.
      * @return a Collection to be used as a test case for the Maps Activity
      */
-    public static Collection collectionTestBuilder(double lat, double lon) {
+    public static Collection collectionTestBuilder(String name, double lat, double lon) {
 
-        Collection collection = new Collection("Test Collection");
+        Collection collection = new Collection();
+        collection.setName(name);
         collection.buildTestElements(lat, lon);
         return collection;
     }
@@ -202,5 +203,10 @@ public class Collection implements Serializable{
         mCollectionElements.add(new Element("test3", lat-0.001, lon+0.001));
         mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
         mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
+    }
+
+    // Ignore this if you are merging from this branch.
+    private void setName(String name) {
+        mName = name;
     }
 }
