@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.magpie.magpie.CollectionUtils.*;
 
 public class InformationPage extends AppCompatActivity implements View.OnClickListener{
 
@@ -27,7 +28,7 @@ public class InformationPage extends AppCompatActivity implements View.OnClickLi
 
     TextView result_box;
     ImageView result_image;
-
+    Element element;
     boolean isCollected = false;
     LocationManager locationManager;
 

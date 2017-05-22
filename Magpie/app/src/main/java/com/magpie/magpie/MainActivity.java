@@ -21,6 +21,10 @@ import com.google.android.gms.common.api.Status;
 public class MainActivity extends AppCompatActivity {
 
     private GoogleApiClient mGoogleApiClient;
+    private int loc_permissionCheck,cam_permissionCheck;
+
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 666,
+            MY_REQUEST_PERMISSIONS_REQUEST_FINE_LOCATION = 42;
 
     /**
      * Initializes the first view in the app for the user. User will be presented with the login
@@ -103,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
