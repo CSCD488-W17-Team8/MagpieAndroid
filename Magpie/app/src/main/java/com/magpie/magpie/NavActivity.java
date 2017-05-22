@@ -23,8 +23,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -71,22 +73,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private RelativeLayout mViewBar;
     private FragmentManager mFragmentMngr;
 
-    /**
-     * view bar buttons
-     */
-    private Button mListViewButton;
-    private Button mGridViewButton;
-    private Button mMapViewButton;
-
-    /**
-     * nav bar buttons
-     */
-    private ImageButton mMapNavButton;
-    private ImageButton mQRNavButton;
-    private ImageButton mHomeNavButton;
-    private ImageButton mSearchNavButton;
-    private ImageButton mAccountNavButton;
-
     private boolean showingBadgePage = false;
     Obtainable_loc fob = new Obtainable_loc();
 
@@ -103,16 +89,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
-
-        mListViewButton = (Button) findViewById(R.id.list_button);
-        mGridViewButton = (Button) findViewById(R.id.grid_button);
-        mMapViewButton = (Button) findViewById(R.id.map_button);
-
-        mMapNavButton = (ImageButton) findViewById(R.id.map_nav_button);
-        mQRNavButton = (ImageButton) findViewById(R.id.qr_nav_button);
-        mHomeNavButton = (ImageButton) findViewById(R.id.home_nav_button);
-        mSearchNavButton = (ImageButton) findViewById(R.id.search_nav_button);
-        mAccountNavButton = (ImageButton) findViewById(R.id.account_nav_button);
 
         // TODO: set visibility of view_bar
 
@@ -158,25 +134,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         */
     }
 
-    public void onClick(View v) {
+    public void onNavButtonClicked(View v) {
 
         switch (v.getId()) {
-
-            case R.id.list_button:
-                // TODO: ensure starting in list view
-                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
-                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BadgePage()).commit();
-                break;
-
-            case R.id.grid_button:
-                // TODO: BadgePage in grid view
-                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.map_button:
-                // TODO: open map with current collection
-                startCollectionMapFragment();
-                break;
 
             case R.id.map_nav_button:
                 // TODO: open map with all collections
@@ -200,6 +160,34 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public void onRadioButtonClicked(View view) {
+
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+
+            case R.id.radio_list_view:
+                if (checked) {
+
+                }
+                break;
+            case R.id.radio_grid_view:
+                if (checked) {
+
+                }
+                break;
+            case R.id.radio_map_view:
+                if (checked) {
+
+                    startCollectionMapFragment();
+
+                }
+                break;
+
+        }
+
     }
 
     /**
@@ -234,7 +222,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             moveToLocation(mMyLocation);
 
             // TESTING. TODO: remove testing parts
-            setActiveCollection(Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude()));
+            //setActiveCollection(Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude()));
             // TESTING END
             //createMarkerList();
             placeMarkers();
@@ -398,7 +386,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             MarkerOptions marker = new MarkerOptions();
             marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
             marker.title(element.getName());
-            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image
+            //marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image; wasn't working here
 
             if (mMarkerList != null) {
 
@@ -454,6 +442,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private void placeMarkers() {
 
         for (MarkerOptions marker : mMarkerList) {
+            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable));
             mMap.addMarker(marker);
         }
     }
@@ -518,6 +507,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startMarkerMapFragment() {
         // TODO: map showing ONE marker from ONE collection
+        hideViewBar();
         setTitle(mActiveElement.getName());
         createMarker(mActiveElement);
         startMapFragment();
@@ -529,9 +519,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startCollectionMapFragment() {
         // TODO: map showing ALL markers from ONE collection
+        showViewBar();
         setTitle(mActiveCollection.getName());
-        createCollectionMarkerList(mActiveCollection);
         startMapFragment();
+        createCollectionMarkerList(mActiveCollection);
     }
 
     /**
@@ -540,6 +531,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startAllCollectionMapFragment() {
         // TODO: map showing ALL markers from ALL collections
+        hideViewBar();
         setTitle(getString(R.string.toolbar_badges_near_me));
         createAllCollectionMarkerList();
         startMapFragment();
@@ -551,7 +543,37 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startNewFragment(Fragment fr) {
 
+        if (fr.getClass().getSimpleName().equals(BadgePage.class.getSimpleName())) {
+
+            showViewBar();
+
+        } else {
+
+            hideViewBar();
+
+        }
+
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).commit();
+
+    }
+
+    /**
+     * Shows the view-switching bar for the badge page
+     */
+    public void showViewBar() {
+
+        if (mViewBar.getVisibility() == View.GONE)
+            mViewBar.setVisibility(View.VISIBLE);
+
+    }
+
+    /**
+     * Hides the view-switching bar if not on the badge page or the single-collection map.
+     */
+    public void hideViewBar() {
+
+        if (mViewBar.getVisibility() == View.VISIBLE)
+            mViewBar.setVisibility(View.GONE);
 
     }
 

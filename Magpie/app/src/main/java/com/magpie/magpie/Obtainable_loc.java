@@ -169,7 +169,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     };
 
     /*
-     * Method onClick: Handles the separate button clicks that can happen --
+     * Method onNavButtonClicked: Handles the separate button clicks that can happen --
      * Cancel: Returns the user to the local list
      * Apply: adds all selected Collections to the local side.
      *

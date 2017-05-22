@@ -24,7 +24,7 @@
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
-        android:onClick="onClick"
+        android:onClick="onNavButtonClicked"
         android:layout_height="40dp"
         android:layout_width="290dp"
         android:layout_centerVertical="true"
@@ -41,7 +41,7 @@
 
     <Button
         android:id="@+id/sign_out_button"
-        android:onClick="onClick"
+        android:onClick="onNavButtonClicked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sign_out_button_text"
@@ -51,7 +51,7 @@
 
     <Button
         android:id="@+id/sessionTestButton"
-        android:onClick="onClick"
+        android:onClick="onNavButtonClicked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/session_test_button_text"
@@ -60,7 +60,7 @@
 
     <Button
         android:id="@+id/mapViewTestButton"
-        android:onClick="onClick"
+        android:onClick="onNavButtonClicked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/map_test_button_text"

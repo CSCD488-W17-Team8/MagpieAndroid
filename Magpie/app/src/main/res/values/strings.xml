@@ -59,10 +59,11 @@
 
     <!-- Local_loc Strings -->
 
-
     <!-- fragment_badge_page Strings-->
     <string name="gridLabel">Grid</string>
     <string name="listLabel">List</string>
+
+    <string name="mapLabel">Map</string>
 
     <string name="title_activity_nav">NavActivity</string>
 

@@ -138,7 +138,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     }
 
     /*
-     * Method onClick: Determines which button has been clicked. Associated buttons are the toObtainable button, sending the
+     * Method onNavButtonClicked: Determines which button has been clicked. Associated buttons are the toObtainable button, sending the
      * user to the Obtainable_loc class, the save button, writing all relevant Collection data to a text file, and the remove
      * button, which allows the user to remove any collection they wish to.
      *
@@ -428,14 +428,14 @@ public class Local_loc extends Fragment implements View.OnClickListener{
                 builder.setIcon(android.R.drawable.ic_dialog_alert);
                 builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
+                    public void onNavButtonClicked(DialogInterface dialogInterface, int which) {
                         localAdapter.remove(addToList.get(i));
                         localCollections.remove(i);
                     }
                 });
                 builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
+                    public void onNavButtonClicked(DialogInterface dialogInterface, int which) {
 
                     }
                 });

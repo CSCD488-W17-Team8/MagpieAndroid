@@ -29,52 +29,58 @@
         android:background="@color/colorMagpieWhite"
         android:visibility="gone">
 
-        <LinearLayout
-            android:id="@+id/view_bar_button_layout"
+        <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@id/centerVerticalShim"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_toLeftOf="@id/centerVerticalShim">
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <Button
-                android:id="@+id/list_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:text="List" />
+            <RadioButton
+                android:id="@+id/radio_list_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:checked="true"
+
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/listLabel" />
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <Button
-                android:id="@+id/grid_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:text="Grid" />
+            <RadioButton
+                android:id="@+id/radio_grid_view"
+                android:text="@string/gridLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:onClick="onRadioButtonClicked"/>
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <Button
-                android:id="@+id/map_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:text="Map" />
+            <RadioButton
+                android:id="@+id/radio_map_view"
+                android:text="@string/mapLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:onClick="onRadioButtonClicked"/>
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
-
-        </LinearLayout>
+        </RadioGroup>
 
         <View
             android:id="@+id/centerVerticalShim"
@@ -130,55 +136,60 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/map_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@drawable/pinavailable" />
+            android:background="@drawable/pinavailable"
+            android:onClick="onNavButtonClicked"/>
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/qr_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@drawable/icon_qrcode" />
+            android:background="@drawable/icon_qrcode"
+            android:onClick="onNavButtonClicked"/>
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/home_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@drawable/icon_home" />
+            android:background="@drawable/icon_home"
+            android:onClick="onNavButtonClicked"/>
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/search_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@android:drawable/ic_search_category_default" />
+            android:background="@android:drawable/ic_search_category_default"
+            android:onClick="onNavButtonClicked"/>
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/account_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@android:drawable/btn_star" />
+            android:background="@android:drawable/btn_star"
+            android:onClick="onNavButtonClicked"/>
 
         <Space
             android:layout_width="0dp"
