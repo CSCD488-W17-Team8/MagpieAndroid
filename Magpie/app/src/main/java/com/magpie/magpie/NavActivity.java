@@ -50,9 +50,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private ArrayList<Collection> mCollections;
     private Collection mActiveCollection;
-    private ArrayList<MarkerOptions> mAllCollectionMarkers;
-    private ArrayList<MarkerOptions> mActiveCollectionMarkers;
-    private MarkerOptions mActiveMarker;
+    private ArrayList<MarkerOptions> mMarkerList;
+    private Element mActiveElement;
 
     /**
      * Map-related member variables
@@ -99,9 +98,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mCollections = new ArrayList<>();
         mActiveCollection = new Collection();
 
-        mAllCollectionMarkers = new ArrayList<>();
-        mActiveCollectionMarkers = new ArrayList<>();
-        mActiveMarker = new MarkerOptions();
+        mMarkerList = new ArrayList<>();
+        mActiveElement = new MarkerOptions();
 
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
@@ -178,13 +176,12 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
             case R.id.map_button:
                 // TODO: open map with current collection
-                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 startCollectionMapFragment();
                 break;
 
             case R.id.map_nav_button:
                 // TODO: open map with all collections
-                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                startAllCollectionMapFragment();
                 break;
 
             case R.id.qr_nav_button:
@@ -240,7 +237,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             // TESTING. TODO: remove testing parts
             setActiveCollection(Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude()));
             // TESTING END
-            createMarkerList();
+            //createMarkerList();
             placeMarkers();
 
         }
@@ -248,6 +245,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         initMap();
     }
 
+    /**
+     * initializes map and its UI settings.
+     */
     private void initMap() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
@@ -392,40 +392,64 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    private void createMarker(Element element) {
+
+        MarkerOptions marker = new MarkerOptions();
+        marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
+        marker.title(element.getName());
+        marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image
+
+        if (mMarkerList != null) {
+            mMarkerList.add(marker);
+        } else {
+            Toast.makeText(getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT);
+            Log.d("NULLPOINTER", "mMarkerList is null. Cannot add marker in createMarker.");
+        }
+
+    }
+
     /**
      * Creates a list of markers from the Elements in the active collection.
-     * Markers are saves in the mActiveCollectionMarkers member variable.
+     * Markers are saved in the mMarkerList member variable.
      */
-    private void createMarkerList() {
+    private void createCollectionMarkerList(Collection collection) {
 
-        if (mActiveCollection != null) {
-            ArrayList<Element> elements = mActiveCollection.getCollectionElements();
+
+        if (collection != null) {
+
+            ArrayList<Element> elements = collection.getCollectionElements();
+
             for (Element element : elements) {
 
-                MarkerOptions marker = new MarkerOptions();
-                marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
-                marker.title(element.getName());
-                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable));
+                createMarker(element);
 
-                mActiveCollectionMarkers.add(marker);
             }
-
-            placeMarkers();
         }
     }
 
     /**
-     * Places markers on the Map after markers were made in the createMarkerList method
+     * Creates list of Markers from the Elements in all collections.
+     */
+    private void createAllCollectionMarkerList() {
+
+        if (mCollections != null) {
+
+            for (Collection collection : mCollections) {
+
+                createCollectionMarkerList(collection);
+
+            }
+        }
+    }
+
+    /**
+     * Places markers in mMarkerList
      */
     private void placeMarkers() {
 
-        for (MarkerOptions marker : mActiveCollectionMarkers) {
+        for (MarkerOptions marker : mMarkerList) {
             mMap.addMarker(marker);
         }
-    }
-
-    private void placeAllCollectionMarkers() {
-
     }
 
     @Override
@@ -488,8 +512,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startMarkerMapFragment() {
         // TODO: map showing ONE marker from ONE collection
-        setTitle(mActiveMarker.getTitle());
-
+        setTitle(mActiveElement.getName());
+        createMarker(mActiveElement);
         startMapFragment();
     }
 
@@ -500,7 +524,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void startCollectionMapFragment() {
         // TODO: map showing ALL markers from ONE collection
         setTitle(mActiveCollection.getName());
-
+        createCollectionMarkerList(mActiveCollection);
         startMapFragment();
     }
 
@@ -511,7 +535,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void startAllCollectionMapFragment() {
         // TODO: map showing ALL markers from ALL collections
         setTitle(getString(R.string.toolbar_badges_near_me));
-
+        createAllCollectionMarkerList();
         startMapFragment();
     }
 
