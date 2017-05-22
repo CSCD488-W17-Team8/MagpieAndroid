@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.magpie.magpie.InfoPage">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:id="@+id/display_img"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="#a8a8a8" />
+
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/map_btn"
+        android:layout_below="@+id/display_img"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/collect_btn"
+        android:layout_below="@+id/display_img"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/share_btn"
+        android:layout_below="@+id/display_img"
+        android:layout_alignRight="@+id/display_img"
+        android:layout_alignEnd="@+id/display_img" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Information Goes Here"
+        android:id="@+id/Info_box_view"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+
+
+
+</RelativeLayout>

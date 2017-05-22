@@ -27,6 +27,10 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private GoogleApiClient mGoogleApiClient;
+    private int loc_permissionCheck,cam_permissionCheck;
+
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 666,
+            MY_REQUEST_PERMISSIONS_REQUEST_FINE_LOCATION = 42;
 
     private TextView mErrorTextView;
 
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
 
         Intent i;
+
 
         switch (v.getId()) {
 
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

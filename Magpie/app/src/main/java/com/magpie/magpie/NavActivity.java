@@ -99,7 +99,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mActiveCollection = new Collection();
 
         mMarkerList = new ArrayList<>();
-        mActiveElement = new MarkerOptions();
+        //mActiveElement = new Element(); // Leave it null?
 
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
@@ -394,16 +394,23 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void createMarker(Element element) {
 
-        MarkerOptions marker = new MarkerOptions();
-        marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
-        marker.title(element.getName());
-        marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image
+        if (element != null) {
 
-        if (mMarkerList != null) {
-            mMarkerList.add(marker);
-        } else {
-            Toast.makeText(getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT);
-            Log.d("NULLPOINTER", "mMarkerList is null. Cannot add marker in createMarker.");
+            MarkerOptions marker = new MarkerOptions();
+            marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
+            marker.title(element.getName());
+            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image
+
+            if (mMarkerList != null) {
+
+                mMarkerList.add(marker);
+
+            } else {
+
+                Toast.makeText(getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT);
+                Log.d("NULLPOINTER", "mMarkerList is null. Cannot add marker in createMarker.");
+
+            }
         }
 
     }
