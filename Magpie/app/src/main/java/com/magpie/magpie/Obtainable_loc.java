@@ -57,16 +57,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     SearchView searchList;
     NavActivity navActivity;
 
-    public interface CollectionsFromObtain{
-        void setAddedCollections(ArrayList<Collection> added);
-    }
-
-    private CollectionsFromObtain collectionsFromObtain;
-
-    public void setListener(CollectionsFromObtain fob2 ){
-        collectionsFromObtain = fob2;
-    }
-
     /*
      * Method onCreate: Handles the sending in of the Collections that are on the local side.
      * If there is no Collections locally, it sends in null.
@@ -76,7 +66,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        collectionsFromObtain = (CollectionsFromObtain)getActivity();
         navActivity = (NavActivity)getActivity();
         navActivity.setTitle(getString(R.string.toolbar_add_collection));
     }
@@ -166,7 +155,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 createElements(badgeArr);
                 if(isAdded()) {
                     ArrayList<Collection> temp = navActivity.getCollections();
-                    collectionsFromObtain.setAddedCollections(added);
                     Fragment fr = new Local_loc();
                     navActivity.startNewFragment(fr);
                 }
@@ -248,7 +236,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                     collection.get(x).addElement(json);
                 }
             }
-            added.add(collection.get(x));
+            navActivity.addCollection(collection.get(x));
         }
         catch(Exception e){
             Log.v("CREATEELEMENTSEXCEP", e.getMessage());
