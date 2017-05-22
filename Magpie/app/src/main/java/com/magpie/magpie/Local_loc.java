@@ -50,6 +50,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.magpie.magpie.CollectionUtils.*;
+import com.magpie.magpie.UserProgress.GetProgress;
 import com.magpie.magpie.UserProgress.SendProgress;
 
 import org.json.JSONObject;
@@ -68,10 +69,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
 
     FloatingActionButton saveToFile;
     FileOutputStream readCollectionsFromFile;
-    ArrayList<Collection> localCollections;
-    ArrayList<Collection> addedFromCMS;
     FloatingActionButton obtainable_loc_Start;
-    ListView localList;
     ExpandableListView localExpandList;
     CustomExpandableListAdapterLocal celal;
     ArrayAdapter<String> localAdapter;
@@ -162,9 +160,9 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         //Saves all current collections to a text file.
         else if(view.getId() == R.id.saveButton){
 
-            Intent intent = new Intent(getContext(), SendProgress.class);
-            intent.putExtra("UserID", "test");
-            intent.putExtra("UserProgressCollection", localCollections);
+            Intent intent = new Intent(getContext(), GetProgress.class);
+            //intent.putExtra("UserID", "test");
+            //intent.putExtra("UserProgressCollection", navActivity.getCollections());
             getContext().startService(intent);
             /*File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
             try {
@@ -197,7 +195,6 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         }
         //Activates remove mode.
         else if(view.getId() == R.id.Removebutn){
-            ArrayList<Collection> temp = navActivity.getCollections();
             if(removeMode) {
                 removeMode = false;
                 removeButton.setText("Remove");
@@ -251,8 +248,9 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         obtainable_loc_Start.setOnClickListener(this);
         saveToFile = (FloatingActionButton) v.findViewById(R.id.saveButton);
         saveToFile.setOnClickListener(this);
-        if(addedFromCMS != null){
-            downloadZIPs();
+        for(Collection c : navActivity.getCollections()){
+            if(!c.getDownloaded())
+                downloadZIPs();
         }
         fillTable(navActivity.getCollections());
         /*if(localCollections == null){
@@ -283,9 +281,9 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     private void downloadZIPs() {
         //The idea here is to construct zip files that contain the CID of the associated Collection within the zip file's name.
         //This is mainly because we are guaranteed that the CID will be unique amongst all the data within the JSON sent.
-        ArrayList<Integer> CIDs = new ArrayList<>(addedFromCMS.size());
-        for(int i = 0; i < addedFromCMS.size(); i++){
-            CIDs.add(addedFromCMS.get(i).getCID());
+        ArrayList<Integer> CIDs = new ArrayList<>(navActivity.getCollections().size());
+        for(int i = 0; i < navActivity.getCollections().size(); i++){
+            CIDs.add(navActivity.getCollections().get(i).getCID());
         }
         Intent download = new Intent(getContext(), ZIPDownload.class);
         download.putIntegerArrayListExtra("TheCIDs", CIDs);
@@ -301,7 +299,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
               /*Should we find a match, the Collection will be ready for use by the user.
                 As such, we also want to store the path to the zip file for later use.
                 To do that, we want to build the path here and store it in the Collection object.*/
-                if (zipName.compareTo("test.zip") == 0) {
+                if (zipName.compareTo("imagesCID" + navActivity.getCollections().get(i).getCID() + ".zip") == 0) {
                     navActivity.getCollections().get(i).setDownloaded();
                     navActivity.getCollections().get(i).setPicZip(path + "/" + zipName);
                     addImagesToElements(i);
@@ -348,7 +346,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
-                localCollections.remove(i);
+                navActivity.getCollections().remove(i);
                 celal.notifyDataSetChanged();
             }
         });
@@ -363,12 +361,12 @@ public class Local_loc extends Fragment implements View.OnClickListener{
 
     private void addImagesToElements(int index){
         try {
-            ZipFile zipImages = new ZipFile(localCollections.get(index).getPicZip());
+            ZipFile zipImages = new ZipFile(navActivity.getCollections().get(index).getPicZip());
             Enumeration<? extends ZipEntry> entries = zipImages.entries();
             ZipEntry curImage = entries.nextElement();
             ZipEntry defaultImage = curImage;
             int count = 0;
-            for(Element element : localCollections.get(index).getCollectionElements()){
+            for(Element element : navActivity.getCollections().get(index).getCollectionElements()){
                 InputStream zin = zipImages.getInputStream(curImage);
                 Bitmap bm = BitmapFactory.decodeStream(zin);
                 element.setBadge(bm);

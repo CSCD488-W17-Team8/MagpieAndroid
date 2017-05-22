@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, Obtainable_loc.CollectionsFromObtain {
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener {
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
@@ -117,7 +117,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         // TODO: set visibility of view_bar
 
         mFragmentMngr = getSupportFragmentManager(); // TODO: test this
-        fob.setListener(this);
         if (findViewById(R.id.fragment_container) != null) {
 
             /**
@@ -593,7 +592,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public Collection getActiveCollection(){return mActiveCollection;}
 
-    @Override
+    //@Override
     public void setAddedCollections(ArrayList<Collection> added) {
         addNewCollections(added);
     }
