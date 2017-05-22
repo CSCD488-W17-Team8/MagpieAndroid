@@ -36,7 +36,6 @@ public class InfoPage extends Fragment implements View.OnClickListener {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
 
     /**       CONSTANTS          */
     private final double RANGE = 20;
@@ -62,6 +61,8 @@ public class InfoPage extends Fragment implements View.OnClickListener {
     double latitude_user, latitude_dest;
     Location user_location = new Location("user_location");
     Location dest_location = new Location("dest_location");
+
+    NavActivity navActivity;
 
 
     public InfoPage() {
@@ -90,18 +91,9 @@ public class InfoPage extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-
-            Bundle bundle = getArguments();
-            ////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-            curElement = (Element) bundle.getSerializable("Cur_Element");
-
-            latitude_dest  = curElement.getLatitude();
-            longitude_dest = curElement.getLatitude();
-        }
-
+        navActivity = (NavActivity) getActivity();
+        latitude_dest  = navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getLatitude();
+        longitude_dest = navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getLongitude();
 
 
 
@@ -131,31 +123,19 @@ public class InfoPage extends Fragment implements View.OnClickListener {
         btn_share.setOnClickListener(this);
         btn_collect.setOnClickListener(this);
 
-        return view;
-    }
+        result_box.setText(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getName() + "\n" + navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getInfoLink());
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     @Override
@@ -214,10 +194,6 @@ public class InfoPage extends Fragment implements View.OnClickListener {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 
     public boolean collectBadge()
     {

@@ -28,7 +28,7 @@ public class Collection implements Serializable{
     private int mCollected; //Thinking about the collection progress here.
     private boolean mSelected, mDownloaded; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully.
     private Bitmap img;
-    private int mHour, mMin, mSec, mZIPCode;
+    private int mHour, mMin, mSec, mZIPCode, mSelectedElement;
 
     public Collection() {
         mName = "";
@@ -215,4 +215,8 @@ public class Collection implements Serializable{
         mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
         mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
     }
+
+    public void setSelectedElement(int i){mSelectedElement = i;}
+
+    public int getSelectedElement(){return mSelectedElement;}
 }
