@@ -165,7 +165,8 @@ public class InfoPage extends Fragment implements View.OnClickListener {
              * collected the current Badge.
              *
              */
-            displayToast();
+            Fragment shareFrag = new ShareFragment();
+            navActivity.startNewFragment(shareFrag);
 
         }
         else if(v.getId() == btn_collect.getId())
