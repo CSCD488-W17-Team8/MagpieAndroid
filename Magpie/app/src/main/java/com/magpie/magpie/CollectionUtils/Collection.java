@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.InterfaceAddress;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -19,38 +20,45 @@ public class Collection implements Serializable{
 
     private ArrayList<Element> mCollectionElements;
 	private int mCID;
-    private String mCity, mState, mRating, mDescription, mPicID, mName; //PicID is apparently used only within context of the database.
+    //PicID is apparently used only within context of the database. We can use it to store the path to the zip file containing all the pictures related to the Collection.
+    private String mCity, mState, mRating, mDescription, mPicZip, mName, mAbbrev;
     private double mDistance;
     private boolean mOrdered;
     private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
     private int mCollected; //Thinking about the collection progress here.
     private boolean mSelected;
+    private boolean mDownloaded = true; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully. // TODO: remove default set to true
     private Bitmap img;
+    private int mHour, mMin, mSec, mZIPCode;
 
     public Collection() {
         mName = "";
         mCollectionElements = new ArrayList<>();
     }
 
-    public Collection(String str) {
-        mName = str;
+    public Collection(String fromFile) {
+        String [] elementSplit = fromFile.split("÷÷");
+        String [] elements = elementSplit[17].split(",");
         mCollectionElements = new ArrayList<>();
-    }
-
-    /**
-     * Added by Sean.
-     *
-     * This method might be temporary
-     * // TODO: evaluate necessity
-     */
-    public boolean addElement(Element element) {
-        if (element != null) {
-            if (!mCollectionElements.contains(element)) {
-                mCollectionElements.add(element);
-                return true;
-            }
+        for(String e : elements){
+            mCollectionElements.add(new Element(e));
         }
-        return false;
+        mName = elementSplit[0];
+        mCID = Integer.parseInt(elementSplit[1]);
+        mCity = elementSplit[2];
+        mState = elementSplit[3];
+        mRating = elementSplit[4];
+        mDescription = elementSplit[5];
+        mDistance = Double.parseDouble(elementSplit[7]);
+        mOrdered = Boolean.parseBoolean(elementSplit[8]);
+        mElementTotal = Integer.parseInt(elementSplit[9]);
+        mSelected = Boolean.parseBoolean(elementSplit[10]);
+        mDownloaded = Boolean.parseBoolean(elementSplit[11]);
+        mHour = Integer.parseInt(elementSplit[12]);
+        mMin = Integer.parseInt(elementSplit[13]);
+        mSec = Integer.parseInt(elementSplit[14]);
+        mZIPCode = Integer.parseInt(elementSplit[15]);
+        mAbbrev = elementSplit[15];
     }
 
     public Collection(JSONObject json){
@@ -60,14 +68,20 @@ public class Collection implements Serializable{
             mState = json.getString("State");
             mRating = json.getString("Rating");
             mDescription = json.getString("Description");
-            //mDistance = json.getDouble("CollectionLength");
+            mAbbrev = json.getString("Abbreviation");
+            String[] time = json.getString("TimeToComplete").split(":");
+            mHour = Integer.parseInt(time[0]);
+            mMin = Integer.parseInt(time[1]);
+            mSec = Integer.parseInt(time[2]);
+            mZIPCode = json.getInt("Zip Code");
+            mDistance = json.getDouble("Distance");
             if(json.getInt("IsOrder") == 1) //0 is false, 1 is true
                 mOrdered = true;
             else
                 mOrdered = false;
-            mPicID = json.getString("PicID");
             mName = json.getString("Name");
             mElementTotal = json.getInt("NumberOfLandmarks");
+
             mCollectionElements = new ArrayList<>();
         }
         catch(JSONException e){
@@ -96,15 +110,27 @@ public class Collection implements Serializable{
 
     public String getDescription() {return mDescription;}
 
+    public int getElementTotal() {return mElementTotal;}
+
     public String getRating() {return mRating;}
 
-    public String getPicID() {return mPicID;}
+    public String getPicZip() {return mPicZip;}
 
     public String getState() {return mState;}
 
     public boolean getOrdered(){return mOrdered;}
 
     public int getCollected(){return mCollected;}
+
+    public int getHour(){return mHour;}
+
+    public int getMinute(){return mMin;}
+
+    public int getSecond(){return mSec;}
+
+    public int getZIPCode(){return mZIPCode;}
+
+    public String getAbbrev(){return mAbbrev;}
 
     public void setCollected(Element e){
         if(!e.isCollected()){
@@ -120,7 +146,6 @@ public class Collection implements Serializable{
     public String getName() {
         return mName;
     }
-
     @Override
     public boolean equals(Object o) {
         if (o == null)
@@ -135,14 +160,8 @@ public class Collection implements Serializable{
 
         return true;
     }
-
-    public void addBitmap(String url){
-        try {
-            img = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    public void addBitmap(Bitmap bm){
+        img = bm;
     }
     public Bitmap getImg(){return img;}
 
@@ -153,7 +172,26 @@ public class Collection implements Serializable{
         else
             mSelected = true;
     }
-    
+
+    public boolean getDownloaded(){return mDownloaded;}
+
+    public void setDownloaded(){mDownloaded = true;}
+
+    public void setPicZip(String path){mPicZip = path;}
+
+    @Override
+    public String toString(){
+        String elementStr= "";
+        for(Element e : mCollectionElements){
+            elementStr += e.toString() + ",";
+        }
+        String fin = mName + "÷÷" + mCID + "÷÷" + mCity + "÷÷" + mState + "÷÷" + mRating
+                + "÷÷" + mDescription + "÷÷" + mPicZip + "÷÷" + mDistance + "÷÷" + mOrdered
+                + "÷÷" + mElementTotal + "÷÷" + mSelected + "÷÷" + mDownloaded + "÷÷" + mHour + "÷÷" + mMin + "÷÷"
+                + mSec + "÷÷" + mZIPCode + "÷÷" + mAbbrev + "÷÷" + elementStr;
+        return fin;
+    }
+
     /**
      * Temporary method for generating a test Collection to be used when testing the Maps Activity's
      * ability to place markers from a collection. The Maps Activity passes the user's location to
@@ -163,26 +201,25 @@ public class Collection implements Serializable{
      * @param lon user's longitude position.
      * @return a Collection to be used as a test case for the Maps Activity
      */
-    public static Collection collectionTestBuilder(double lat, double lon) {
-        
-        Collection collection = new Collection("Test Collection");
+    public static Collection collectionTestBuilder(String name, double lat, double lon) {
+
+        Collection collection = new Collection();
+        collection.setName(name);
         collection.buildTestElements(lat, lon);
         return collection;
     }
-    
+
     private void buildTestElements(double lat, double lon) {
-        
+
         mCollectionElements.add(new Element("test1", lat+0.001, lon+0.001));
         mCollectionElements.add(new Element("test2", lat-0.001, lon-0.001));
         mCollectionElements.add(new Element("test3", lat-0.001, lon+0.001));
         mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
         mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
     }
-    
-    /**
-     * Potentially where updating the collected status of each Element could take place
-     */
-    public void updateFromUserProgress() {
-        // TODO: maybe here? Maybe not?
+
+    // Ignore this if you are merging from this branch.
+    private void setName(String name) {
+        mName = name;
     }
 }

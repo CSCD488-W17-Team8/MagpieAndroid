@@ -16,7 +16,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to Magpie!"
+        android:text="@string/welcome_message"
         android:textSize="18sp"
         android:layout_marginBottom="11dp"
         android:layout_above="@+id/sign_in_button"
@@ -24,37 +24,57 @@
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
-        android:onClick="buttonOnClick"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:onClick="onNavButtonClicked"
+        android:layout_height="40dp"
+        android:layout_width="290dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:id="@+id/loginTestButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:layout_above="@+id/mapViewTestButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="19dp" />
+        android:id="@+id/custom_sign_in_button"
+        android:layout_width="290dp"
+        android:layout_height="40dp"
+        android:background="@drawable/signin_button_selector"
+        android:layout_below="@+id/sign_in_button"
+        android:layout_alignLeft="@+id/sign_in_button"
+        android:layout_alignStart="@+id/sign_in_button" />
 
     <Button
-        android:id="@+id/jsonTestViewButton"
+        android:id="@+id/sign_out_button"
+        android:onClick="onNavButtonClicked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_out_button_text"
+        android:layout_above="@+id/mapViewTestButton"
+        android:layout_alignLeft="@+id/mapViewTestButton"
+        android:layout_alignStart="@+id/mapViewTestButton" />
+
+    <Button
+        android:id="@+id/sessionTestButton"
+        android:onClick="onNavButtonClicked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/session_test_button_text"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="18dp" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:id="@+id/mapViewTestButton"
+        android:onClick="onNavButtonClicked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/map_test_button_text"
-        android:layout_marginBottom="11dp"
-        android:layout_above="@+id/jsonTestViewButton"
-        android:layout_alignRight="@+id/loginTestButton"
-        android:layout_alignEnd="@+id/loginTestButton" />
+        android:layout_above="@+id/sessionTestButton"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/error_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/custom_sign_in_button"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="10dp"
+        android:text=""
+        android:textColor="@android:color/holo_red_dark" />
+
 </RelativeLayout>
