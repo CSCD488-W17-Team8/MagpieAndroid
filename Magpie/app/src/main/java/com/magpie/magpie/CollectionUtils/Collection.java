@@ -219,4 +219,5 @@ public class Collection implements Serializable{
     public void setSelectedElement(int i){mSelectedElement = i;}
 
     public int getSelectedElement(){return mSelectedElement;}
+
 }

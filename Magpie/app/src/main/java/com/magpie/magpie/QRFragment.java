@@ -16,11 +16,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.Result;
+
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
 
 
 /**
@@ -31,7 +31,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
  * Use the {@link QRFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class QRFragment extends Fragment implements ZXingScannerView.ResultHandler, View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback
+public class QRFragment extends Fragment implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback
         {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,15 +42,13 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
-    private ZXingScannerView zXingScannerView;
     TextView resultsView;
     Boolean updated = false;
     String result_text = "Initial Point";
     private int cam_permissionCheck = 0;
     Button scan_button;
     private final int MY_PERMISSIONS_REQUEST_CAMERA = 666;
-    IntentIntegrator integrator;
+    QRFragmentIntentIntegrator integrator;
 
 
     public QRFragment() {
@@ -91,53 +89,24 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
         View view = inflater.inflate(R.layout.fragment_qr, container, false);
         Fragment fragment = this;
         resultsView = (TextView) view.findViewById(R.id.result_view);
-        resultsView.setText("What the fuck Happened Bro!");
+        resultsView.setText("Stuff");
         scan_button = (Button) view.findViewById(R.id.btn_scan);
         scan_button.setOnClickListener(this);
-       // zXingScannerView = new ZXingScannerView(this);
-        integrator = new IntentIntegrator(getActivity());
+
+        integrator = new QRFragmentIntentIntegrator(this);
         permissionCheck();
         checkAppPermissions();
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 
             public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -151,6 +120,7 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
                     Toast.makeText(getActivity(), result_text, Toast.LENGTH_SHORT).show();
 
                 }
+                Toast.makeText(getActivity(), "LOL", Toast.LENGTH_SHORT).show();
                 // else continue with any other code you need in the method...
             }
 
@@ -166,11 +136,11 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
                      zXingScannerView.setResultHandler(this);
                      zXingScannerView.startCamera();
                      */
-
+                    Toast.makeText(getActivity(), "Pressing btttn", Toast.LENGTH_SHORT).show();
 
                     integrator.setOrientationLocked(false);
                     integrator.initiateScan(integrator.QR_CODE_TYPES);
-                    resultsView.setText(result_text);
+
                 }
             }
 
@@ -269,27 +239,8 @@ public class QRFragment extends Fragment implements ZXingScannerView.ResultHandl
                 }
             }//end of the method
 
-
-            protected void pause_reader()
-            {
-                super.onPause();
-                zXingScannerView.stopCamera();
-                getActivity().setContentView(R.layout.activity_qreader);
-                if(updated)
-                    resultsView.setText(result_text);
-
-                updated = false;
-            }
-
             @Override
-            public void handleResult(Result result)
-            {
-                //Toast.makeText(getApplicationContext(), result.getText(), Toast.LENGTH_SHORT).show();
-                result_text = result.getText();
-
-                // zXingScannerView.resumeCameraPreview(this);
-                onPause();
-
+            public void startActivityForResult(Intent intent, int code){
 
             }
 }

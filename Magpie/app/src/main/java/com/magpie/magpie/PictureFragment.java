@@ -1,4 +1,4 @@
-package com.example.jacob.sharepage;
+package com.magpie.magpie;
 
 import android.content.Context;
 import android.graphics.Bitmap;

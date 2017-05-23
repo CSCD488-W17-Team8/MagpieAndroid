@@ -1,6 +1,7 @@
 package com.magpie.magpie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.UserProgress.SendProgress;
 
 
 /**
@@ -124,7 +126,7 @@ public class InfoPage extends Fragment implements View.OnClickListener {
         btn_collect.setOnClickListener(this);
 
         result_box.setText(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getName() + "\n" + navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getDesc());
-
+        isCollected = navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).isCollected();
         return view;
     }
 
@@ -168,17 +170,23 @@ public class InfoPage extends Fragment implements View.OnClickListener {
         }
         else if(v.getId() == btn_collect.getId())
         {
-
-            Boolean result = collectBadge();
-            if(result)
-            {
-                /**
-                 *
-                 * Do something like display stuff or
-                 * whatever.
-                 */
+            if(!isCollected) {
+                Boolean result = collectBadge();
+                if (result) {
+                    /**
+                     *
+                     * Do something like display stuff or
+                     * whatever.
+                     */
+                    Intent intent = new Intent(getActivity(), SendProgress.class);
+                    intent.putExtra("UserProgressCollection", navActivity.getCollections());
+                    navActivity.startService(intent);
+                }
             }
-
+            else
+            {
+                Toast.makeText(getActivity(), "Badge is already collected", Toast.LENGTH_SHORT).show();
+            }
         }
 
 
