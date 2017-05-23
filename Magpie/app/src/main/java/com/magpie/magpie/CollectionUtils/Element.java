@@ -13,8 +13,8 @@ import org.json.JSONObject;
 
 public class Element implements Serializable {
 
-    private int mLID, mDescID, mPicID, mCollID;
-    private String mName, mQRCode, mCreator, mInfoLink;
+    private int mLID, mPicID, mCollID;
+    private String mName, mQRCode, mCreator, mInfoLink, mDesc;
     private double mLatitude, mLongitude, mTime;
     private boolean mCollected; //Assuming no user database or Requires internet connection
     private Bitmap mBadge;
@@ -32,7 +32,7 @@ public class Element implements Serializable {
         String[] data = fromFile.split("÷");
         mName = data[0];
         mLID = Integer.parseInt(data[1]);
-        mDescID = Integer.parseInt(data[2]);
+        mDesc = data[2];
         mPicID =  Integer.parseInt(data[3]);
         mCollID = Integer.parseInt(data[4]);
         mQRCode = data[5];
@@ -45,7 +45,7 @@ public class Element implements Serializable {
     public Element(JSONObject json) {
         try{
             mLID = json.getInt("LID");
-            mDescID = json.getInt("DescID");
+            mDesc = json.getString("Description");
             mPicID = json.getInt("PicID");
             mCollID = json.getInt("CollectionID");
             mQRCode = json.getString("QRCode");
@@ -63,7 +63,7 @@ public class Element implements Serializable {
 
     public int getLID(){return mLID;}
 
-    public int getDescID(){return mDescID;}
+    public String getDesc(){return mDesc;}
 
     public int getPicID(){return mPicID;}
 
@@ -111,7 +111,7 @@ public class Element implements Serializable {
 
     @Override
     public String toString(){
-        String ret = mName + "÷" + mLID + "÷" + mDescID + "÷" + mPicID + "÷" +
+        String ret = mName + "÷" + mLID + "÷" + mDesc + "÷" + mPicID + "÷" +
                 mCollID + "÷" + mQRCode + "÷" + mLatitude + "÷" + mLongitude + "÷" + mCreator + "÷" + mInfoLink;
         return ret;
     }

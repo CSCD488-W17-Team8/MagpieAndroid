@@ -123,7 +123,7 @@ public class InfoPage extends Fragment implements View.OnClickListener {
         btn_share.setOnClickListener(this);
         btn_collect.setOnClickListener(this);
 
-        result_box.setText(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getName() + "\n" + navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getInfoLink());
+        result_box.setText(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getName() + "\n" + navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getDesc());
 
         return view;
     }
