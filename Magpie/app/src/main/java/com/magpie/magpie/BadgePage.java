@@ -1,11 +1,9 @@
 package com.magpie.magpie;
 
-import android.content.Context;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.magpie.magpie.CollectionUtils.Collection;
@@ -31,26 +28,29 @@ import java.util.ArrayList;
  * Use the {@link BadgePage#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BadgePage extends Fragment {
+public class BadgePage extends Fragment implements AdapterView.OnItemSelectedListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private Collection selectedColl;
+    ArrayList<Element> displayElements;
     private ListView badgeList;
     private GridView badgeGrid;
-    private TextView collTitle;
     private TabLayout viewTabs;
     private TabLayout.Tab listTab, gridTab;
-    private ProgressBar collectionProgress;
     private CustomBadgeListAdapter cbla;
     private CustomBadgeListAdapter cbga;
+    private Spinner filter;
+    private NavActivity navActivity;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private String bundleKey = "";
+    private String activeCollectionKey = "";
+
+    //private OnFragmentInteractionListener mListener;
 
     public BadgePage() {
         // Required empty public constructor
@@ -83,10 +83,8 @@ public class BadgePage extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            Bundle b = getArguments();
-            selectedColl = (Collection) b.getSerializable("TheCollection");
-        }
+        navActivity = (NavActivity)getActivity();
+        navActivity.setTitle(navActivity.getActiveCollection().getName());
     }
 
     /*
@@ -101,20 +99,22 @@ public class BadgePage extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_badge_page, container, false);
-        collTitle = (TextView) v.findViewById(R.id.CollectionTitle);
         badgeGrid = (GridView) v.findViewById(R.id.BadgeGridView);
         badgeList = (ListView) v.findViewById(R.id.BadgeListView);
         viewTabs = (TabLayout) v.findViewById(R.id.ViewTabs);
         listTab = viewTabs.getTabAt(0);
         gridTab = viewTabs.getTabAt(1);
         viewTabs.setOnTabSelectedListener(tlSelected);
-        collectionProgress = (ProgressBar) v.findViewById(R.id.CollectionProgress);
-        collectionProgress.setMax(selectedColl.getCollectionSize());
-        collectionProgress.setProgress(selectedColl.getCollected());
-        collTitle.setText(selectedColl.getName());
+        filter = (Spinner) v.findViewById(R.id.BadgeFilter);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this.getContext(), R.array.BadgeFilterArray, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filter.setAdapter(spinnerAdapter);
+        filter.setOnItemSelectedListener(this);
         //ArrayList<String> elementNames = elementToString(selectedColl);
-        cbla = new CustomBadgeListAdapter(this, selectedColl.getCollectionElements(), "List");
-        cbga = new CustomBadgeListAdapter(this, selectedColl.getCollectionElements(), "Grid");
+        displayElements = new ArrayList<>();
+        displayElements.addAll(navActivity.getActiveCollection().getCollectionElements());
+        cbla = new CustomBadgeListAdapter(this, displayElements, "List");
+        cbga = new CustomBadgeListAdapter(this, displayElements, "Grid");
         //ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
         badgeList.setAdapter(cbla);
         badgeGrid.setAdapter(cbga);
@@ -122,6 +122,7 @@ public class BadgePage extends Fragment {
         badgeGrid.setOnItemClickListener(onGVClick);
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
+
         return v;
     }
 
@@ -165,19 +166,9 @@ public class BadgePage extends Fragment {
     AdapterView.OnItemClickListener onLVClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Element e = selectedColl.getCollectionElements().get(i);
-            selectedColl.setCollected(e);
-            collectionProgress.setProgress(selectedColl.getCollected());
-            //Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
-            //Ultimately, will be sending the whole collection
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("CurElement", e);
-            Fragment frag = new InfoPage();
-            frag.setArguments(bundle);
-
-
-
+            navActivity.getActiveCollection().setSelectedElement(i);
+            Fragment fr = new InfoPage();
+            navActivity.startNewFragment(fr);
         }
     };
 
@@ -190,46 +181,89 @@ public class BadgePage extends Fragment {
     AdapterView.OnItemClickListener onGVClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Element e = selectedColl.getCollectionElements().get(i);
-            selectedColl.setCollected(e);
-            collectionProgress.setProgress(selectedColl.getCollected());
+            Element e = navActivity.getActiveCollection().getCollectionElements().get(i);
+            navActivity.getActiveCollection().setCollected(e);
             Toast.makeText(getContext(), e.getCollectionID() + " - " + e.getName() + ": " + e.getLatitude() + ", " + e.getLongitude(), Toast.LENGTH_SHORT).show();
             //Ultimately, will be sending the whole collection
         }
     };
 
 
-
-    /*private ArrayList<String> elementToString(Collection selectedCollPassed) {
-        ArrayList<String> temp = new ArrayList<>();
-        for(Element e : selectedCollPassed.getCollectionElements()){
-            temp.add(e.getName());
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(position == 0){
+            filterUnachieved();
         }
-        return temp;
-    }*/
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        else if(position == 1){
+            filterAchieved();
+        }
+        else {
+            filterTime(position);
         }
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    private void filterUnachieved(){
+        displayElements.clear();
+        for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+            if(!e.isCollected()){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
+    }
+
+    private void filterAchieved(){
+        displayElements.clear();
+        for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+            if(e.isCollected()){
+                displayElements.add(e);
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
+    }
+
+    public void filterTime(int pos) {
+        if (pos == 2) {
+            displayElements.clear();
+            for (Element e : navActivity.getActiveCollection().getCollectionElements()) {
+                if (Double.compare(e.getTime(), 5.0) < 0) {
+                    displayElements.add(e);
+                }
+            }
+        }
+        else if(pos == 3){
+            displayElements.clear();
+            for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+                if(Double.compare(e.getTime(), 10.0) < 0){
+                    displayElements.add(e);
+                }
+            }
+        }
+        else if(pos == 4){
+            displayElements.clear();
+            for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+                if(Double.compare(e.getTime(), 15.0) < 0){
+                    displayElements.add(e);
+                }
+            }
+        }
+        else {
+            displayElements.clear();
+            for(Element e : navActivity.getActiveCollection().getCollectionElements()){
+                if(Double.compare(e.getTime(), 15.0) >= 0){
+                    displayElements.add(e);
+                }
+            }
+        }
+        cbla.notifyDataSetChanged();
+        cbga.notifyDataSetChanged();
     }
 
     /**
@@ -242,8 +276,10 @@ public class BadgePage extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+    /*
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+    */
 }

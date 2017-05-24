@@ -1,174 +1,208 @@
 package com.magpie.magpie;
 
 import android.Manifest;
+import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.UserProgress.GetProgress;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener {
-
-    /**
-     * TODO:
-     * Go from badge info screen to map, centered on marker
-     * Go from badge screen to map, centered on user
-     * Swipe right to go from map back to badge screen
-     * Access to
-     */
+public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, ImageButton.OnClickListener {
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
 
-    // Keys
-    private String mBundleExtraKey = "";
-    private String mActiveCollectionKey = "";
-    private String zoomKey = "";
-
-    private GoogleMap mMap;
+    private ArrayList<Collection> mCollections;
+    private Collection mActiveCollection;
 
     /**
-     * I moved the LocationManager to a member variable in order to keep a persistent reference to
-     * attach a LocationListener to. LocationManager is instantiated in onMapReady().
+     * Map-related member variables
      */
+    private GoogleMap mMap;
     private LocationManager mLocManager;
-    //private TextView mCollectionTitleTextView;
-    //private TextView mTempCoordinateTextView;
-    //private TextView mDistanceTextView;
-    //private TextView mTimeTextView;
-
-    private Collection mCollection;
     private Marker mSelectedMarker;
     private ArrayList<MarkerOptions> mMarkers;
     private Location mMyLocation;
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        mBundleExtraKey = getString(R.string.bundle_extra_key);
-        mActiveCollectionKey = getString(R.string.active_collection_key);
-        zoomKey = getString(R.string.zoom_key);
-
-        // Get intent from the previous activity if applicable
-        Intent intent = getIntent();
-
-        //super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        //mCollectionTitleTextView = (TextView) findViewById(R.id.collectionTitleTextView);
-        //mTempCoordinateTextView = (TextView) findViewById(R.id.tempCoordinateTextView);
-        //mDistanceTextView = (TextView) findViewById(R.id.distanceTextView);
-        //mTimeTextView = (TextView) findViewById(R.id.minutesTextView);
-
-        mMarkers = new ArrayList<>();
-
-        if (intent.hasExtra(mBundleExtraKey)) {
-
-            Bundle b = intent.getBundleExtra(mBundleExtraKey);
-            if (b.containsKey(mActiveCollectionKey)) {
-                // If the Intent does contain a Bundle from a previous Activity
-                //mCollection = (Collection) b.getSerializable(mActiveCollectionKey);
-                //mCollection = ((NavActivity).g
-
-            } else {
-                // If the Intent does NOT contain a Bundle from a previous Activity
-                //mCollectionTitleTextView.setText(getResources().getString(R.string.no_collection_selected));
-                //mTempCoordinateTextView.setText(getResources().getString(R.string.no_location));
-            }
-        }
-    }
+    /**
+     * Persistent UI elements.
+     * These will persist across fragment changes.
+     */
+    private Toolbar mTitleBar;
+    private RelativeLayout mViewBar;
+    private FragmentManager mFragmentMngr;
 
     /**
-     * Saves the zoom level and the active collection to the saved Bundle
-     * @param outState the container for data to be passed between intents
+     * view bar buttons
      */
+    private Button mListViewButton;
+    private Button mGridViewButton;
+    private Button mMapViewButton;
+
+    /**
+     * nav bar buttons
+     */
+    private ImageButton mMapNavButton;
+    private ImageButton mQRNavButton;
+    private ImageButton mHomeNavButton;
+    private ImageButton mSearchNavButton;
+    private ImageButton mAccountNavButton;
+
+    private boolean showingBadgePage = false;
+    private boolean mReadFromFile = false;
+
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_nav);
 
-        // TODO: save to preferences instead?
-        outState.putFloat(zoomKey, mMap.getCameraPosition().zoom);
-        //if (mCollection != null)
+        mCollections = new ArrayList<>();
+        mActiveCollection = new Collection();
 
-            outState.putSerializable(mActiveCollectionKey, mCollection);
+        mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
+        mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
 
-        super.onSaveInstanceState(outState);
-    }
+        mListViewButton = (Button) findViewById(R.id.list_button);
+        mGridViewButton = (Button) findViewById(R.id.grid_button);
+        mMapViewButton = (Button) findViewById(R.id.map_button);
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState.containsKey(mActiveCollectionKey)) {
-            mCollection = (Collection) savedInstanceState.get(mActiveCollectionKey);
-            if (mCollection != null) {
-                createMarkerList();
-                //mCollectionTitleTextView.setText(mCollection.getName());
+        mMapNavButton = (ImageButton) findViewById(R.id.map_nav_button);
+        mQRNavButton = (ImageButton) findViewById(R.id.qr_nav_button);
+        mHomeNavButton = (ImageButton) findViewById(R.id.home_nav_button);
+        mSearchNavButton = (ImageButton) findViewById(R.id.search_nav_button);
+        mAccountNavButton = (ImageButton) findViewById(R.id.account_nav_button);
+
+        mQRNavButton.setOnClickListener(this);
+        mSearchNavButton.setOnClickListener(this);
+        mHomeNavButton.setOnClickListener(this);
+
+        // TODO: set visibility of view_bar
+
+        mFragmentMngr = getSupportFragmentManager(); // TODO: test this
+        if (findViewById(R.id.fragment_container) != null) {
+
+            /**
+             * Don't inflate a new fragment if a saved instance state is present
+             */
+            if (savedInstanceState != null) {
+                return;
             }
-            if (savedInstanceState.containsKey(zoomKey)) {
-                // TODO: set zoom
+
+            /**
+             * Get the intent to determine which Fragment to inflate.
+             * THIS IS ONLY FOR TESTING!!!!!
+             * Once the map test is no longer needed, this section is no longer needed.
+             * TODO: remove the below if-else once testing is done
+             */
+            Intent i = getIntent();
+
+            if (i.hasExtra("MAP_TEST")) {
+                getFragmentManager().beginTransaction().add(R.id.fragment_container, new MapFragment()).commit();
+            } else {
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
+            }
+
+        }
+
+        /*
+        if (i.hasExtra(mBundleExtraKey)) {
+
+            Bundle b = i.getBundleExtra(mBundleExtraKey);
+
+            if (b.containsKey(mActiveCollectionKey)) {
+                mActiveCollection = (Collection) b.getSerializable(mActiveCollectionKey);
             }
         }
-        super.onRestoreInstanceState(savedInstanceState);
+        */
     }
 
-    @Override
-    public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.leaving_map_alert)
-                .setMessage("Are you sure you want to return to Your Collections?")
-                .setPositiveButton(R.string.yes_confirmation, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Bundle b = new Bundle();
-                        b.putSerializable(mActiveCollectionKey, mCollection);
-                        Intent i = new Intent(MapsActivity.this, NavActivity.class);
-                        i.putExtra(mBundleExtraKey, b);
-                        startActivity(i);
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.no_confirmation, null)
-                .show();
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.list_button:
+                // TODO: ensure starting in list view
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BadgePage()).commit();
+                break;
+
+            case R.id.grid_button:
+                // TODO: BadgePage in grid view
+                break;
+
+            case R.id.map_button:
+                // TODO: open map with current collection
+                startCollectionMapFragment();
+                break;
+
+            case R.id.map_nav_button:
+                // TODO: open map with all collections
+                break;
+
+            case R.id.qr_nav_button:
+                Fragment qrFrag = new QRFragment();
+                startNewFragment(qrFrag);
+                //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.home_nav_button:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
+                break;
+
+            case R.id.search_nav_button:
+                Fragment olocFrag = new Obtainable_loc();
+                startNewFragment(olocFrag);
+                //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.account_nav_button:
+                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     /**
@@ -204,7 +238,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //mTempCoordinateTextView.setText(mMyLocation.getLatitude()+", "+mMyLocation.getLongitude());
 
             // TESTING
-            mCollection = Collection.collectionTestBuilder(mMyLocation.getLatitude(), mMyLocation.getLongitude());
+            mActiveCollection = Collection.collectionTestBuilder(mMyLocation.getLatitude(), mMyLocation.getLongitude());
             //mCollectionTitleTextView.setText(mCollection.getName());
             //placeTestMarkers();
             createMarkerList();
@@ -367,8 +401,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void createMarkerList() {
 
-        if (mCollection != null) {
-            ArrayList<Element> elements = mCollection.getCollectionElements();
+        if (mActiveCollection != null) {
+            ArrayList<Element> elements = mActiveCollection.getCollectionElements();
             for (Element element : elements) {
 
                 MarkerOptions marker = new MarkerOptions();
@@ -378,7 +412,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMarkers.add(marker);
             }
-
 
             placeMarkers();
         }
@@ -394,26 +427,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void placeTestMarkers() {
+    private void placeAllCollectionMarkers() {
 
-        /**
-         * EXAMPLE:
-         * LatLng sydney = new LatLng(-34, 151);
-         * mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-         */
-
-        // TODO: left off here!
-        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude()+0.001, mMyLocation.getLongitude())).title("Test 0"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()+0.001)).title("Test 1"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()-0.001)).title("Test 2"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(mMyLocation.getLatitude()-0.001, mMyLocation.getLongitude())).title("Test 3"));
     }
-
-    private void updateUI() {
-        //mTempCoordinateTextView.setText("Lat: "+mMyLocation.getLatitude()+", Lon: "+mMyLocation.getLongitude());
-    }
-
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -468,4 +484,106 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mTimeTextView.setText("Time: "+(results[0]/1.4)+"s");
         // TODO: fill in UI elements pertaining to marker.
     }
+
+    /**
+     * Starts a version of the map with only a single Marker representing a single badge selected by
+     * the user.
+     */
+    public void startMarkerMapFragment() {
+        // TODO: map showing ONE marker from ONE collection
+
+        MapFragment mapFragment = new MapFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+        mapFragment.getMapAsync(this);
+    }
+
+    /**
+     * Starts a version of the map populated with Markers for each Element in the currently active
+     * collection.
+     */
+    public void startCollectionMapFragment() {
+        // TODO: map showing ALL markers from ONE collection
+
+        MapFragment mapFragment = new MapFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+        mapFragment.getMapAsync(this);
+    }
+
+    /**
+     * Starts a version of the map populate with Markers for each Element in each Collection the
+     * user is participating in.
+     */
+    public void startAllCollectionMapFragment() {
+        // TODO: map showing ALL markers from ALL collections
+
+        MapFragment mapFragment = new MapFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+        mapFragment.getMapAsync(this);
+    }
+
+    public void startNewFragment(Fragment fr) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).commit();
+    }
+
+    public void setActiveCollection(Collection collection) {
+        mActiveCollection = collection;
+    }
+
+    public ArrayList<Collection> getCollections() {
+        return mCollections;
+    }
+
+    public void setCollections(ArrayList<Collection> collections) {
+        this.mCollections = collections;
+    }
+
+    public void addCollection(Collection collection) {
+        this.mCollections.add(collection);
+    }
+
+    public void addNewCollections(ArrayList<Collection> newCollections) {
+        this.mCollections.addAll(newCollections);
+    }
+
+    public void setTitle(String title) {
+        //mTitleBar.setTitle(title.toUpperCase());
+        ((Toolbar)findViewById(R.id.nav_toolbar)).setTitle(title);
+    }
+
+    public Collection getActiveCollection(){return mActiveCollection;}
+
+    public ImageButton getQRNavButton(){return mQRNavButton;}
+
+    public ImageButton getHomeNavButton(){return mHomeNavButton;}
+
+    public ImageButton getSearchNavButton(){return mSearchNavButton;}
+
+    public boolean getReadFromFile(){return mReadFromFile;}
+
+    public void setReadFromFile(){mReadFromFile = true;}
+
+    /*
+    @Override
+    public void onBackPressed() {
+
+
+
+        switch (getSupportFragmentManager().getFragments().get(0).getId()) {
+
+            case R.id.activity_local_loc:
+                super.onBackPressed();
+                break;
+
+            case R.id.fragment_obtainable_loc:
+                b.putSerializable("CurrentCollections", localCollections);
+                Fragment fr = new Obtainable_loc();
+                fr.setArguments(b);
+                android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.Nav_Activity, fr);
+                ft.commit();
+                break;
+        }
+    }
+    */
 }

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_test"
+    android:id="@+id/fragment_obtainable_loc"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -12,39 +12,50 @@
     android:background="#FFFFFF"
     tools:context="com.magpie.magpie.Obtainable_loc">
 
-    <ImageView
-        android:id="@+id/FromZip"
-        android:layout_width="1000dp"
-        android:layout_height="200dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="108dp"
-        app:srcCompat="@android:color/transparent" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/getElements"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="420dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
-
     <Button
         android:id="@+id/Return"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/returnToLocal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/SortByText"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/button3"
-        android:text="@string/returnToLocal" />
+        android:layout_below="@+id/Return"
+        android:text="Sort By: "
+        android:textSize="30sp" />
 
+    <ExpandableListView
+        android:id="@+id/ObtainableExpandList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/SortByText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <SearchView
+        android:id="@+id/SearchList"
+        android:layout_width="200dp"
+        android:layout_height="130dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/Return"
+        android:layout_alignBottom="@+id/Return"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Spinner
+        android:id="@+id/SortByDropDown"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/SearchList"
+        android:layout_toRightOf="@+id/SortByText"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/ObtainableExpandList" />
 </RelativeLayout>

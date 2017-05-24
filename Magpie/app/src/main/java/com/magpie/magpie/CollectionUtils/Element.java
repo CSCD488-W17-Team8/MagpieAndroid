@@ -13,10 +13,9 @@ import org.json.JSONObject;
 
 public class Element implements Serializable {
 
-    private int mLID, mDescID, mPicID, mCollID;
-    private String mName, mQRCode;
-    private double mLatitude;
-    private double mLongitude;
+    private int mLID, mPicID, mCollID;
+    private String mName, mQRCode, mCreator, mInfoLink, mDesc;
+    private double mLatitude, mLongitude, mTime;
     private boolean mCollected; //Assuming no user database or Requires internet connection
     private Bitmap mBadge;
     private Bitmap mActualImage; //Assuming that there is a real world image associated with this.
@@ -26,30 +25,36 @@ public class Element implements Serializable {
         mName = name;
         mLatitude = lat;
         mLongitude = lon;
+        mCollected = false;
     }
 
     public Element(String fromFile){
-        String[] data = fromFile.split("%");
+        String[] data = fromFile.split("÷");
         mName = data[0];
         mLID = Integer.parseInt(data[1]);
-        mDescID = Integer.parseInt(data[2]);
+        mDesc = data[2];
         mPicID =  Integer.parseInt(data[3]);
         mCollID = Integer.parseInt(data[4]);
         mQRCode = data[5];
         mLatitude = Double.parseDouble(data[6]);
         mLongitude = Double.parseDouble(data[7]);
+        mCreator = data[8];
+        mInfoLink = data[9];
     }
 
     public Element(JSONObject json) {
         try{
             mLID = json.getInt("LID");
-            mDescID = json.getInt("DescID");
+            mDesc = json.getString("Description");
             mPicID = json.getInt("PicID");
             mCollID = json.getInt("CollectionID");
             mQRCode = json.getString("QRCode");
             mName = json.getString("Name");
             mLatitude = json.getDouble("Latitude");
             mLongitude = json.getDouble("Longitude");
+            mCreator = json.getString("Creator");
+            mInfoLink = json.getString("InfoLink");
+
         }
         catch(JSONException e){
             e.printStackTrace();
@@ -58,7 +63,7 @@ public class Element implements Serializable {
 
     public int getLID(){return mLID;}
 
-    public int getDescID(){return mDescID;}
+    public String getDesc(){return mDesc;}
 
     public int getPicID(){return mPicID;}
 
@@ -96,11 +101,34 @@ public class Element implements Serializable {
 
     public void setBadge(Bitmap fromZIP){mBadge = fromZIP;}
 
+    public String getCreator(){return mCreator;}
+
+    public String getInfoLink(){return mInfoLink;}
+
+    public double getTime(){return mTime;}
+
+    public void setTime(double time){mTime = time;}
+
     @Override
     public String toString(){
-        String ret = mName + "%" + mLID + "%" + mDescID + "%" + mPicID + "%" +
-                mCollID + "%" + mQRCode + "%" + mLatitude + "%" + mLongitude;
+        String ret = mName + "÷" + mLID + "÷" + mDesc + "÷" + mPicID + "÷" +
+                mCollID + "÷" + mQRCode + "÷" + mLatitude + "÷" + mLongitude + "÷" + mCreator + "÷" + mInfoLink;
         return ret;
+    }
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null)
+            return false;
+
+        if (!Element.class.isAssignableFrom(o.getClass()))
+            return false;
+
+        final Element other = (Element) o;
+        if (this.mName.equals(other.getName()))
+            return false;
+
+        return true;
     }
 }
 

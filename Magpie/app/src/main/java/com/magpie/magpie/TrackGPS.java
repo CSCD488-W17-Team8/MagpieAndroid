@@ -90,7 +90,7 @@ public class TrackGPS extends Service implements LocationListener {
                             longitude = loc.getLongitude();
                         }
                     } catch (SecurityException e) {
-
+                        Log.d("GPSTRACKEXECEPTION", e.getMessage());
                     }
                 }
             }

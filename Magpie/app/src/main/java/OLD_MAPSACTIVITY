@@ -110,7 +110,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (b.containsKey(mActiveCollectionKey)) {
                 // If the Intent does contain a Bundle from a previous Activity
                 //mCollection = (Collection) b.getSerializable(mActiveCollectionKey);
-                //mCollection = ((NavActivity).g
 
             } else {
                 // If the Intent does NOT contain a Bundle from a previous Activity
@@ -130,9 +129,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // TODO: save to preferences instead?
         outState.putFloat(zoomKey, mMap.getCameraPosition().zoom);
         //if (mCollection != null)
-
             outState.putSerializable(mActiveCollectionKey, mCollection);
-
         super.onSaveInstanceState(outState);
     }
 

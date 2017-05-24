@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/buffer"
+        android:layout_width="10dp"
+        android:layout_height="75dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/CollectionProgress"
+        android:layout_toEndOf="@+id/CollectionProgress" />
+
+    <TextView
+        android:id="@+id/CollectionAcronym"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/buffer"
+        android:text="TextView"
+        android:textAllCaps="true"
+        android:textSize="45sp" />
+
+    <TextView
+        android:id="@+id/CollectionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:text="TextView"
+        android:textSize="16sp"
+        android:layout_below="@+id/CollectionAcronym"
+        android:layout_toRightOf="@+id/buffer"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ProgressBar
+        android:id="@+id/CollectionProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:progressDrawable="@drawable/circle_progress"
+        android:progressTint="@android:color/darker_gray" />
+</RelativeLayout>

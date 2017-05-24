@@ -1,61 +1,42 @@
 package com.magpie.magpie;
 
 import android.Manifest;
-import android.app.ActionBar;
-import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.media.Image;
-import android.net.Uri;
-import android.os.Environment;
-import android.renderscript.ScriptGroup;
+import android.graphics.Point;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.AdapterView;
+import android.widget.SearchView;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import com.magpie.magpie.CollectionUtils.*;
 
-public class Obtainable_loc extends Fragment implements View.OnClickListener{
+public class Obtainable_loc extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener{
     ArrayList<Collection> collection;
     ArrayList<Collection> added;
     ArrayList<Collection> fromFile;
@@ -68,8 +49,13 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
     Bitmap bm;
     JSONArray cmsColl;
     ListView collectionDisplay;
+    ExpandableListView obtainExpandList;
     ArrayAdapter<String> obtainable_loc_Adapter;
+    Spinner sort;
     ArrayList<String> allColl;
+    CustomExpandableListAdapterObtainable celao;
+    SearchView searchList;
+    NavActivity navActivity;
 
     /*
      * Method onCreate: Handles the sending in of the Collections that are on the local side.
@@ -80,10 +66,8 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null){
-            Bundle b = getArguments();
-            fromFile = (ArrayList<Collection>)b.getSerializable("CurrentCollections");
-        }
+        navActivity = (NavActivity)getActivity();
+        navActivity.setTitle(getString(R.string.toolbar_add_collection));
     }
 
     /*
@@ -105,10 +89,11 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
                     String fin = j.getString("CID") + " : " + j.getString("Name") + "\r\n";
                     fin += j.getString("Description") + " (" + j.getString("Rating") + ")";
                     allColl.add(fin);
-                    obtainable_loc_Adapter.notifyDataSetChanged();
+                    //obtainable_loc_Adapter.notifyDataSetChanged();
 
                 }
             }
+            celao.notifyDataSetChanged();
         } catch (JSONException je) {
             je.printStackTrace();
         }
@@ -121,9 +106,9 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
      */
 
     private boolean checkCID(int CID) {
-        if (fromFile.size() != 0) {
-            for (Collection fileColl : fromFile){
-                if(fileColl.getCID() == CID){
+        if (navActivity.getCollections().size() != 0) {
+            for (Collection exist : navActivity.getCollections()){
+                if(exist.getCID() == CID){
                     return false;
                 }
             }
@@ -168,17 +153,10 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
                 strBadges = intent.getStringExtra("CollectionElements");
                 String[] badgeArr = strBadges.split("%");
                 createElements(badgeArr);
-                Fragment fr = new Local_loc();
-                Bundle coll = new Bundle();
-                if (added.size() != 0) {
-                    coll.putSerializable("NewlyAddedCollections", added);
-                }
                 if(isAdded()) {
-                    fr.setArguments(coll);
-                    android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-                    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                    ft.replace(R.id.Main_Activity, fr);
-                    ft.commit();
+                    navActivity.getHomeNavButton().setEnabled(true);
+                    navActivity.getQRNavButton().setEnabled(true);
+                    navActivity.getSearchNavButton().setEnabled(true);
                 }
                 else{
                     Toast.makeText(getContext(), "There was an error adding a collection", Toast.LENGTH_SHORT).show();
@@ -199,16 +177,13 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
+
         if(view.getId() == cancel.getId()){
             Fragment fr = new Local_loc();
-            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Main_Activity, fr);
-            ft.commit();
+            navActivity.startNewFragment(fr);
         }
         else if(((String)(view.getTag())).compareTo("Apply") == 0) {
             try {
-                sendAll.setEnabled(false);
                 if (added.size() != 0) {
                     for (Collection i : added) {
                         collectionsToElements += i.getCID() + ",";
@@ -222,6 +197,20 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
                 Log.d("PULLERROR", e.getMessage());
             }
         }
+        /*
+        else if(((String)(view.getTag())).compareTo("Send") == 0) {
+            Fragment fr = new Local_loc();
+            Bundle coll = new Bundle();
+            if (added.size() != 0) {
+                coll.putSerializable("CollectionList", added);
+            }
+            fr.setArguments(coll);
+            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.Nav_Activity, fr);
+            ft.commit();
+        }
+        */
     }
 
     /*
@@ -232,20 +221,25 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
 
     private void createElements(String[] badgeArr) {
         try {
+            int x = 0;
             for(int k = 0; k < badgeArr.length; k++) {
                 JSONArray ja = new JSONArray(badgeArr[k]);
-                for (int j = 0; j < added.size(); j++) {
-                    for (int i = 0; i < ja.length(); i++) {
-                        JSONObject json = ja.getJSONObject(i);
-                        if (json.getInt("CollectionID") == added.get(j).getCID()) {
-                            added.get(j).addElement(json);
-                        }
+                for (int i = 0; i < ja.length(); i++) {
+                    JSONObject json = ja.getJSONObject(i);
+                    int number = json.getInt("CollectionID");
+                    Collection coll;
+                    while (number != collection.get(x).getCID()) {
+                        coll = collection.get(x);
+                        if(number != collection.get(x).getCID())
+                            x++;
                     }
+                    collection.get(x).addElement(json);
                 }
             }
+            navActivity.addCollection(collection.get(x));
         }
-        catch(JSONException e){
-            e.printStackTrace();
+        catch(Exception e){
+            Log.v("CREATEELEMENTSEXCEP", e.getMessage());
         }
     }
 
@@ -273,40 +267,158 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
         if (intent.hasExtra("LocalCollections")) {
             fromFile = (ArrayList<Collection>) intent.getSerializableExtra("Collections");
         }
-        collectionDisplay = (ListView) v.findViewById(R.id.listView);
-        sendAll = (Button) v.findViewById(R.id.button3);
-        sendAll.setEnabled(false);
+        //collectionDisplay = (ListView) v.findViewById(R.id.listView);
         cancel = (Button) v.findViewById(R.id.Return);
-        iv = (ImageView) v.findViewById(R.id.FromZip);
         LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(br, new IntentFilter("FromCMS"));
         LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(ebr, new IntentFilter("Elements"));
-        //LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(zbr, new IntentFilter("ImageZIP"));
-        /*try {
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-            String file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).list()[5];
-            ZipFile zipImages = new ZipFile(path + "/" + file);
-            ZipEntry firstImage = zipImages.entries().nextElement();
-            InputStream zin = zipImages.getInputStream(firstImage);
-            bm = BitmapFactory.decodeStream(zin);
-        }
-        catch(Exception e){
-            Log.d("IOException", e.getMessage());
-        }*/
-        sendAll.setOnClickListener(this);
+        obtainExpandList = (ExpandableListView) v.findViewById(R.id.ObtainableExpandList);
+        searchList = (SearchView) v.findViewById(R.id.SearchList);
+        setUpSearch();
         cancel.setOnClickListener(this);
         collection = new ArrayList<>();
         collectionsToElements = "";
         collBundle = new Bundle();
-        sendAll.setTag("Apply");
         allColl = new ArrayList<>();
-        obtainable_loc_Adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, allColl)//{
+        sort = (Spinner) v.findViewById(R.id.SortByDropDown);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this.getContext(), R.array.ObtainSort, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sort.setAdapter(spinnerAdapter);
+        sort.setOnItemSelectedListener(this);
+        Display d = getActivity().getWindowManager().getDefaultDisplay();
+        Point p = new Point();
+        d.getSize(p);
+        celao = new CustomExpandableListAdapterObtainable(this, collection, p.x);
+        obtainExpandList.setAdapter(celao);
+        obtainExpandList.setIndicatorBounds(obtainExpandList.getRight() + 1150, obtainExpandList.getWidth());
+        obtainExpandList.setOnChildClickListener(childClick);
+        return v;
+    }
+
+    private void setUpSearch() {
+        searchList.setIconifiedByDefault(false);
+        searchList.setOnQueryTextListener(queryListener);
+        searchList.setSubmitButtonEnabled(true);
+        searchList.setQueryHint("City or State");
+    }
+
+    SearchView.OnQueryTextListener queryListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            celao.filterData(query);
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            celao.filterData(newText);
+            return true;
+        }
+    };
+
+    ExpandableListView.OnChildClickListener childClick = new ExpandableListView.OnChildClickListener() {
+        @Override
+        public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
+            String strAdded = " added";
+            String strRemoved = " removed";
+            Collection c = collection.get(i);
+            try {
+                navActivity.getHomeNavButton().setEnabled(false);
+                navActivity.getQRNavButton().setEnabled(false);
+                navActivity.getSearchNavButton().setEnabled(false);
+                Intent collIntent = new Intent(getContext(), JSONElements.class);
+                collIntent.putExtra("SelectedCollectionCIDs", c.getCID() + "");
+                getContext().startService(collIntent);
+            }
+            catch (Exception e){
+                Log.d("PULLERROR", e.getMessage());
+            }
+
+            return true;
+        }
+    };
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(position == 0){
+            sortListByNumberOfBadges();
+        }
+        else if(position == 1){
+            sortListByCollectionLength();
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    public void sortListByNumberOfBadges(){
+        Collection[] sortTemp = new Collection[collection.size()];
+        Object[] tempArray = collection.toArray();
+        for(int i = 0; i < tempArray.length; i++){
+            sortTemp[i] = (Collection)tempArray[i];
+        }
+        Collection cur;
+        Collection next;
+        int leftToSort = collection.size();
+        while(leftToSort > 0){
+            for(int i = 1; i < leftToSort; i++) {
+                cur = sortTemp[i];
+                next = sortTemp[i - 1];
+                if (cur.getElementTotal() < next.getElementTotal()) {
+                    Collection temp = cur;
+                    sortTemp[i] = next;
+                    sortTemp[i - 1] = temp;
+                }
+            }
+            leftToSort--;
+        }
+        collection.clear();
+        for(Collection c : sortTemp){
+            collection.add(c);
+        }
+        celao.notifyDataSetChanged();
+    }
+
+    public void sortListByCollectionLength(){
+        Collection[] sortTemp = new Collection[collection.size()];
+        Object[] tempArray = collection.toArray();
+        for(int i = 0; i < tempArray.length; i++){
+            sortTemp[i] = (Collection)tempArray[i];
+        }
+        Collection cur;
+        Collection next;
+        int leftToSort = collection.size();
+        while(leftToSort > 0){
+            for(int i = 1; i < leftToSort; i++) {
+                cur = sortTemp[i];
+                next = sortTemp[i - 1];
+                if (cur.getDistance() < next.getDistance()) {
+                    Collection temp = cur;
+                    sortTemp[i] = next;
+                    sortTemp[i - 1] = temp;
+                }
+            }
+            leftToSort--;
+        }
+        collection.clear();
+        for(Collection c : sortTemp){
+            collection.add(c);
+        }
+        celao.notifyDataSetChanged();
+    }
+
+}
+
+//obtainable_loc_Adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, allColl)//{
         /*@Override
         public View getView(int position, View convertView, ViewGroup parent){
             Vi
         }
-    }*/;
-        collectionDisplay.setAdapter(obtainable_loc_Adapter);
-        collectionDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    //}*/;
+//collectionDisplay.setAdapter(obtainable_loc_Adapter);
+        /*collectionDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (added.size() == 0) {
@@ -324,8 +436,4 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener{
                     added.add(collection.get(i));
                     view.setBackgroundColor(Color.GREEN);
                 }
-            }
-        });
-        return v;
-    }
-}
+*/

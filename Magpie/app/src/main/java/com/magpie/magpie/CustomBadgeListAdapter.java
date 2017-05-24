@@ -2,6 +2,7 @@ package com.magpie.magpie;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 /**
@@ -28,15 +30,22 @@ import java.util.ArrayList;
 
 public class CustomBadgeListAdapter extends BaseAdapter {
 
+    private final double WALKING_RATE = 272.8;
+    private final double FOOT_CONVERSION = 3.28;
+
     private ArrayList<Element> elements;
     private Context context;
     private String type;
+    private TrackGPS user_location;
+    private Location user;
+    private float dist;
     private static LayoutInflater inflater;
 
     public CustomBadgeListAdapter(BadgePage bp, ArrayList<Element> e, String t){
         context = bp.getContext();
         elements = e;
         type = t;
+        user_location = new TrackGPS(bp.getContext());
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -100,9 +109,30 @@ public class CustomBadgeListAdapter extends BaseAdapter {
         catch(Exception e){
             Log.d("SETEXTERROR", e.getMessage());
         }
-        item.distance.setText("LID: " + elements.get(i).getLID());
-        item.time.setText("Latitude: " + elements.get(i).getLatitude());
+
+        item.distance.setText("Distance: " + determineDistance(i));
+        elements.get(i).setTime(determineTime());
+        item.time.setText("Time: " + elements.get(i).getTime());
         item.badgeImage.setImageBitmap(elements.get(i).getBadge());
         return badgeListItem;
+    }
+
+    private int determineDistance(int i){
+        Location bloc = new Location("badge_location");
+        bloc.setLatitude(elements.get(i).getLatitude());
+        bloc.setLongitude(elements.get(i).getLongitude());
+        user = new Location("USERLOC");
+        if(user_location.canGetLocation()) {
+            user.setLatitude(user_location.getLatitude());
+            user.setLongitude(user_location.getLongitude());
+            dist = (float) ((bloc.distanceTo(user)) * FOOT_CONVERSION);
+        }
+        return (int)dist;
+    }
+
+    private double determineTime(){
+        double time = dist / WALKING_RATE;
+
+        return (int)time;
     }
 }
