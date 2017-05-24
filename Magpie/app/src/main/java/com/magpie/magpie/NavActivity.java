@@ -261,7 +261,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         switch (v.getId()) {
 
             case R.id.map_nav_button:
-                // TODO: open map with all collections
                 startAllCollectionMapFragment();
                 break;
 
@@ -272,8 +271,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
 
             case R.id.home_nav_button:
-                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
-                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
+                //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
                 break;
 
             case R.id.search_nav_button:
