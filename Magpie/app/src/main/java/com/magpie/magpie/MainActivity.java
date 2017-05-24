@@ -48,9 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mErrorTextView = (TextView)findViewById(R.id.error_text_view);
 
         Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton); // TODO: remove when testing is done
-        Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton); // TODO: remove when testing is done
         sessionTestButton.setOnClickListener(this);
-        mapTestButton.setOnClickListener(this);
 
         SignInButton googleSignInButton = (SignInButton)findViewById(R.id.sign_in_button);
         googleSignInButton.setOnClickListener(this);
@@ -75,14 +73,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.sessionTestButton: // TODO: ensure other fragments work well with NavActivity
                 Toast.makeText(getApplicationContext(), "Starting session test", Toast.LENGTH_SHORT).show();
                 i = new Intent(v.getContext(), NavActivity.class);
-                startActivity(i);
-                finish();
-                break;
-
-            case R.id.mapViewTestButton: // TODO: remove when testing is done
-                Toast.makeText(getApplicationContext(), "Starting Map test", Toast.LENGTH_SHORT).show();
-                i = new Intent(v.getContext(), NavActivity.class);
-                i.putExtra("MAP_TEST", true);
                 startActivity(i);
                 finish();
                 break;

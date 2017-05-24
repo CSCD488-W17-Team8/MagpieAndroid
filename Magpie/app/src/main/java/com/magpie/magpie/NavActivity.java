@@ -177,23 +177,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 return;
             }
 
-            /**
-             * Get the intent to determine which Fragment to inflate.
-             * THIS IS ONLY FOR TESTING!!!!!
-             * Once the map test is no longer needed, this section is no longer needed.
-             * TODO: remove the below if-else once testing is done
-             */
-            Intent i = getIntent();
-
-            if (i.hasExtra("MAP_TEST")) {
-
-                startTestMap();
-
-            } else {
-
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
-            }
-
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
 
         }
 
@@ -272,7 +256,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
             case R.id.home_nav_button:
                 //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
+                startNewFragment(new Local_loc());
                 break;
 
             case R.id.search_nav_button:
@@ -452,7 +436,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (!mLocManager.isProviderEnabled(providerName)) {
 
-            View parent = findViewById(R.id.map) ;
+            View parent = findViewById(R.id.Nav_Activity) ;
             Snackbar snack = Snackbar.make(parent, "Location Provider Not Enabled: Goto Settings?",
                     Snackbar.LENGTH_LONG) ;
             snack.setAction("Confirm", new View.OnClickListener() {
@@ -624,9 +608,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mSelectedMarker = marker;
         float[] results = new float[1];
         Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
-        //mDistanceTextView.setText("Distance: "+results[0]);
-        //mTimeTextView.setText("Time: "+(results[0]/1.4)+"s");
-        // TODO: fill in UI elements pertaining to marker.
+
+        // TODO: determine marker
     }
 
     /**
@@ -742,19 +725,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public Collection getActiveCollection(){return mActiveCollection;}
 
-    //@Override
+    //@Override TODO: not needed?
     public void setAddedCollections(ArrayList<Collection> added) {
         addNewCollections(added);
-    }
-
-    // TODO: remove this method once testing is done
-    private void startTestMap() {
-
-
-        MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().add(R.id.fragment_container, mapFragment).commit();
-        mapFragment.getMapAsync(this);
-        //mActiveCollection = Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude());
     }
 
     @Override

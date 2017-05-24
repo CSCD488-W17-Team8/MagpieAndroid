@@ -29,6 +29,13 @@
         android:background="@color/colorMagpieWhite"
         android:visibility="gone">
 
+        <View
+            android:id="@+id/centerVerticalShim"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible" />
+
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -81,13 +88,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
         </RadioGroup>
-
-        <View
-            android:id="@+id/centerVerticalShim"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible" />
 
         <LinearLayout
             android:id="@+id/view_bar_spinner_layout"
