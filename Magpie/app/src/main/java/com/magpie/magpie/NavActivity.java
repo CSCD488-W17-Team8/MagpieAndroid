@@ -617,7 +617,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * the user.
      */
     public void startMarkerMapFragment() {
-        // TODO: map showing ONE marker from ONE collection
+        // TODO: call this from info page
         hideViewBar();
         setTitle(mActiveElement.getName());
         createMarker(mActiveElement);
@@ -629,7 +629,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * collection.
      */
     public void startCollectionMapFragment() {
-        // TODO: map showing ALL markers from ONE collection
+
         showViewBar();
         setTitle(mActiveCollection.getName());
         startMapFragment();
@@ -641,7 +641,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * user is participating in.
      */
     public void startAllCollectionMapFragment() {
-        // TODO: map showing ALL markers from ALL collections
+
         hideViewBar();
         setTitle(getString(R.string.toolbar_badges_near_me));
         createAllCollectionMarkerList();
