@@ -3,6 +3,7 @@ package com.magpie.magpie;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -28,7 +29,17 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -45,7 +56,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
@@ -58,12 +69,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     /**
      * Map-related member variables
      */
+    private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private LocationManager mLocManager;
     private Marker mSelectedMarker;
     private Location mMyLocation;
-    private String mLastUpdateTime;
+    private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates;
+    private boolean mLocationPermissionGranted = false;
 
     /**
      * Persistent UI elements.
@@ -80,6 +93,57 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
+
+        /*
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        createLocationRequest();
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
+                .checkLocationSettings(mGoogleApiClient, builder.build());
+        */
+
+        /*
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>()) {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location requests here.
+                        //...
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(OuterClass.this, REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way
+                        // to fix the settings so we won't show the dialog.
+                        //...
+                        break;
+                }
+            }
+        });
+        */
+
+        mRequestingLocationUpdates = false;
 
         mCollections = new ArrayList<>();
         mActiveCollection = new Collection();
@@ -132,6 +196,53 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
         */
+    }
+
+    @Override
+    protected void onStart() {
+
+        // TODO: determine if this needs to be here?
+        //mGoogleApiClient.connect();
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onStop() {
+
+        //mGoogleApiClient.disconnect();
+        super.onStop();
+
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        //if (checkPermission()) TODO: check for permissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mMyLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+            if (mMyLocation != null) {
+
+                // TODO: do stuff here?
+
+            }
+        } else {
+            Toast.makeText(this.getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT).show();
+            Log.d("ERROR", "Error: unable to place markers. Permission not granted");
+        }
+
+    }
+
+    protected void createLocationRequest() {
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(2000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
     }
 
     public void onNavButtonClicked(View v) {
@@ -252,6 +363,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        // TODO: link to calibrate settings?
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         /**
@@ -367,6 +479,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (requestCode == REQUEST_LOCATION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionGranted = true;
                 initMap() ;
             } else {
                 /**
@@ -449,8 +562,16 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+
         mMyLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        updateUI();
+
+    }
+
+    private void updateUI() {
+
+        moveToLocation(mMyLocation);
+
     }
 
     @Override
@@ -469,19 +590,12 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
-    @Override
     public void onConnectionSuspended(int i) {
 
     }
 
     protected void startLocationUpdates() {
-        //LocationServices.FusedLocationApi.
+        //LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
     @Override
@@ -627,6 +741,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         getFragmentManager().beginTransaction().add(R.id.fragment_container, mapFragment).commit();
         mapFragment.getMapAsync(this);
         //mActiveCollection = Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude());
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     /*
