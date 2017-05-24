@@ -154,9 +154,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 String[] badgeArr = strBadges.split("%");
                 createElements(badgeArr);
                 if(isAdded()) {
-                    navActivity.getHomeNavButton().setEnabled(true);
-                    navActivity.getQRNavButton().setEnabled(true);
-                    navActivity.getSearchNavButton().setEnabled(true);
+                    navActivity.setNavButtonsEnabled(true);
                 }
                 else{
                     Toast.makeText(getContext(), "There was an error adding a collection", Toast.LENGTH_SHORT).show();
@@ -169,7 +167,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     };
 
     /*
-     * Method onClick: Handles the separate button clicks that can happen --
+     * Method onNavButtonClicked: Handles the separate button clicks that can happen --
      * Cancel: Returns the user to the local list
      * Apply: adds all selected Collections to the local side.
      *
@@ -332,9 +330,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
             }
             if(addIt) {
                 try {
-                    navActivity.getHomeNavButton().setEnabled(false);
-                    navActivity.getQRNavButton().setEnabled(false);
-                    navActivity.getSearchNavButton().setEnabled(false);
+                    navActivity.setNavButtonsEnabled(false);
                     Intent collIntent = new Intent(getContext(), JSONElements.class);
                     collIntent.putExtra("SelectedCollectionCIDs", c.getCID() + "");
                     getContext().startService(collIntent);

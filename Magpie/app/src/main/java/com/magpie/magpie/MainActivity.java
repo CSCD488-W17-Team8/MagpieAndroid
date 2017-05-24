@@ -1,11 +1,14 @@
 package com.magpie.magpie;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -17,14 +20,19 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private GoogleApiClient mGoogleApiClient;
     private int loc_permissionCheck,cam_permissionCheck;
 
     private final int MY_PERMISSIONS_REQUEST_CAMERA = 666,
             MY_REQUEST_PERMISSIONS_REQUEST_FINE_LOCATION = 42;
+
+    private TextView mErrorTextView;
 
     /**
      * Initializes the first view in the app for the user. User will be presented with the login
@@ -37,10 +45,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mErrorTextView = (TextView)findViewById(R.id.error_text_view);
+
         Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton); // TODO: remove when testing is done
         Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton); // TODO: remove when testing is done
+        sessionTestButton.setOnClickListener(this);
+        mapTestButton.setOnClickListener(this);
 
-        SignInButton googleSignInButton = (SignInButton)findViewById(R.id.google_sign_in_button);
+        SignInButton googleSignInButton = (SignInButton)findViewById(R.id.sign_in_button);
+        googleSignInButton.setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -50,16 +63,16 @@ public class MainActivity extends AppCompatActivity {
 
         Button signOutButton = (Button)findViewById(R.id.sign_out_button); // TODO: remove when testing is done
 
-
     }
 
+    @Override
     public void onClick(View v) {
 
         Intent i;
 
         switch (v.getId()) {
 
-            case R.id.sessionTestButton:
+            case R.id.sessionTestButton: // TODO: ensure other fragments work well with NavActivity
                 Toast.makeText(getApplicationContext(), "Starting session test", Toast.LENGTH_SHORT).show();
                 i = new Intent(v.getContext(), NavActivity.class);
                 startActivity(i);
@@ -74,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 break;
 
-            case R.id.google_sign_in_button:
+            case R.id.sign_in_button:
                 signIn();
                 break;
 
@@ -116,18 +129,33 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 9001) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
+        } else {
+            mErrorTextView.setText("Something went wrong!");
         }
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
 
-        //Log.d(TAG, "handleSignInResult:" + result.isSuccess()); TODO: look in to Log
+        Log.d("Action: ", "handleSignInResult: " + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, take authentication action
-            GoogleSignInAccount acct = result.getSignInAccount();
-            String idToken = acct.getIdToken();
+            //GoogleSignInAccount acct = result.getSignInAccount();
+            mErrorTextView.setTextColor(Color.BLACK);
+
+            try {
+                // Try to connect to the web server sign
+
+                HttpURLConnection conn = (HttpURLConnection) new URL("http://magpiehunt.com/api/user/app").openConnection();
+
+            } catch (Exception e) {
+                Log.d("Error: ", e.getMessage());
+            }
+
             // TODO: send token to server and validate server-side
             //beginSession(); Not ready for this here yet TODO: test sign-in functionality first
+        } else {
+            // Sign in failed
+            mErrorTextView.setText("Sign-in failed!!");
         }
     }
 }

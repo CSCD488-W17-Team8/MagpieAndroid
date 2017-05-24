@@ -26,7 +26,8 @@ public class Collection implements Serializable{
     private boolean mOrdered;
     private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
     private int mCollected; //Thinking about the collection progress here.
-    private boolean mSelected, mDownloaded; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully.
+    private boolean mSelected;
+    private boolean mDownloaded = true; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully. // TODO: remove default set to true
     private Bitmap img;
     private int mHour, mMin, mSec, mZIPCode, mSelectedElement;
 
@@ -200,9 +201,10 @@ public class Collection implements Serializable{
      * @param lon user's longitude position.
      * @return a Collection to be used as a test case for the Maps Activity
      */
-    public static Collection collectionTestBuilder(double lat, double lon) {
+    public static Collection collectionTestBuilder(String name, double lat, double lon) {
 
-        Collection collection = new Collection("Test Collection");
+        Collection collection = new Collection();
+        collection.setName(name);
         collection.buildTestElements(lat, lon);
         return collection;
     }
@@ -214,6 +216,11 @@ public class Collection implements Serializable{
         mCollectionElements.add(new Element("test3", lat-0.001, lon+0.001));
         mCollectionElements.add(new Element("test4", lat+0.001, lon-0.001));
         mCollectionElements.add(new Element("test5", lat+0.002, lon+0.002));
+    }
+
+    // Ignore this if you are merging from this branch.
+    private void setName(String name) {
+        mName = name;
     }
 
     public void setSelectedElement(int i){mSelectedElement = i;}

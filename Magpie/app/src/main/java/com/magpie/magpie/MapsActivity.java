@@ -39,6 +39,11 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * TODO: remove this file.
+ * This Activity is no longer needed. All map functionality is now in NavActivity
+ */
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener {
 
@@ -204,7 +209,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //mTempCoordinateTextView.setText(mMyLocation.getLatitude()+", "+mMyLocation.getLongitude());
 
             // TESTING
-            mCollection = Collection.collectionTestBuilder(mMyLocation.getLatitude(), mMyLocation.getLongitude());
+            //mCollection = Collection.collectionTestBuilder(mMyLocation.getLatitude(), mMyLocation.getLongitude());
             //mCollectionTitleTextView.setText(mCollection.getName());
             //placeTestMarkers();
             createMarkerList();

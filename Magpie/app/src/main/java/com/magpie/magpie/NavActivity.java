@@ -5,11 +5,13 @@ import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -26,10 +28,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -50,24 +64,30 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, ImageButton.OnClickListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
+//=======
+        //GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, ImageButton.OnClickListener {
+//>>>>>>> ArrasmithBetaBranch
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
 
     private ArrayList<Collection> mCollections;
     private Collection mActiveCollection;
+    private ArrayList<MarkerOptions> mMarkerList;
+    private Element mActiveElement;
 
     /**
      * Map-related member variables
      */
+    private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private LocationManager mLocManager;
     private Marker mSelectedMarker;
-    private ArrayList<MarkerOptions> mMarkers;
     private Location mMyLocation;
-    private String mLastUpdateTime;
+    private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates;
+    private boolean mLocationPermissionGranted = false;
 
     /**
      * Persistent UI elements.
@@ -77,22 +97,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private RelativeLayout mViewBar;
     private FragmentManager mFragmentMngr;
 
-    /**
-     * view bar buttons
-     */
-    private Button mListViewButton;
-    private Button mGridViewButton;
-    private Button mMapViewButton;
-
-    /**
-     * nav bar buttons
-     */
-    private ImageButton mMapNavButton;
-    private ImageButton mQRNavButton;
-    private ImageButton mHomeNavButton;
-    private ImageButton mSearchNavButton;
-    private ImageButton mAccountNavButton;
-
     private boolean showingBadgePage = false;
     private boolean mReadFromFile = false;
 
@@ -101,25 +105,65 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
 
+        /*
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        createLocationRequest();
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
+                .checkLocationSettings(mGoogleApiClient, builder.build());
+        */
+
+        /*
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>()) {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location requests here.
+                        //...
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(OuterClass.this, REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way
+                        // to fix the settings so we won't show the dialog.
+                        //...
+                        break;
+                }
+            }
+        });
+        */
+
+        mRequestingLocationUpdates = false;
+
         mCollections = new ArrayList<>();
         mActiveCollection = new Collection();
 
+        mMarkerList = new ArrayList<>();
+        //mActiveElement = new Element(); // Leave it null?
+
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
-
-        mListViewButton = (Button) findViewById(R.id.list_button);
-        mGridViewButton = (Button) findViewById(R.id.grid_button);
-        mMapViewButton = (Button) findViewById(R.id.map_button);
-
-        mMapNavButton = (ImageButton) findViewById(R.id.map_nav_button);
-        mQRNavButton = (ImageButton) findViewById(R.id.qr_nav_button);
-        mHomeNavButton = (ImageButton) findViewById(R.id.home_nav_button);
-        mSearchNavButton = (ImageButton) findViewById(R.id.search_nav_button);
-        mAccountNavButton = (ImageButton) findViewById(R.id.account_nav_button);
-
-        mQRNavButton.setOnClickListener(this);
-        mSearchNavButton.setOnClickListener(this);
-        mHomeNavButton.setOnClickListener(this);
 
         // TODO: set visibility of view_bar
 
@@ -142,10 +186,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             Intent i = getIntent();
 
             if (i.hasExtra("MAP_TEST")) {
-                getFragmentManager().beginTransaction().add(R.id.fragment_container, new MapFragment()).commit();
+
+                startTestMap();
+
             } else {
+
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
             }
+
 
         }
 
@@ -161,26 +209,59 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         */
     }
 
-    public void onClick(View v) {
+    @Override
+    protected void onStart() {
+
+        // TODO: determine if this needs to be here?
+        //mGoogleApiClient.connect();
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onStop() {
+
+        //mGoogleApiClient.disconnect();
+        super.onStop();
+
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        //if (checkPermission()) TODO: check for permissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mMyLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+            if (mMyLocation != null) {
+
+                // TODO: do stuff here?
+
+            }
+        } else {
+            Toast.makeText(this.getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT).show();
+            Log.d("ERROR", "Error: unable to place markers. Permission not granted");
+        }
+
+    }
+
+    protected void createLocationRequest() {
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(2000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+    }
+
+    public void onNavButtonClicked(View v) {
 
         switch (v.getId()) {
 
-            case R.id.list_button:
-                // TODO: ensure starting in list view
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BadgePage()).commit();
-                break;
-
-            case R.id.grid_button:
-                // TODO: BadgePage in grid view
-                break;
-
-            case R.id.map_button:
-                // TODO: open map with current collection
-                startCollectionMapFragment();
-                break;
-
             case R.id.map_nav_button:
-                // TODO: open map with all collections
+                startAllCollectionMapFragment();
                 break;
 
             case R.id.qr_nav_button:
@@ -190,6 +271,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
 
             case R.id.home_nav_button:
+                //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
                 break;
 
@@ -203,6 +285,34 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public void onRadioButtonClicked(View view) {
+
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+
+            case R.id.radio_list_view:
+                if (checked) {
+
+                }
+                break;
+            case R.id.radio_grid_view:
+                if (checked) {
+
+                }
+                break;
+            case R.id.radio_map_view:
+                if (checked) {
+
+                    startCollectionMapFragment();
+
+                }
+                break;
+
+        }
+
     }
 
     /**
@@ -235,22 +345,21 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mMyLocation = getLocation();
         if (mMyLocation != null) {
             moveToLocation(mMyLocation);
-            //mTempCoordinateTextView.setText(mMyLocation.getLatitude()+", "+mMyLocation.getLongitude());
 
-            // TESTING
-            mActiveCollection = Collection.collectionTestBuilder(mMyLocation.getLatitude(), mMyLocation.getLongitude());
-            //mCollectionTitleTextView.setText(mCollection.getName());
-            //placeTestMarkers();
-            createMarkerList();
-            placeMarkers();
+            // TESTING. TODO: remove testing parts
+            //setActiveCollection(Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude()));
             // TESTING END
-        }
+            //createMarkerList();
+            placeMarkers();
 
-        //placeMarkers();
+        }
 
         initMap();
     }
 
+    /**
+     * initializes map and its UI settings.
+     */
     private void initMap() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
@@ -268,6 +377,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        // TODO: link to calibrate settings?
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         /**
@@ -301,7 +411,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         };
         Handler handler = new Handler();
-        handler.postDelayed(runnable, 200);
+        handler.postDelayed(runnable, 1);
     }
 
     private Location getLocation() {
@@ -383,6 +493,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (requestCode == REQUEST_LOCATION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionGranted = true;
                 initMap() ;
             } else {
                 /**
@@ -395,46 +506,86 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    private void createMarker(Element element) {
+
+        if (element != null) {
+
+            MarkerOptions marker = new MarkerOptions();
+            marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
+            marker.title(element.getName());
+            //marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image; wasn't working here
+
+            if (mMarkerList != null) {
+
+                mMarkerList.add(marker);
+
+            } else {
+
+                Toast.makeText(getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT);
+                Log.d("NULLPOINTER", "mMarkerList is null. Cannot add marker in createMarker.");
+
+            }
+        }
+
+    }
+
     /**
      * Creates a list of markers from the Elements in the active collection.
-     * Markers are saves in the mMarkers member variable.
+     * Markers are saved in the mMarkerList member variable.
      */
-    private void createMarkerList() {
+    private void createCollectionMarkerList(Collection collection) {
 
-        if (mActiveCollection != null) {
-            ArrayList<Element> elements = mActiveCollection.getCollectionElements();
+
+        if (collection != null) {
+
+            ArrayList<Element> elements = collection.getCollectionElements();
+
             for (Element element : elements) {
 
-                MarkerOptions marker = new MarkerOptions();
-                marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
-                marker.title(element.getName());
-                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable));
+                createMarker(element);
 
-                mMarkers.add(marker);
             }
-
-            placeMarkers();
         }
     }
 
     /**
-     * Places markers on the Map after markers were made in the createMarkerList method
+     * Creates list of Markers from the Elements in all collections.
+     */
+    private void createAllCollectionMarkerList() {
+
+        if (mCollections != null) {
+
+            for (Collection collection : mCollections) {
+
+                createCollectionMarkerList(collection);
+
+            }
+        }
+    }
+
+    /**
+     * Places markers in mMarkerList
      */
     private void placeMarkers() {
 
-        for (MarkerOptions marker : mMarkers) {
+        for (MarkerOptions marker : mMarkerList) {
+            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable));
             mMap.addMarker(marker);
         }
     }
 
-    private void placeAllCollectionMarkers() {
+    @Override
+    public void onLocationChanged(Location location) {
+
+        mMyLocation = location;
+        updateUI();
 
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        mMyLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+    private void updateUI() {
+
+        moveToLocation(mMyLocation);
+
     }
 
     @Override
@@ -453,19 +604,12 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
-    @Override
     public void onConnectionSuspended(int i) {
 
     }
 
     protected void startLocationUpdates() {
-        //LocationServices.FusedLocationApi.
+        //LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
     @Override
@@ -491,10 +635,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startMarkerMapFragment() {
         // TODO: map showing ONE marker from ONE collection
-
-        MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
-        mapFragment.getMapAsync(this);
+        hideViewBar();
+        setTitle(mActiveElement.getName());
+        createMarker(mActiveElement);
+        startMapFragment();
     }
 
     /**
@@ -503,10 +647,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startCollectionMapFragment() {
         // TODO: map showing ALL markers from ONE collection
-
-        MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
-        mapFragment.getMapAsync(this);
+        showViewBar();
+        setTitle(mActiveCollection.getName());
+        startMapFragment();
+        createCollectionMarkerList(mActiveCollection);
     }
 
     /**
@@ -515,14 +659,61 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startAllCollectionMapFragment() {
         // TODO: map showing ALL markers from ALL collections
+        hideViewBar();
+        setTitle(getString(R.string.toolbar_badges_near_me));
+        createAllCollectionMarkerList();
+        startMapFragment();
+    }
+
+    /**
+     * Changes the fragment currently active in the fragment container
+     * @param fr the fragment to be started.
+     */
+    public void startNewFragment(Fragment fr) {
+
+        if (fr.getClass().getSimpleName().equals(BadgePage.class.getSimpleName())) {
+
+            showViewBar();
+
+        } else {
+
+            hideViewBar();
+
+        }
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).commit();
+
+    }
+
+    /**
+     * Shows the view-switching bar for the badge page
+     */
+    public void showViewBar() {
+
+        if (mViewBar.getVisibility() == View.GONE)
+            mViewBar.setVisibility(View.VISIBLE);
+
+    }
+
+    /**
+     * Hides the view-switching bar if not on the badge page or the single-collection map.
+     */
+    public void hideViewBar() {
+
+        if (mViewBar.getVisibility() == View.VISIBLE)
+            mViewBar.setVisibility(View.GONE);
+
+    }
+
+    /**
+     * Starts the Map fragment.
+     */
+    public void startMapFragment() {
 
         MapFragment mapFragment = new MapFragment();
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
         mapFragment.getMapAsync(this);
-    }
 
-    public void startNewFragment(Fragment fr) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).commit();
     }
 
     public void setActiveCollection(Collection collection) {
@@ -546,17 +737,40 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void setTitle(String title) {
-        //mTitleBar.setTitle(title.toUpperCase());
-        ((Toolbar)findViewById(R.id.nav_toolbar)).setTitle(title);
+        mTitleBar.setTitle(title.toUpperCase());
     }
 
     public Collection getActiveCollection(){return mActiveCollection;}
 
-    public ImageButton getQRNavButton(){return mQRNavButton;}
+    //@Override
+    public void setAddedCollections(ArrayList<Collection> added) {
+        addNewCollections(added);
+    }
 
-    public ImageButton getHomeNavButton(){return mHomeNavButton;}
+    // TODO: remove this method once testing is done
+    private void startTestMap() {
 
-    public ImageButton getSearchNavButton(){return mSearchNavButton;}
+
+        MapFragment mapFragment = new MapFragment();
+        getFragmentManager().beginTransaction().add(R.id.fragment_container, mapFragment).commit();
+        mapFragment.getMapAsync(this);
+        //mActiveCollection = Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude());
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    public void setNavButtonsEnabled(boolean enabled) {
+
+        ((Button) findViewById(R.id.map_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.qr_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.home_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.search_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.account_nav_button)).setEnabled(enabled);
+
+    }
 
     public boolean getReadFromFile(){return mReadFromFile;}
 

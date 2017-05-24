@@ -61,23 +61,15 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <!--
-        <activity
-            android:name=".Obtainable_loc"
-            android:label="@string/title_activity_obtainable_loc"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Local_loc"
-            android:screenOrientation="portrait"/>
-        -->
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".NavActivity"
             android:label="@string/title_activity_nav"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
