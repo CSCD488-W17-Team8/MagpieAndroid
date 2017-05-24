@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent i;
 
-
         switch (v.getId()) {
 
             case R.id.sessionTestButton: // TODO: ensure other fragments work well with NavActivity

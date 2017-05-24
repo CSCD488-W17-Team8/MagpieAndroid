@@ -74,7 +74,7 @@ public class CustomExpandableListAdapterObtainable extends BaseExpandableListAda
         TextView title = (TextView) elvp.findViewById(R.id.CollectionTitle);
         TextView acronym = (TextView) elvp.findViewById(R.id.CollectionAcronym);
         title.setText(display.get(i).getName());
-        acronym.setText(createAcronym(display.get(i).getName()));
+        acronym.setText(display.get(i).getAbbrev());
         return elvp;
     }
 
@@ -83,12 +83,17 @@ public class CustomExpandableListAdapterObtainable extends BaseExpandableListAda
         LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View elvc = li.inflate(R.layout.obtainable_list_display_child, null);
         TextView desc = (TextView) elvc.findViewById(R.id.CollectionDescription);
-        TextView badges = (TextView) elvc.findViewById(R.id.BadgesText);
-        TextView rating = (TextView) elvc.findViewById(R.id.RatingText);
+        TextView badges = (TextView) elvc.findViewById(R.id.BadgesValue);
+        TextView rating = (TextView) elvc.findViewById(R.id.RatingValue);
+        TextView time = (TextView) elvc.findViewById(R.id.TimeToComplete);
+        TextView distance = (TextView) elvc.findViewById(R.id.DistanceValue);
+        TextView reward = (TextView) elvc.findViewById(R.id.RewardValue);
         badges.setText(display.get(i).getElementTotal() + " Badges");
         rating.setText("Rating: " + display.get(i).getRating());
-        badges.setWidth(width/2);
         desc.setText(display.get(i).getDescription());
+        time.setText("Time: " + display.get(i).getHour() + " hrs. " + display.get(i).getMinute() + " mins.");
+        distance.setText(display.get(i).getDistance() + "miles");
+        reward.setText("Nothing");
         return elvc;
     }
 

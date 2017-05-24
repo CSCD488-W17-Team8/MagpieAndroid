@@ -53,6 +53,8 @@ import com.magpie.magpie.CollectionUtils.*;
 import com.magpie.magpie.UserProgress.GetProgress;
 import com.magpie.magpie.UserProgress.SendProgress;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /*
@@ -69,7 +71,6 @@ public class Local_loc extends Fragment implements View.OnClickListener{
 
     FloatingActionButton saveToFile;
     FileOutputStream readCollectionsFromFile;
-    FloatingActionButton obtainable_loc_Start;
     ExpandableListView localExpandList;
     CustomExpandableListAdapterLocal celal;
     ArrayAdapter<String> localAdapter;
@@ -89,7 +90,13 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         navActivity = (NavActivity) getActivity();
         navActivity.setTitle(getString(R.string.toolbar_my_collections));
 
-        //readFile();
+        if(!navActivity.getReadFromFile()){
+            readFile();
+            navActivity.setReadFromFile();
+            Intent intent = new Intent(getActivity(), GetProgress.class);
+            //TODO: package up user's ID for check on CMS
+            getActivity().startService(intent);
+        }
 
         // BEGIN: ADDED BY SEAN 5/2/2017
 
@@ -107,11 +114,36 @@ public class Local_loc extends Fragment implements View.OnClickListener{
 
     private void parseProgress(String progress) {
         try {
-            JSONObject jsonProgress = new JSONObject(progress);
-
+            JSONObject collectionProgress;
+            JSONArray jsonProgress = new JSONArray(progress);
+            for(int i = 0; i < jsonProgress.length(); i++){
+                collectionProgress = jsonProgress.getJSONObject(i);
+                for(Collection c : navActivity.getCollections()){
+                    if(c.getCID() == collectionProgress.getInt("cid")){
+                        assignCollected(c, collectionProgress);
+                    }
+                }
+            }
         }
         catch (Exception e){
             Log.d("PARSEPROGRESSEXCEP", e.getMessage());
+        }
+    }
+
+    private void assignCollected(Collection c, JSONObject progress) {
+        try {
+            JSONArray landmarkIDs = progress.getJSONArray("landmarks");
+            for(int i = 0; i < landmarkIDs.length(); i++) {
+                int lid = landmarkIDs.getInt(i);
+                for (Element e : c.getCollectionElements()) {
+                    if(e.getLID() == lid){
+                        e.isCollected();
+                    }
+                }
+            }
+        }
+        catch (JSONException e){
+            Log.d("ASSIGNCOLLECTEDEXCEP", "Data error");
         }
     }
 
@@ -146,43 +178,28 @@ public class Local_loc extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        //Sends the user to the Obtainable_loc class.
-        if(view.getId() == R.id.ToObtainable) {
-            try {
-                obtainable_loc_Start.hide();
-                saveToFile.hide();
-                Fragment fr = new Obtainable_loc();
-                navActivity.startNewFragment(fr);
-            } catch (Exception e){
-                Log.d("Stuff", "Error: ", e);
-            }
-        }
         //Saves all current collections to a text file.
-        else if(view.getId() == R.id.saveButton){
+        if(view.getId() == R.id.saveButton){
 
-            Intent intent = new Intent(getContext(), GetProgress.class);
-            //intent.putExtra("UserID", "test");
-            //intent.putExtra("UserProgressCollection", navActivity.getCollections());
-            getContext().startService(intent);
-            /*File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
+            File f = new File(getActivity().getFilesDir(), "SavedCollections.txt");
             try {
                 if (f.exists()) {
                     readCollectionsFromFile = getActivity().openFileOutput("SavedCollections.txt", Context.MODE_PRIVATE);
-                    for(Collection c : localCollections){
+                    for(Collection c : navActivity.getCollections()){
                         readCollectionsFromFile.write(c.toString().getBytes());
                         readCollectionsFromFile.write("÷÷÷".getBytes());
                     }
                     readCollectionsFromFile.close();
                     Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
                 }
-                /*else if(f.exists() && localCollections.size() == 0){
+                else if(f.exists() && navActivity.getCollections().size() == 0){
                     f.delete();
-                }*/
-               /* else {
+                }
+                else {
                     f.createNewFile();
                     readCollectionsFromFile = getActivity().openFileOutput("SavedCollections.txt", Context.MODE_PRIVATE);
                     readCollectionsFromFile.write("".getBytes());
-                    for(Collection c : localCollections){
+                    for(Collection c : navActivity.getCollections()){
                         readCollectionsFromFile.write(c.toString().getBytes());
                     }
                     readCollectionsFromFile.close();
@@ -191,7 +208,7 @@ public class Local_loc extends Fragment implements View.OnClickListener{
             }
             catch (IOException e){
                 e.printStackTrace();
-            }*/
+            }
         }
         //Activates remove mode.
         else if(view.getId() == R.id.Removebutn){
@@ -237,15 +254,14 @@ public class Local_loc extends Fragment implements View.OnClickListener{
      */
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
+
         View v = inflater.inflate(R.layout.activity_local_loc, container, false);
-        obtainable_loc_Start = (FloatingActionButton) v.findViewById(R.id.ToObtainable);
         addToList = new ArrayList<>();
         LocalBroadcastManager.getInstance(v.getContext()).registerReceiver(pbr, new IntentFilter("ProgressFromCMS"));
         //localList = (ListView) v.findViewById(R.id.list);
         localExpandList = (ExpandableListView) v.findViewById(R.id.expandList);
         //localAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, addToList);
         //localList.setAdapter(localAdapter);
-        obtainable_loc_Start.setOnClickListener(this);
         saveToFile = (FloatingActionButton) v.findViewById(R.id.saveButton);
         saveToFile.setOnClickListener(this);
         for(Collection c : navActivity.getCollections()){
@@ -326,7 +342,6 @@ public class Local_loc extends Fragment implements View.OnClickListener{
 
         /*
         try {
-            obtainable_loc_Start.hide();
             saveToFile.hide();
             Collection send = navActivity.getCollections().get(i);
             navActivity.setActiveCollection(send);
@@ -359,31 +374,29 @@ public class Local_loc extends Fragment implements View.OnClickListener{
         builder.show();
     }
 
-    private void addImagesToElements(int index){
+    private void addImagesToElements(int index) {
         try {
             ZipFile zipImages = new ZipFile(navActivity.getCollections().get(index).getPicZip());
             Enumeration<? extends ZipEntry> entries = zipImages.entries();
             ZipEntry curImage = entries.nextElement();
             ZipEntry defaultImage = curImage;
             int count = 0;
-            for(Element element : navActivity.getCollections().get(index).getCollectionElements()){
+            for (Element element : navActivity.getCollections().get(index).getCollectionElements()) {
                 InputStream zin = zipImages.getInputStream(curImage);
                 Bitmap bm = BitmapFactory.decodeStream(zin);
                 element.setBadge(bm);
-                if(entries.hasMoreElements()) {
+                if (entries.hasMoreElements()) {
                     curImage = entries.nextElement();
                     String elementName = curImage.getName();
                     String extension = elementName.substring(elementName.length() - 3);
                     if (extension.compareTo("zip") == 0) {
                         curImage = zipImages.entries().nextElement();
                     }
-                }
-                else{
+                } else {
                     curImage = defaultImage;
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.d("ZIPREADINGERROR", e.getMessage());
         }
     }

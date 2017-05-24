@@ -1,41 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/CollectionDescription"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:text="TextView"
         android:textSize="17sp" />
 
     <TextView
-        android:id="@+id/BadgesText"
+        android:id="@+id/buffer"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/CollectionDescription" />
+
+    <ImageView
+        android:id="@+id/TimeToCompleteImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/buffer"
+        app:srcCompat="@android:drawable/ic_menu_recent_history" />
+
+    <TextView
+        android:id="@+id/TimeToComplete"
+        android:layout_width="60dp"
+        android:layout_height="33dp"
+        android:layout_alignBottom="@+id/timebuffer"
+        android:layout_below="@+id/buffer"
+        android:layout_toEndOf="@+id/timebuffer"
+        android:layout_toRightOf="@+id/timebuffer"
+        android:gravity="center_vertical"
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/RatingText"
-        android:layout_width="match_parent"
+        android:id="@+id/timebuffer"
+        android:layout_width="10dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/buffer"
+        android:layout_toEndOf="@+id/TimeToCompleteImage"
+        android:layout_toRightOf="@+id/TimeToCompleteImage" />
+
+    <TextView
+        android:id="@+id/distancebuffer"
+        android:layout_width="30dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/buffer"
+        android:layout_toRightOf="@+id/TimeToComplete" />
+
+    <ImageView
+        android:id="@+id/DistanceImage"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buffer"
-        android:layout_toEndOf="@+id/BadgesText"
-        android:layout_toRightOf="@+id/BadgesText"
+        android:layout_toEndOf="@+id/distancebuffer"
+        android:layout_toRightOf="@+id/distancebuffer"
+        app:srcCompat="@android:drawable/ic_menu_compass" />
+
+    <TextView
+        android:id="@+id/DistanceValue"
+        android:layout_width="60dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/buffer"
+        android:layout_toRightOf="@+id/distancevaluebuffer"
+        android:gravity="center_vertical"
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/buffer"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:id="@+id/distancevaluebuffer"
+        android:layout_width="10dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/buffer"
+        android:layout_toRightOf="@+id/DistanceImage"
+        android:layout_toEndOf="@+id/DistanceImage" />
+
+    <TextView
+        android:id="@+id/badgesbuffer"
+        android:layout_width="30dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/buffer"
+        android:layout_toRightOf="@+id/DistanceValue"
+        android:layout_toEndOf="@+id/DistanceValue" />
+
+    <ImageView
+        android:id="@+id/badgesImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/badgesbuffer"
+        android:layout_below="@+id/buffer"
+        android:layout_toRightOf="@+id/badgesbuffer"
+        app:srcCompat="@android:drawable/star_on" />
+
+    <TextView
+        android:id="@+id/badgesvaluebuffer"
+        android:layout_width="10dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/buffer"
+        android:layout_toEndOf="@+id/badgesImage"
+        android:layout_toRightOf="@+id/badgesImage" />
+
+    <TextView
+        android:id="@+id/BadgesValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/badgesvaluebuffer"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/buffer"
+        android:layout_toRightOf="@+id/badgesvaluebuffer"
+        android:text="TextView"
+        android:gravity="center_vertical"/>
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/CollectionDescription" />
+        android:layout_below="@+id/TimeToCompleteImage"
+        app:srcCompat="@android:drawable/ic_menu_info_details" />
+
+    <TextView
+        android:id="@+id/rewardbuffer"
+        android:layout_width="10dp"
+        android:layout_height="32dp"
+        android:layout_alignBottom="@+id/imageView4"
+        android:layout_below="@+id/TimeToCompleteImage"
+        android:layout_toEndOf="@+id/imageView4"
+        android:layout_toRightOf="@+id/imageView4" />
+
+    <TextView
+        android:id="@+id/RewardValue"
+        android:layout_width="192dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/TimeToComplete"
+        android:layout_toEndOf="@+id/timebuffer"
+        android:layout_toRightOf="@+id/timebuffer"
+        android:text="TextView"
+        android:gravity="center_vertical"/>
+
+    <TextView
+        android:id="@+id/ratingbuffer"
+        android:layout_width="30dp"
+        android:layout_height="32dp"
+        android:layout_below="@+id/DistanceValue"
+        android:layout_toRightOf="@+id/DistanceValue"
+        android:layout_toEndOf="@+id/DistanceValue" />
+
+    <ImageView
+        android:id="@+id/RatingImage"
+        android:layout_width="28dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/badgesImage"
+        android:layout_toEndOf="@+id/ratingbuffer"
+        android:layout_toRightOf="@+id/ratingbuffer"
+        app:srcCompat="@android:drawable/ic_menu_myplaces" />
+
+    <TextView
+        android:id="@+id/ratingvaluebuffer"
+        android:layout_width="10dp"
+        android:layout_height="32dp"
+        android:layout_alignBottom="@+id/RatingImage"
+        android:layout_below="@+id/badgesvaluebuffer"
+        android:layout_toEndOf="@+id/RatingImage"
+        android:layout_toRightOf="@+id/RatingImage" />
+
+    <TextView
+        android:id="@+id/RatingValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/BadgesValue"
+        android:layout_toRightOf="@+id/ratingvaluebuffer"
+        android:text="TextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/ratingvaluebuffer"
+        android:gravity="center_vertical"/>
 
 </RelativeLayout>

@@ -1,6 +1,8 @@
 package com.magpie.magpie;
 
 import android.Manifest;
+import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -18,6 +20,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -50,6 +53,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.UserProgress.GetProgress;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -57,6 +64,9 @@ import java.util.Date;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
+//=======
+        //GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, ImageButton.OnClickListener {
+//>>>>>>> ArrasmithBetaBranch
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
@@ -87,7 +97,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private FragmentManager mFragmentMngr;
 
     private boolean showingBadgePage = false;
-    Obtainable_loc fob = new Obtainable_loc();
+    private boolean mReadFromFile = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,7 +265,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
 
             case R.id.qr_nav_button:
-                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                Fragment qrFrag = new QRFragment();
+                startNewFragment(qrFrag);
+                //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.home_nav_button:
@@ -264,7 +276,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
 
             case R.id.search_nav_button:
-                Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
+                Fragment olocFrag = new Obtainable_loc();
+                startNewFragment(olocFrag);
+                //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.account_nav_button:
@@ -747,6 +761,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+    public boolean getReadFromFile(){return mReadFromFile;}
+
+    public void setReadFromFile(){mReadFromFile = true;}
 
     /*
     @Override

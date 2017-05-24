@@ -29,7 +29,7 @@ public class Collection implements Serializable{
     private boolean mSelected;
     private boolean mDownloaded = true; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully. // TODO: remove default set to true
     private Bitmap img;
-    private int mHour, mMin, mSec, mZIPCode;
+    private int mHour, mMin, mSec, mZIPCode, mSelectedElement;
 
     public Collection() {
         mName = "";
@@ -222,4 +222,9 @@ public class Collection implements Serializable{
     private void setName(String name) {
         mName = name;
     }
+
+    public void setSelectedElement(int i){mSelectedElement = i;}
+
+    public int getSelectedElement(){return mSelectedElement;}
+
 }

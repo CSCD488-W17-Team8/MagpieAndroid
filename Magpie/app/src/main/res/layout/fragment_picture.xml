@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.magpie.magpie.PictureFragment">
+
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="false"
+        android:background="@android:color/background_light"
+        android:cropToPadding="false"
+        android:elevation="0dp"
+        android:scaleType="fitXY"
+         />
+
+    <FrameLayout
+        android:id="@+id/CameraPreview"
+        android:layout_width="match_parent"
+        android:layout_height="800dp"
+        android:layout_above="@+id/imageButton"
+        android:layout_centerVertical="true"
+        android:layoutDirection="inherit">
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

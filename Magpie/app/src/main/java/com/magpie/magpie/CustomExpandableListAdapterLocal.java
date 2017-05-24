@@ -77,7 +77,7 @@ public class CustomExpandableListAdapterLocal extends BaseExpandableListAdapter 
         circularProgress.setMax(toBeAdded.getCollectionSize());
         circularProgress.setProgress(4);
         full.setText(toBeAdded.getName());
-        acro.setText(createAcronym(toBeAdded.getName()));
+        acro.setText(localCollections.get(i).getAbbrev());
         return elvp;
     }
 
@@ -92,8 +92,8 @@ public class CustomExpandableListAdapterLocal extends BaseExpandableListAdapter 
         TextView reward = (TextView) elvc.findViewById(R.id.RewardValue);
         TextView rating = (TextView) elvc.findViewById(R.id.RatingValue);
         desc.setText(localCollections.get(i).getDescription());
-        timeToComplete.setText("0.0 hours");
-        distance.setText("0.0 miles");
+        timeToComplete.setText(localCollections.get(i).getHour() + " hrs. " + localCollections.get(i).getMinute() + " mins.");
+        distance.setText(localCollections.get(i).getDistance() + " miles");
         badges.setText(localCollections.get(i).getCollectionSize() + " Badges");
         reward.setText("Nothing");
         rating.setText(localCollections.get(i).getRating());
