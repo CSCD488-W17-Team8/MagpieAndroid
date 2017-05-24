@@ -237,6 +237,8 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 }
             }
             navActivity.addCollection(collection.get(x));
+            Toast.makeText(getActivity(), "" + navActivity.getCollections().get(0).getCollectionElements().size(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), collection.get(x).getName() + "added", Toast.LENGTH_SHORT).show();
         }
         catch(Exception e){
             Log.v("CREATEELEMENTSEXCEP", e.getMessage());
@@ -318,21 +320,28 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     ExpandableListView.OnChildClickListener childClick = new ExpandableListView.OnChildClickListener() {
         @Override
         public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
-            String strAdded = " added";
-            String strRemoved = " removed";
+            boolean addIt = true;
             Collection c = collection.get(i);
-            try {
-                navActivity.getHomeNavButton().setEnabled(false);
-                navActivity.getQRNavButton().setEnabled(false);
-                navActivity.getSearchNavButton().setEnabled(false);
-                Intent collIntent = new Intent(getContext(), JSONElements.class);
-                collIntent.putExtra("SelectedCollectionCIDs", c.getCID() + "");
-                getContext().startService(collIntent);
+            for(int j = 0; j < navActivity.getCollections().size(); j++){
+                if(c.getCID() == navActivity.getCollections().get(i).getCID()){
+                    addIt = false;
+                    navActivity.getCollections().remove(i);
+                    collection.get(i).getCollectionElements().clear();
+                    Toast.makeText(getActivity(), c.getName() + "removed", Toast.LENGTH_SHORT).show();
+                }
             }
-            catch (Exception e){
-                Log.d("PULLERROR", e.getMessage());
+            if(addIt) {
+                try {
+                    navActivity.getHomeNavButton().setEnabled(false);
+                    navActivity.getQRNavButton().setEnabled(false);
+                    navActivity.getSearchNavButton().setEnabled(false);
+                    Intent collIntent = new Intent(getContext(), JSONElements.class);
+                    collIntent.putExtra("SelectedCollectionCIDs", c.getCID() + "");
+                    getContext().startService(collIntent);
+                } catch (Exception e) {
+                    Log.d("PULLERROR", e.getMessage());
+                }
             }
-
             return true;
         }
     };
