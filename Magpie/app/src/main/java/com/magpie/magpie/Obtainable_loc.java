@@ -154,9 +154,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 String[] badgeArr = strBadges.split("%");
                 createElements(badgeArr);
                 if(isAdded()) {
-                    navActivity.getHomeNavButton().setEnabled(true);
-                    navActivity.getQRNavButton().setEnabled(true);
-                    navActivity.getSearchNavButton().setEnabled(true);
+                    navActivity.setNavButtonsEnabled(true);
                 }
                 else{
                     Toast.makeText(getContext(), "There was an error adding a collection", Toast.LENGTH_SHORT).show();
@@ -322,9 +320,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
             String strRemoved = " removed";
             Collection c = collection.get(i);
             try {
-                navActivity.getHomeNavButton().setEnabled(false);
-                navActivity.getQRNavButton().setEnabled(false);
-                navActivity.getSearchNavButton().setEnabled(false);
+                navActivity.setNavButtonsEnabled(false);
                 Intent collIntent = new Intent(getContext(), JSONElements.class);
                 collIntent.putExtra("SelectedCollectionCIDs", c.getCID() + "");
                 getContext().startService(collIntent);

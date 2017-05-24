@@ -11,6 +11,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -759,6 +760,16 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    public void setNavButtonsEnabled(boolean enabled) {
+
+        ((Button) findViewById(R.id.map_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.qr_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.home_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.search_nav_button)).setEnabled(enabled);
+        ((Button) findViewById(R.id.account_nav_button)).setEnabled(enabled);
 
     }
 
