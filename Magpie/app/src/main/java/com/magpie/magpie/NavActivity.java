@@ -1,27 +1,21 @@
 package com.magpie.magpie;
 
 import android.Manifest;
-import android.app.IntentService;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,19 +25,11 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -54,14 +40,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
-import com.magpie.magpie.UserProgress.GetProgress;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
@@ -75,6 +55,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<Collection> mCollections;
     private Collection mActiveCollection;
     private ArrayList<MarkerOptions> mMarkerList;
+    private ArrayList<Element> mMarkerElementsList;
     private Element mActiveElement;
 
     /**
@@ -159,6 +140,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mCollections = new ArrayList<>();
         mActiveCollection = new Collection();
 
+        mMarkerElementsList = new ArrayList<>();
         mMarkerList = new ArrayList<>();
         //mActiveElement = new Element(); // Leave it null?
 
@@ -490,24 +472,34 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void createMarker(Element element) {
+    private void createMarkers() {
 
-        if (element != null) {
+        mMarkerList = new ArrayList<>();
+
+        for (Element element : mMarkerElementsList) {
 
             MarkerOptions marker = new MarkerOptions();
             marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
             marker.title(element.getName());
             //marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image; wasn't working here
+            mMarkerList.add(marker);
 
-            if (mMarkerList != null) {
+        }
 
-                mMarkerList.add(marker);
+    }
+
+    private void createMarkerList(Element element) {
+
+        if (element != null) {
+
+            if (mMarkerElementsList != null) {
+
+                mMarkerElementsList.add(element);
 
             } else {
 
                 Toast.makeText(getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT);
-                Log.d("NULLPOINTER", "mMarkerList is null. Cannot add marker in createMarker.");
-
+                Log.d("NULLPOINTER", "mMarkerElementsList is null. Cannot add marker in createMarkerList.");
             }
         }
 
@@ -526,7 +518,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
             for (Element element : elements) {
 
-                createMarker(element);
+                createMarkerList(element);
 
             }
         }
@@ -606,8 +598,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private void onMarkerSelected(Marker marker) {
 
         mSelectedMarker = marker;
-        float[] results = new float[1];
-        Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
+        //float[] results = new float[1];
+        //Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
 
         // TODO: determine marker
     }
@@ -617,11 +609,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * the user.
      */
     public void startMarkerMapFragment() {
-        // TODO: call this from info page
+
         setViewBarVisibility(false);
         setTitle(mActiveElement.getName());
-        createMarker(mActiveElement);
+        mMarkerElementsList = new ArrayList<>();
+        createMarkerList(mActiveElement);
+        createMarkers();
         startMapFragment();
+
     }
 
     /**
@@ -632,8 +627,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         setViewBarVisibility(true);
         setTitle(mActiveCollection.getName());
-        startMapFragment();
+        mMarkerElementsList = new ArrayList<>();
         createCollectionMarkerList(mActiveCollection);
+        createMarkers();
+        startMapFragment();
+
     }
 
     /**
@@ -644,8 +642,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         setViewBarVisibility(false);
         setTitle(getString(R.string.toolbar_badges_near_me));
+        mMarkerElementsList = new ArrayList<>();
         createAllCollectionMarkerList();
+        createMarkers();
         startMapFragment();
+
     }
 
     /**
@@ -735,11 +736,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setNavButtonsEnabled(boolean enabled) {
 
-        ((Button) findViewById(R.id.map_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.qr_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.home_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.search_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.account_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.map_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.qr_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.home_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.search_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.account_nav_button)).setEnabled(enabled);
 
     }
 
