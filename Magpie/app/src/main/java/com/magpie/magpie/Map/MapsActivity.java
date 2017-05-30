@@ -1,4 +1,4 @@
-package com.magpie.magpie;
+package com.magpie.magpie.Map;
 
 import android.Manifest;
 import android.content.Context;
@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,6 +33,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.NavActivity;
+import com.magpie.magpie.R;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

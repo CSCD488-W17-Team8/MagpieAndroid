@@ -1,10 +1,9 @@
-package com.magpie.magpie;
+package com.magpie.magpie.InfoAndShare;
 
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,7 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.magpie.magpie.CollectionUtils.Element;
-import com.magpie.magpie.UserProgress.SendProgress;
+import com.magpie.magpie.NavActivity;
+import com.magpie.magpie.R;
+import com.magpie.magpie.Services.TrackGPS;
+import com.magpie.magpie.Services.UserProgress.SendProgress;
 
 
 /**

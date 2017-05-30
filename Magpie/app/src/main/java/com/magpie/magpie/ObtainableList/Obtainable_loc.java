@@ -1,4 +1,4 @@
-package com.magpie.magpie;
+package com.magpie.magpie.ObtainableList;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -23,8 +22,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -35,22 +32,22 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import com.magpie.magpie.CollectionUtils.*;
+import com.magpie.magpie.Services.JSON.JSONElements;
+import com.magpie.magpie.Services.JSON.JSONGet;
+import com.magpie.magpie.LocalList.Local_loc;
+import com.magpie.magpie.NavActivity;
+import com.magpie.magpie.R;
 
 public class Obtainable_loc extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener{
     ArrayList<Collection> collection;
     ArrayList<Collection> added;
     ArrayList<Collection> fromFile;
     Bundle collBundle;
-    Button sendAll;
     Button cancel;
-    ImageView iv;
     String collectionsToElements;
     String strBadges;
-    Bitmap bm;
     JSONArray cmsColl;
-    ListView collectionDisplay;
     ExpandableListView obtainExpandList;
-    ArrayAdapter<String> obtainable_loc_Adapter;
     Spinner sort;
     ArrayList<String> allColl;
     CustomExpandableListAdapterObtainable celao;
@@ -84,7 +81,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 j = cmsColl.getJSONObject(i);
                 if (j.getInt("Status") == 1 && checkCID(j.getInt("CID"))) { //(0 is false, 1 is true) && (ensuring that a collection isn't already on the system).
                     c = new Collection(j);
-                    c.addBitmap(bm);
                     collection.add(c);
                     String fin = j.getString("CID") + " : " + j.getString("Name") + "\r\n";
                     fin += j.getString("Description") + " (" + j.getString("Rating") + ")";
@@ -133,9 +129,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
             catch(JSONException e){
                 e.printStackTrace();
             }
-        /*Intent parseIntent = new Intent(Obtainable_loc.this, JSONParse.class);
-        parseIntent.putExtra("JSON", json);
-        Obtainable_loc.this.startService(parseIntent);*/
 
         }
     }};
@@ -149,20 +142,15 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
     private BroadcastReceiver ebr = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            try {
-                strBadges = intent.getStringExtra("CollectionElements");
-                String[] badgeArr = strBadges.split("%");
-                createElements(badgeArr);
-                if(isAdded()) {
-                    navActivity.setNavButtonsEnabled(true);
-                }
-                else{
-                    Toast.makeText(getContext(), "There was an error adding a collection", Toast.LENGTH_SHORT).show();
-                }
+            int total = obtainExpandList.getCount();
+            for(int i = collection.size() - 1; i >= total; i--){
+                collection.remove(i);
             }
-            catch(Exception e){
-                Log.d("UNIQUERECEIVE", e.getMessage());
-            }
+            added = new ArrayList<>(collection);
+            strBadges = intent.getStringExtra("CollectionElements");
+            String[] badgeArr = strBadges.split("%");
+            createElements(badgeArr);
+            navActivity.setNavButtonsEnabled(true);
         }
     };
 
@@ -225,20 +213,24 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 for (int i = 0; i < ja.length(); i++) {
                     JSONObject json = ja.getJSONObject(i);
                     int number = json.getInt("CollectionID");
-                    Collection coll;
                     while (number != collection.get(x).getCID()) {
-                        coll = collection.get(x);
                         if(number != collection.get(x).getCID())
                             x++;
                     }
                     collection.get(x).addElement(json);
                 }
             }
-            navActivity.addCollection(collection.get(x));
-            Toast.makeText(getActivity(), "" + navActivity.getCollections().get(0).getCollectionElements().size(), Toast.LENGTH_SHORT).show();
-            Toast.makeText(getActivity(), collection.get(x).getName() + "added", Toast.LENGTH_SHORT).show();
+            boolean dontAdd = false;
+            for(int j = 0; j < navActivity.getCollections().size(); j++){
+                if(navActivity.getCollections().get(j).getCID() == collection.get(x).getCID()){
+                    dontAdd = true;
+                }
+            }
+            if(!dontAdd){
+                navActivity.addCollection(collection.get(x));
+            }
         }
-        catch(Exception e){
+        catch(JSONException e){
             Log.v("CREATEELEMENTSEXCEP", e.getMessage());
         }
     }
@@ -258,7 +250,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
         if(readPermission == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
-        View v = inflater.inflate(R.layout.obtainable_loc, container, false);
+        View v = inflater.inflate(R.layout.fragment_obtainable_loc, container, false);
         super.onCreate(savedInstanceState);
         Intent getIntent = new Intent(getContext(), JSONGet.class);
         getContext().startService(getIntent);
@@ -414,31 +406,8 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
         celao.notifyDataSetChanged();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
 }
-
-//obtainable_loc_Adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, allColl)//{
-        /*@Override
-        public View getView(int position, View convertView, ViewGroup parent){
-            Vi
-        }
-    //}*/;
-//collectionDisplay.setAdapter(obtainable_loc_Adapter);
-        /*collectionDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (added.size() == 0) {
-                    Collection c = collection.get(i);
-                    added.add(c);
-                    view.setBackgroundColor(Color.GREEN);
-                    sendAll.setEnabled(true);
-                } else if (added.contains(collection.get(i))) {
-                    added.remove(collection.get(i));
-                    if(added.size() == 0)
-                        sendAll.setEnabled(false);
-                    view.setBackgroundColor(Color.WHITE);
-                }
-                else{
-                    added.add(collection.get(i));
-                    view.setBackgroundColor(Color.GREEN);
-                }
-*/

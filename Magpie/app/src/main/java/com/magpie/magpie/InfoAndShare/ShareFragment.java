@@ -1,4 +1,4 @@
-package com.magpie.magpie;
+package com.magpie.magpie.InfoAndShare;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,9 @@ import android.widget.Toast;
 
 //import com.twitter.sdk.android.core.TwitterAuthConfig;
 //import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+
+import com.magpie.magpie.NavActivity;
+import com.magpie.magpie.R;
 
 import java.io.File;
 import java.io.FileOutputStream;

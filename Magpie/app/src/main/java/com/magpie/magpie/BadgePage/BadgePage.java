@@ -1,9 +1,12 @@
-package com.magpie.magpie;
+package com.magpie.magpie.BadgePage;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +15,18 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.InfoAndShare.InfoPage;
+import com.magpie.magpie.NavActivity;
+import com.magpie.magpie.R;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 
 /**
@@ -42,6 +51,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     private CustomBadgeListAdapter cbga;
     private Spinner filter;
     private NavActivity navActivity;
+    private ZipFile imgZIP;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -85,6 +95,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         super.onCreate(savedInstanceState);
         navActivity = (NavActivity)getActivity();
         navActivity.setTitle(navActivity.getActiveCollection().getName());
+        imgZIP = navActivity.getActiveCollection().getPicZip();
     }
 
     /*
@@ -98,6 +109,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        addImagesToElements();
         View v = inflater.inflate(R.layout.fragment_badge_page, container, false);
         badgeGrid = (GridView) v.findViewById(R.id.BadgeGridView);
         badgeList = (ListView) v.findViewById(R.id.BadgeListView);
@@ -113,8 +125,8 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         //ArrayList<String> elementNames = elementToString(selectedColl);
         displayElements = new ArrayList<>();
         displayElements.addAll(navActivity.getActiveCollection().getCollectionElements());
-        cbla = new CustomBadgeListAdapter(this, displayElements, "List");
-        cbga = new CustomBadgeListAdapter(this, displayElements, "Grid");
+        cbla = new CustomBadgeListAdapter(this, displayElements, "List", navActivity.getActiveCollection().getPicZip(), navActivity);
+        cbga = new CustomBadgeListAdapter(this, displayElements, "Grid", navActivity.getActiveCollection().getPicZip(), navActivity);
         //ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
         badgeList.setAdapter(cbla);
         badgeGrid.setAdapter(cbga);
@@ -122,7 +134,7 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         badgeGrid.setOnItemClickListener(onGVClick);
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
-
+        Log.d("BADGEIMAGETEST", navActivity.getActiveCollection().getCollectionElements().get(5).getBadge().toString());
         return v;
     }
 
@@ -265,6 +277,61 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         }
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
+    }
+
+    private void addImagesToElements() {
+        int reqHeight;
+        int reqWidth;
+        Bitmap bm;
+        Enumeration<? extends ZipEntry> entries = imgZIP.entries();
+        ZipEntry curImage = entries.nextElement();
+
+        for(Element e : navActivity.getActiveCollection().getCollectionElements()) {
+            try {
+                InputStream zin = imgZIP.getInputStream(curImage);
+                BitmapFactory.Options opt = new BitmapFactory.Options();
+                opt.inJustDecodeBounds = true;
+                bm = BitmapFactory.decodeStream(zin, null, opt);
+                int imageHeight = opt.outHeight;
+                int imageWidth = opt.outWidth;
+                String imageType = opt.outMimeType;
+                reqHeight = 75;
+                reqWidth = 75;
+                opt.inSampleSize = calculateSampleSize(opt, reqHeight, reqWidth);
+                opt.inJustDecodeBounds = false;
+                zin = imgZIP.getInputStream(curImage);
+                bm = BitmapFactory.decodeStream(zin, null, opt);
+                e.setBadge(bm);
+                if (entries.hasMoreElements()) {
+                    curImage = entries.nextElement();
+                    String elementName = curImage.getName();
+                    String extension = elementName.substring(elementName.length() - 3);
+                    if (extension.compareTo("zip") == 0) {
+                        curImage = imgZIP.entries().nextElement();
+                    }
+                }
+            } catch (IOException ioe) {
+                Log.d("ZIPREADINGIO", ioe.getMessage());
+            }
+        }
+    }
+
+    //Taken straight from the Android Developers site -- URL: {[URL HERE]}
+    private int calculateSampleSize(BitmapFactory.Options opt, int reqHeight, int reqWidth) {
+        final int height = opt.outHeight;
+        final int width = opt.outWidth;
+        int inSampleSize = 1;
+
+        if(height > reqHeight || width > reqWidth){
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth)
+            {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
 
     /**

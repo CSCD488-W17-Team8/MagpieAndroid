@@ -1,4 +1,4 @@
-package com.magpie.magpie.UserProgress;
+package com.magpie.magpie.Services.UserProgress;
 
 import android.app.IntentService;
 import android.content.Intent;

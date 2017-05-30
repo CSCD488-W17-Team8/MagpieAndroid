@@ -1,7 +1,6 @@
-package com.magpie.magpie;
+package com.magpie.magpie.BadgePage;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,11 +10,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.NavActivity;
+import com.magpie.magpie.R;
+import com.magpie.magpie.Services.TrackGPS;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Created by Zachary Arrasmith on 5/1/2017.
@@ -40,12 +43,20 @@ public class CustomBadgeListAdapter extends BaseAdapter {
     private Location user;
     private float dist;
     private static LayoutInflater inflater;
+    private ZipFile zipImages;
+    private ZipEntry defaultImage;
+    private Enumeration<? extends ZipEntry> entries;
+    private NavActivity navActivity;
 
-    public CustomBadgeListAdapter(BadgePage bp, ArrayList<Element> e, String t){
+    public CustomBadgeListAdapter(BadgePage bp, ArrayList<Element> e, String t, ZipFile picZIP, NavActivity nav){
         context = bp.getContext();
         elements = e;
         type = t;
+        zipImages = picZIP;
+        entries = zipImages.entries();
+        defaultImage = entries.nextElement();
         user_location = new TrackGPS(bp.getContext());
+        navActivity = nav;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -102,25 +113,24 @@ public class CustomBadgeListAdapter extends BaseAdapter {
             item.time = (TextView) badgeListItem.findViewById(R.id.GridTime);
             item.distance = (TextView) badgeListItem.findViewById(R.id.GridDistance);
         }
-
         try {
-            item.title.setText(elements.get(i).getName());
+            item.title.setText(navActivity.getActiveCollection().getCollectionElements().get(i).getName());
         }
         catch(Exception e){
             Log.d("SETEXTERROR", e.getMessage());
         }
 
         item.distance.setText("Distance: " + determineDistance(i));
-        elements.get(i).setTime(determineTime());
-        item.time.setText("Time: " + elements.get(i).getTime());
-        item.badgeImage.setImageBitmap(elements.get(i).getBadge());
+        navActivity.getActiveCollection().getCollectionElements().get(i).setTime(determineTime());
+        item.time.setText("Time: " + navActivity.getActiveCollection().getCollectionElements().get(i).getTime());
+        item.badgeImage.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(i).getBadge());
         return badgeListItem;
     }
 
     private int determineDistance(int i){
         Location bloc = new Location("badge_location");
-        bloc.setLatitude(elements.get(i).getLatitude());
-        bloc.setLongitude(elements.get(i).getLongitude());
+        bloc.setLatitude(navActivity.getActiveCollection().getCollectionElements().get(i).getLatitude());
+        bloc.setLongitude(navActivity.getActiveCollection().getCollectionElements().get(i).getLongitude());
         user = new Location("USERLOC");
         if(user_location.canGetLocation()) {
             user.setLatitude(user_location.getLatitude());
