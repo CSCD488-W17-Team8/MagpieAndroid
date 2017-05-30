@@ -154,7 +154,9 @@ public class InfoPage extends Fragment implements View.OnClickListener {
              *
              */
 
-            displayToast();
+            //displayToast();
+            // TODO: test this
+            navActivity.startMarkerMapFragment();
         }
         else if(v.getId() == btn_share.getId())
         {

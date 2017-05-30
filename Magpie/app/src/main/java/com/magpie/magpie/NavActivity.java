@@ -618,7 +618,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startMarkerMapFragment() {
         // TODO: call this from info page
-        hideViewBar();
+        setViewBarVisibility(false);
         setTitle(mActiveElement.getName());
         createMarker(mActiveElement);
         startMapFragment();
@@ -630,7 +630,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startCollectionMapFragment() {
 
-        showViewBar();
+        setViewBarVisibility(true);
         setTitle(mActiveCollection.getName());
         startMapFragment();
         createCollectionMarkerList(mActiveCollection);
@@ -642,7 +642,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     public void startAllCollectionMapFragment() {
 
-        hideViewBar();
+        setViewBarVisibility(false);
         setTitle(getString(R.string.toolbar_badges_near_me));
         createAllCollectionMarkerList();
         startMapFragment();
@@ -656,11 +656,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (fr.getClass().getSimpleName().equals(BadgePage.class.getSimpleName())) {
 
-            showViewBar();
+            setViewBarVisibility(true);
 
         } else {
 
-            hideViewBar();
+            setViewBarVisibility(false);
 
         }
 
@@ -669,22 +669,20 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     /**
-     * Shows the view-switching bar for the badge page
+     * Toggles visibility of the view bar
+     * @param visible determines visibility of the view bar.
      */
-    public void showViewBar() {
+    public void setViewBarVisibility(boolean visible) {
 
-        if (mViewBar.getVisibility() == View.GONE)
+        if (visible) {
+
             mViewBar.setVisibility(View.VISIBLE);
 
-    }
+        } else {
 
-    /**
-     * Hides the view-switching bar if not on the badge page or the single-collection map.
-     */
-    public void hideViewBar() {
-
-        if (mViewBar.getVisibility() == View.VISIBLE)
             mViewBar.setVisibility(View.GONE);
+
+        }
 
     }
 
