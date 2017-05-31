@@ -36,8 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             MY_REQUEST_PERMISSIONS_REQUEST_FINE_LOCATION = 42;
 
     private TextView mErrorTextView;
-    //private Typeface fontawesome = Typeface.createFromAsset(getAssets(), "font_awesome.ttf");
-    //private final Typeface font  = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
+    private Typeface font;
 
     /**
      * Initializes the first view in the app for the user. User will be presented with the login
@@ -50,7 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //((TextView) findViewById(R.id.welcome_text_view)).setTypeface(font);
+        font  = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
+        ((TextView) findViewById(R.id.welcome_text_view)).setTypeface(font);
 
         mErrorTextView = (TextView)findViewById(R.id.error_text_view);
 

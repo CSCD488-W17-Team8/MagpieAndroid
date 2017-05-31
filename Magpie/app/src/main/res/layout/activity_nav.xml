@@ -37,6 +37,7 @@
             android:visibility="invisible" />
 
         <RadioGroup
+            android:id="@+id/view_radio_group"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toLeftOf="@id/centerVerticalShim"
@@ -162,6 +163,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
+
         <ImageButton
             android:id="@+id/home_nav_button"
             android:layout_width="60dp"
@@ -169,6 +171,15 @@
             android:background="@android:color/transparent"
             android:onClick="onNavButtonClicked"
             android:src="@drawable/home_grey" />
+
+        <!--
+        <Button
+            android:id="@+id/home_nav_button"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:onClick="onNavButtonClicked" />
+            -->
 
         <Space
             android:layout_width="0dp"

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,8 +21,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -80,7 +83,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     private Toolbar mTitleBar;
     private RelativeLayout mViewBar;
+    private RadioGroup mViewRadioGroup;
     private FragmentManager mFragmentMngr;
+
+    private Typeface fontawesome;
+    private Typeface font;
 
     private boolean showingBadgePage = false;
     private boolean mReadFromFile = false;
@@ -89,6 +96,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
+
+        font  = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
+        fontawesome = Typeface.createFromAsset(getAssets(), "font_awesome.ttf");
+        //((Button)findViewById(R.id.home_nav_button)).setText(getString(R.string.home_icon));
 
         /*
         if (mGoogleApiClient == null) {
@@ -146,12 +157,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mMarkerElementsList = new ArrayList<>();
         mMarkerList = new ArrayList<>();
-        //mActiveElement = new Element(); // Leave it null?
 
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
-
-        // TODO: set visibility of view_bar
+        mViewRadioGroup = (RadioGroup)findViewById(R.id.view_radio_group);
 
         mFragmentMngr = getSupportFragmentManager(); // TODO: test this
         if (findViewById(R.id.fragment_container) != null) {
@@ -801,6 +810,12 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void setReadFromFile(){mReadFromFile = true;}
 
     public RelativeLayout getViewBar(){return mViewBar;}
+
+    public int getSelectedView() {
+
+        return mViewRadioGroup.getCheckedRadioButtonId();
+
+    }
 
     /*
     @Override

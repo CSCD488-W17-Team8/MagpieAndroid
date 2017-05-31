@@ -302,11 +302,13 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
 
     private void whatWasClicked(){
 
-        if(type.compareTo("List") == 0){
+        //if(type.compareTo("List") == 0){
+        if (navActivity.getSelectedView() == R.id.radio_list_view) {
             badgeList.setVisibility(View.VISIBLE);
             badgeGrid.setVisibility(View.INVISIBLE);
         }
-        else if(type.compareTo("Grid") == 0){
+        //else if(type.compareTo("Grid") == 0){
+        else if (navActivity.getSelectedView() == R.id.radio_grid_view) {
             badgeList.setVisibility(View.INVISIBLE);
             badgeGrid.setVisibility(View.VISIBLE);
         }
