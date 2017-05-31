@@ -23,6 +23,9 @@ import com.google.android.gms.common.api.Status;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Placeholder button icons are courtesy of icons8.com
+ */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

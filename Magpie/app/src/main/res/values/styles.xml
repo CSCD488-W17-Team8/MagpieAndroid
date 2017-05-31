@@ -23,4 +23,16 @@
         <item name="android:button">@drawable/custom_radio_list</item>
     </style>
 
+    <style
+        name="GridRadioButtonStyle"
+        parent="Base.Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/custom_radio_grid</item>
+    </style>
+
+    <style
+        name="MapRadioButtonStyle"
+        parent="Base.Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/custom_radio_map</item>
+    </style>
+
 </resources>

@@ -3,34 +3,34 @@
     <item
         android:state_checked="true"
         android:state_window_focused="false"
-        android:drawable="@drawable/list_view_grey" />
+        android:drawable="@drawable/grid_view_grey" />
     <item
         android:state_checked="false"
         android:state_window_focused="false"
-        android:drawable="@drawable/list_view_grey" />
+        android:drawable="@drawable/grid_view_grey" />
 
     <item
         android:state_checked="true"
         android:state_pressed="true"
-        android:drawable="@drawable/list_view_black" />
+        android:drawable="@drawable/grid_view_black" />
     <item
         android:state_checked="false"
         android:state_pressed="true"
-        android:drawable="@drawable/list_view_black" />
+        android:drawable="@drawable/grid_view_black" />
 
     <item
         android:state_checked="true"
         android:state_focused="true"
-        android:drawable="@drawable/list_view_green" />
+        android:drawable="@drawable/grid_view_green" />
     <item
         android:state_checked="false"
         android:state_focused="true"
-        android:drawable="@drawable/list_view_green" />
+        android:drawable="@drawable/grid_view_green" />
 
     <item
         android:state_checked="false"
-        android:drawable="@drawable/list_view_grey" />
+        android:drawable="@drawable/grid_view_grey" />
     <item
         android:state_checked="true"
-        android:drawable="@drawable/list_view_green" />
+        android:drawable="@drawable/grid_view_green" />
 </selector>
