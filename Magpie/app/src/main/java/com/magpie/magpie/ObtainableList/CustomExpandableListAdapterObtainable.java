@@ -1,7 +1,6 @@
-package com.magpie.magpie;
+package com.magpie.magpie.ObtainableList;
 
 import android.content.Context;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +8,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.magpie.magpie.CollectionUtils.Collection;
-
-import org.w3c.dom.Text;
+import com.magpie.magpie.R;
 
 import java.util.ArrayList;
 

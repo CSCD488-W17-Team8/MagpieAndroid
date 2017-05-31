@@ -1,4 +1,4 @@
-package com.magpie.magpie;
+package com.magpie.magpie.InfoAndShare;
 
 import android.content.Context;
 import android.hardware.Camera;

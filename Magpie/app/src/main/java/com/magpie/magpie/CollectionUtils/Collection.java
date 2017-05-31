@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.net.InterfaceAddress;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.zip.ZipFile;
 
 /**
  * Created by sean on 4/3/17.
@@ -21,7 +22,7 @@ public class Collection implements Serializable{
     private ArrayList<Element> mCollectionElements;
 	private int mCID;
     //PicID is apparently used only within context of the database. We can use it to store the path to the zip file containing all the pictures related to the Collection.
-    private String mCity, mState, mRating, mDescription, mPicZip, mName, mAbbrev;
+    private String mCity, mState, mRating, mDescription, mName, mAbbrev;
     private double mDistance;
     private boolean mOrdered;
     private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
@@ -30,6 +31,7 @@ public class Collection implements Serializable{
     private boolean mDownloaded = true; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully. // TODO: remove default set to true
     private Bitmap img;
     private int mHour, mMin, mSec, mZIPCode, mSelectedElement;
+    private ZipFile mPicZip;
 
     public Collection() {
         mName = "";
@@ -38,7 +40,7 @@ public class Collection implements Serializable{
 
     public Collection(String fromFile) {
         String [] elementSplit = fromFile.split("÷÷");
-        String [] elements = elementSplit[17].split(",");
+        String [] elements = elementSplit[17].split(",,");
         mCollectionElements = new ArrayList<>();
         for(String e : elements){
             mCollectionElements.add(new Element(e));
@@ -58,7 +60,7 @@ public class Collection implements Serializable{
         mMin = Integer.parseInt(elementSplit[13]);
         mSec = Integer.parseInt(elementSplit[14]);
         mZIPCode = Integer.parseInt(elementSplit[15]);
-        mAbbrev = elementSplit[15];
+        mAbbrev = elementSplit[16];
     }
 
     public Collection(JSONObject json){
@@ -114,7 +116,7 @@ public class Collection implements Serializable{
 
     public String getRating() {return mRating;}
 
-    public String getPicZip() {return mPicZip;}
+    public ZipFile getPicZip() {return mPicZip;}
 
     public String getState() {return mState;}
 
@@ -177,13 +179,13 @@ public class Collection implements Serializable{
 
     public void setDownloaded(){mDownloaded = true;}
 
-    public void setPicZip(String path){mPicZip = path;}
+    public void setPicZip(ZipFile path){mPicZip = path;}
 
     @Override
     public String toString(){
         String elementStr= "";
         for(Element e : mCollectionElements){
-            elementStr += e.toString() + ",";
+            elementStr += e.toString() + ",,";
         }
         String fin = mName + "÷÷" + mCID + "÷÷" + mCity + "÷÷" + mState + "÷÷" + mRating
                 + "÷÷" + mDescription + "÷÷" + mPicZip + "÷÷" + mDistance + "÷÷" + mOrdered

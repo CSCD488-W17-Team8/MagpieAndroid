@@ -1,4 +1,4 @@
-package com.magpie.magpie;
+package com.magpie.magpie.Services;
 
 import android.Manifest;
 import android.app.DownloadManager;

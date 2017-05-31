@@ -1,4 +1,4 @@
-package com.magpie.magpie;
+package com.magpie.magpie.Services;
 
 import android.app.IntentService;
 import android.content.Intent;

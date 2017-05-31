@@ -1,22 +1,17 @@
-package com.magpie.magpie;
+package com.magpie.magpie.LocalList;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.magpie.magpie.CollectionUtils.Collection;
-
-import org.w3c.dom.Text;
+import com.magpie.magpie.R;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Created by Zachary Arrasmith on 5/11/2017.

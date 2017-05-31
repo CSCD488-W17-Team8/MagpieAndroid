@@ -20,7 +20,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
@@ -38,8 +37,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.magpie.magpie.BadgePage.BadgePage;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.LocalList.Local_loc;
+import com.magpie.magpie.ObtainableList.Obtainable_loc;
+import com.magpie.magpie.QRReader.QRFragment;
 
 import java.util.ArrayList;
 
@@ -756,7 +759,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         switch (getSupportFragmentManager().getFragments().get(0).getId()) {
 
-            case R.id.activity_local_loc:
+            case R.id.fragment_local_loc:
                 super.onBackPressed();
                 break;
 

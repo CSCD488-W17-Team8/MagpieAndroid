@@ -1,4 +1,4 @@
-package com.magpie.magpie;
+package com.magpie.magpie.Services;
 
 /**
  * Created by Jacob on 4/5/2017.

@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="#FFFFFF"
-    tools:context="com.magpie.magpie.Obtainable_loc">
+    tools:context="com.magpie.magpie.ObtainableList.Obtainable_loc">
 
     <Button
         android:id="@+id/Return"
