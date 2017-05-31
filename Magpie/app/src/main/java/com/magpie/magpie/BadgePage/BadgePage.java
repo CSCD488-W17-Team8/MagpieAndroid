@@ -4,7 +4,6 @@ package com.magpie.magpie.BadgePage;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,13 +44,12 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     ArrayList<Element> displayElements;
     private ListView badgeList;
     private GridView badgeGrid;
-    private TabLayout viewTabs;
-    private TabLayout.Tab listTab, gridTab;
     private CustomBadgeListAdapter cbla;
     private CustomBadgeListAdapter cbga;
     private Spinner filter;
     private NavActivity navActivity;
     private ZipFile imgZIP;
+    private String type;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -93,6 +91,8 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle b = getArguments();
+        type = b.getString("Type");
         navActivity = (NavActivity)getActivity();
         navActivity.setTitle(navActivity.getActiveCollection().getName());
         imgZIP = navActivity.getActiveCollection().getPicZip();
@@ -113,10 +113,6 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         View v = inflater.inflate(R.layout.fragment_badge_page, container, false);
         badgeGrid = (GridView) v.findViewById(R.id.BadgeGridView);
         badgeList = (ListView) v.findViewById(R.id.BadgeListView);
-        viewTabs = (TabLayout) v.findViewById(R.id.ViewTabs);
-        listTab = viewTabs.getTabAt(0);
-        gridTab = viewTabs.getTabAt(1);
-        viewTabs.setOnTabSelectedListener(tlSelected);
         filter = (Spinner) v.findViewById(R.id.BadgeFilter);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this.getContext(), R.array.BadgeFilterArray, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -135,39 +131,9 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
         Log.d("BADGEIMAGETEST", navActivity.getActiveCollection().getCollectionElements().get(5).getBadge().toString());
+        whatWasClicked();
         return v;
     }
-
-    /*
-     * TabLayout.onTabSelectedListener tlSelected: Handles the switching between the list and the grid visual. Self-explanatory code.
-     *
-     */
-
-    TabLayout.OnTabSelectedListener tlSelected = new TabLayout.OnTabSelectedListener() {
-        @Override
-        public void onTabSelected(TabLayout.Tab tab) {
-            if(tab.getPosition() == 0)
-                badgeList.setVisibility(View.VISIBLE);
-            else
-                badgeGrid.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onTabUnselected(TabLayout.Tab tab) {
-            if(tab.getPosition() == 0)
-                badgeList.setVisibility(View.INVISIBLE);
-            else
-                badgeGrid.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        public void onTabReselected(TabLayout.Tab tab) {
-            if(tab.getPosition() == 0)
-                badgeList.setVisibility(View.VISIBLE);
-            else
-                badgeGrid.setVisibility(View.VISIBLE);
-        }
-    };
 
     /*
      * AdapterView.OnItemClickListener onLVClick: handles the selecting of any ListView Item and performs and action on it.
@@ -332,6 +298,19 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
             }
         }
         return inSampleSize;
+    }
+
+    private void whatWasClicked(){
+
+        if(type.compareTo("List") == 0){
+            badgeList.setVisibility(View.VISIBLE);
+            badgeGrid.setVisibility(View.INVISIBLE);
+        }
+        else if(type.compareTo("Grid") == 0){
+            badgeList.setVisibility(View.INVISIBLE);
+            badgeGrid.setVisibility(View.VISIBLE);
+        }
+
     }
 
     /**

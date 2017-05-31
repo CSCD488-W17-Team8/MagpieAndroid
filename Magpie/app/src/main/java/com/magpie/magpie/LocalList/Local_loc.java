@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -32,6 +33,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.zip.ZipFile;
 
+import com.google.android.gms.common.api.Releasable;
 import com.magpie.magpie.BadgePage.BadgePage;
 import com.magpie.magpie.CollectionUtils.*;
 import com.magpie.magpie.NavActivity;
@@ -302,7 +304,11 @@ public class Local_loc extends Fragment implements View.OnClickListener{
     private void toBadgePage(int i) {
 
         navActivity.setActiveCollection(navActivity.getCollections().get(i));
-        navActivity.startNewFragment(new BadgePage());
+        BadgePage badgeList = new BadgePage();
+        Bundle b = new Bundle();
+        b.putString("Type", "List");
+        badgeList.setArguments(b);
+        navActivity.startNewFragment(badgeList);
 
         /*
         try {

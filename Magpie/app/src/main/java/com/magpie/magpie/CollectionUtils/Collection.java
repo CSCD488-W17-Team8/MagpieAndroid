@@ -2,6 +2,7 @@ package com.magpie.magpie.CollectionUtils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,7 +88,7 @@ public class Collection implements Serializable{
             mCollectionElements = new ArrayList<>();
         }
         catch(JSONException e){
-            e.printStackTrace();
+            Log.d("COLLECTIONCONSTRUCT", e.getMessage());
         }
     }
 

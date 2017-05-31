@@ -265,12 +265,20 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
             case R.id.radio_list_view:
                 if (checked) {
-
+                    BadgePage badgeList = new BadgePage();
+                    Bundle b = new Bundle();
+                    b.putString("Type", "List");
+                    badgeList.setArguments(b);
+                    startNewFragment(badgeList);
                 }
                 break;
             case R.id.radio_grid_view:
                 if (checked) {
-
+                    BadgePage badgeGrid = new BadgePage();
+                    Bundle b = new Bundle();
+                    b.putString("Type", "Grid");
+                    badgeGrid.setArguments(b);
+                    startNewFragment(badgeGrid);
                 }
                 break;
             case R.id.radio_map_view:
@@ -791,6 +799,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean getReadFromFile(){return mReadFromFile;}
 
     public void setReadFromFile(){mReadFromFile = true;}
+
+    public RelativeLayout getViewBar(){return mViewBar;}
 
     /*
     @Override
