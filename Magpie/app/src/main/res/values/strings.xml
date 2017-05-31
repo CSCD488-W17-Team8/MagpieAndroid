@@ -37,8 +37,9 @@
     <string name="no_confirmation">No</string>
     <string name="cancel_confirmation">Cancel</string>
 
-    <!-- Alert string -->
+    <!-- Alert/Error string -->
     <string name="leaving_map_alert">Leaving the map</string>
+    <string name="whoops_message">Woops! Something has gone wrong.</string>
 
     <!-- Strings For Testing Functionality Only
          TODO: remove once no longer needed -->

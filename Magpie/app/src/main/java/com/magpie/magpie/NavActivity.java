@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.magpie.magpie.BadgePage.BadgePage;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.InfoAndShare.InfoPage;
 import com.magpie.magpie.LocalList.Local_loc;
 import com.magpie.magpie.ObtainableList.Obtainable_loc;
 import com.magpie.magpie.QRReader.QRFragment;
@@ -475,6 +476,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    // TODO: remove?
     private void createMarkers() {
 
         mMarkerList = new ArrayList<>();
@@ -547,10 +549,28 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     private void placeMarkers() {
 
+        for (Element element : mMarkerElementsList) {
+
+            MarkerOptions marker = new MarkerOptions();
+            marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
+            marker.title(element.getName());
+
+            if (element.isCollected())
+                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_black));
+            else
+                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_grey));
+
+            mMarkerList.add(marker);
+            mMap.addMarker(marker);
+
+        }
+
+        /*
         for (MarkerOptions marker : mMarkerList) {
-            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable));
+            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_black));
             mMap.addMarker(marker);
         }
+        */
     }
 
     @Override
@@ -604,7 +624,28 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         //float[] results = new float[1];
         //Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
 
+        // This is for testing
+        Toast.makeText(getApplicationContext(), marker.getTitle()+" marker selected.", Toast.LENGTH_SHORT).show();
+
         // TODO: determine marker
+        if (mMarkerElementsList != null) {
+
+            for (Element element : mMarkerElementsList) {
+
+                if (marker.getTitle().equals(element.getName())) {
+
+                    // TODO: inflate custom tooltip
+                    // Goes right to info page for now.
+                    startNewFragment(new InfoPage());
+
+                }
+
+            }
+
+        } else {
+            Toast.makeText(getApplicationContext(), getString(R.string.whoops_message), Toast.LENGTH_SHORT).show();
+            Log.d("NULLLIST", "mMarkerElementsList is null. Error in onMarkerSelected");
+        }
     }
 
     /**
@@ -617,7 +658,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         setTitle(mActiveElement.getName());
         mMarkerElementsList = new ArrayList<>();
         createMarkerList(mActiveElement);
-        createMarkers();
+        //createMarkers();
         startMapFragment();
 
     }
@@ -632,7 +673,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         setTitle(mActiveCollection.getName());
         mMarkerElementsList = new ArrayList<>();
         createCollectionMarkerList(mActiveCollection);
-        createMarkers();
+        //createMarkers();
         startMapFragment();
 
     }
@@ -647,7 +688,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         setTitle(getString(R.string.toolbar_badges_near_me));
         mMarkerElementsList = new ArrayList<>();
         createAllCollectionMarkerList();
-        createMarkers();
+        //createMarkers();
         startMapFragment();
 
     }

@@ -2,6 +2,7 @@ package com.magpie.magpie;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             MY_REQUEST_PERMISSIONS_REQUEST_FINE_LOCATION = 42;
 
     private TextView mErrorTextView;
+    //private Typeface fontawesome = Typeface.createFromAsset(getAssets(), "font_awesome.ttf");
+    //private final Typeface font  = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
 
     /**
      * Initializes the first view in the app for the user. User will be presented with the login
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //((TextView) findViewById(R.id.welcome_text_view)).setTypeface(font);
 
         mErrorTextView = (TextView)findViewById(R.id.error_text_view);
 

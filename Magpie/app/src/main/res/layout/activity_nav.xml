@@ -27,7 +27,7 @@
         android:layout_height="50dp"
         android:layout_below="@id/nav_toolbar"
         android:background="@color/colorMagpieWhite"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <View
             android:id="@+id/centerVerticalShim"

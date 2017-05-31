@@ -380,7 +380,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 MarkerOptions marker = new MarkerOptions();
                 marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
                 marker.title(element.getName());
-                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable));
+                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.qr_black));
 
                 mMarkers.add(marker);
             }
