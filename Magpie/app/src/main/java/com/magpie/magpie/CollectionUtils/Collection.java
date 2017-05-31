@@ -2,6 +2,7 @@ package com.magpie.magpie.CollectionUtils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +29,7 @@ public class Collection implements Serializable{
     private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
     private int mCollected; //Thinking about the collection progress here.
     private boolean mSelected;
-    private boolean mDownloaded = true; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully. // TODO: remove default set to true
+    private boolean mDownloaded; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully. // TODO: remove default set to true
     private Bitmap img;
     private int mHour, mMin, mSec, mZIPCode, mSelectedElement;
     private ZipFile mPicZip;
@@ -87,7 +88,7 @@ public class Collection implements Serializable{
             mCollectionElements = new ArrayList<>();
         }
         catch(JSONException e){
-            e.printStackTrace();
+            Log.d("COLLECTIONCONSTRUCT", e.getMessage());
         }
     }
 
