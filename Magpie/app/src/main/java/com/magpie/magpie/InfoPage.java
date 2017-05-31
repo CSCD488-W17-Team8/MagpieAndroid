@@ -202,14 +202,9 @@ public class InfoPage extends Fragment implements View.OnClickListener
         }
         else if(v.getId() == btn_url.getId())
         {
-            /**
-             *
-             *
-             * Send an intent with the url... go to website
-             *
-             */
-
-
+            Uri website = Uri.parse(navActivity.getActiveElement().getInfoLink());
+            Intent intent = new Intent(Intent.ACTION_VIEW, website);
+            startActivity(intent);
         }
 
 
