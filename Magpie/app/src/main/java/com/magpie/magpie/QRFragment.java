@@ -109,138 +109,136 @@ public class QRFragment extends Fragment implements View.OnClickListener, Activi
         super.onDetach();
     }
 
-            public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-                IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-                if (scanResult != null) {
 
-                    // handle scan result
+    public void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
 
-                    result_text = scanResult.getContents();
-                    resultsView.setText(result_text);
-                    Toast.makeText(getActivity(), result_text, Toast.LENGTH_SHORT).show();
+            // handle scan result
 
+            result_text = scanResult.getContents();
+            resultsView.setText(result_text);
+            Toast.makeText(getActivity(), result_text, Toast.LENGTH_SHORT).show();
+
+        }
+        Toast.makeText(getActivity(), "LOL", Toast.LENGTH_SHORT).show();
+        // else continue with any other code you need in the method...
+    }
+
+    @Override
+    public void onClick(View view)
+    {
+        if(cam_permissionCheck != PackageManager.PERMISSION_GRANTED)
+        {   Toast.makeText(getActivity(), "Camera Permissions have been Turned Off", Toast.LENGTH_SHORT).show();    }
+        else
+        {
+            /**
+             setContentView(zXingScannerView);
+             zXingScannerView.setResultHandler(this);
+             zXingScannerView.startCamera();
+             */
+            Toast.makeText(getActivity(), "Pressing btttn", Toast.LENGTH_SHORT).show();
+
+            integrator.setOrientationLocked(false);
+            integrator.initiateScan(integrator.QR_CODE_TYPES);
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int result_code, String[] permissions, int[] grantResults)
+    {
+
+        switch (result_code)
+        {
+            case MY_PERMISSIONS_REQUEST_CAMERA:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
                 }
-                Toast.makeText(getActivity(), "LOL", Toast.LENGTH_SHORT).show();
-                // else continue with any other code you need in the method...
+                return;
             }
-
-            @Override
-            public void onClick(View view)
-            {
-                if(cam_permissionCheck != PackageManager.PERMISSION_GRANTED)
-                {   Toast.makeText(getActivity(), "Camera Permissions have been Turned Off", Toast.LENGTH_SHORT).show();    }
-                else
-                {
-                    /**
-                     setContentView(zXingScannerView);
-                     zXingScannerView.setResultHandler(this);
-                     zXingScannerView.startCamera();
-                     */
-                    Toast.makeText(getActivity(), "Pressing btttn", Toast.LENGTH_SHORT).show();
-
-                    integrator.setOrientationLocked(false);
-                    integrator.initiateScan(integrator.QR_CODE_TYPES);
-
-                }
-            }
-
-            @Override
-            public void onRequestPermissionsResult(int result_code, String[] permissions, int[] grantResults)
-            {
-
-                switch (result_code)
-                {
-                    case MY_PERMISSIONS_REQUEST_CAMERA:
-                    {
-                        // If request is cancelled, the result arrays are empty.
-                        if (grantResults.length == 1
-                                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                            // permission was granted, yay! Do the
-                            // contacts-related task you need to do.
-
-                        } else {
-
-                            // permission denied, boo! Disable the
-                            // functionality that depends on this permission.
-                        }
-                        return;
-                    }
-                    default:
-                    {   super.onRequestPermissionsResult(result_code, permissions, grantResults);   }
-                }
+            default:
+            {   super.onRequestPermissionsResult(result_code, permissions, grantResults);   }
+        }
 
 
-            }
+    }
 
 
-            public void permissionCheck()
-            {
-                cam_permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.CAMERA);
-            }
+    public void permissionCheck()
+    {
+        cam_permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.CAMERA);
+    }
 
-            public void checkAppPermissions()
-            {
-                // checking the Camera and Access Fine-Location Permissions - Jacob
+    public void checkAppPermissions()
+    {
+        // checking the Camera and Access Fine-Location Permissions - Jacob
 
-                // if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                // {
+        // if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+        // {
 
-                //}
-                check_and_request(Manifest.permission.CAMERA,
-                        cam_permissionCheck, MY_PERMISSIONS_REQUEST_CAMERA);
-            }
+        //}
+        check_and_request(Manifest.permission.CAMERA,
+                cam_permissionCheck, MY_PERMISSIONS_REQUEST_CAMERA);
+    }
 ///////////////////////////////////////////////////////////////////////////////
 
-            /**
-             *
-             * If Permissions are denied, the component dependent on the permission
-             * must be disabled in someway or another.
-             *
-             * Thus, there must be a way to enable the component when the Permissions
-             * have been granted?
-             *
-             */
+    /**
+     *
+     * If Permissions are denied, the component dependent on the permission
+     * must be disabled in someway or another.
+     *
+     * Thus, there must be a way to enable the component when the Permissions
+     * have been granted?
+     *
+     */
 
 
 
-            ///////////////////////////////////////////////////////////////////////////////////
-            public void check_and_request(String permission_type,
-                                          int permission_check,
-                                          int permission_callback)
+    ///////////////////////////////////////////////////////////////////////////////////
+    public void check_and_request(String permission_type,
+                                  int permission_check,
+                                  int permission_callback)
+    {
+
+
+        if(permission_check != PackageManager.PERMISSION_GRANTED)
+        {
+            // Should we show an explanation?
+
+
+
+            if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    permission_type))
             {
-
-
-                if(permission_check != PackageManager.PERMISSION_GRANTED)
-                {
-                    // Should we show an explanation?
-
-
-
-                    if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            permission_type))
-                    {
-                        // Show an explanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-                    }
-                    else
-                    {
-                        ActivityCompat.requestPermissions(getActivity(),
-                                new String[]{permission_type},
-                                permission_callback);
-
-                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                        // app-defined int constant. The callback method gets the
-                        // result of the request.
-                    }
-
-                }
-            }//end of the method
-
-            @Override
-            public void startActivityForResult(Intent intent, int code){
-
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
             }
+            else
+            {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{permission_type},
+                        permission_callback);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+
+        }
+    }//end of the method
+
 }
