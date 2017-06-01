@@ -13,14 +13,14 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/welcome_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/welcome_message"
-        android:textSize="18sp"
-        android:layout_marginBottom="11dp"
         android:layout_above="@+id/sign_in_button"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="11dp"
+        android:text="@string/welcome_message"
+        android:textSize="18sp" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
@@ -45,9 +45,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sign_out_button_text"
-        android:layout_above="@+id/mapViewTestButton"
-        android:layout_alignLeft="@+id/mapViewTestButton"
-        android:layout_alignStart="@+id/mapViewTestButton" />
+        android:layout_below="@+id/custom_sign_in_button"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:id="@+id/sessionTestButton"
@@ -56,15 +55,6 @@
         android:layout_height="wrap_content"
         android:text="@string/session_test_button_text"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:id="@+id/mapViewTestButton"
-        android:onClick="onNavButtonClicked"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/map_test_button_text"
-        android:layout_above="@+id/sessionTestButton"
         android:layout_centerHorizontal="true" />
 
     <TextView

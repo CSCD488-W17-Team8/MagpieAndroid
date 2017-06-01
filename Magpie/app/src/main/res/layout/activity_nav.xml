@@ -6,34 +6,42 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
+    android:screenOrientation="portrait"
     android:id="@+id/Nav_Activity"
     tools:context="com.magpie.magpie.NavActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/nav_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:background="@drawable/background_color"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:title="@string/app_name" />
 
     <RelativeLayout
         android:id="@+id/view_bar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:layout_below="@id/nav_toolbar"
         android:background="@color/colorMagpieWhite"
         android:visibility="gone">
 
+        <View
+            android:id="@+id/centerVerticalShim"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible" />
+
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_toLeftOf="@id/centerVerticalShim">
+            android:layout_toLeftOf="@id/centerVerticalShim"
+            android:orientation="horizontal">
 
             <Space
                 android:layout_width="0dp"
@@ -42,13 +50,13 @@
 
             <RadioButton
                 android:id="@+id/radio_list_view"
+                style="@style/ListRadioButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:checked="true"
-
                 android:onClick="onRadioButtonClicked"
-                android:text="@string/listLabel" />
+                android:selectAllOnFocus="false" />
 
             <Space
                 android:layout_width="0dp"
@@ -57,11 +65,11 @@
 
             <RadioButton
                 android:id="@+id/radio_grid_view"
-                android:text="@string/gridLabel"
+                style="@style/GridRadioButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:onClick="onRadioButtonClicked"/>
+                android:onClick="onRadioButtonClicked" />
 
             <Space
                 android:layout_width="0dp"
@@ -70,24 +78,17 @@
 
             <RadioButton
                 android:id="@+id/radio_map_view"
-                android:text="@string/mapLabel"
+                style="@style/MapRadioButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:onClick="onRadioButtonClicked"/>
+                android:onClick="onRadioButtonClicked" />
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
         </RadioGroup>
-
-        <View
-            android:id="@+id/centerVerticalShim"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible" />
 
         <LinearLayout
             android:id="@+id/view_bar_spinner_layout"
@@ -117,84 +118,89 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorMagpieWhite"
-        android:layout_below="@id/view_bar"
         android:layout_above="@+id/nav_menu"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/view_bar"
+        android:background="@color/colorMagpieWhite" />
 
     <LinearLayout
         android:id="@id/nav_menu"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
         android:background="@color/colorMagpieWhite"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:orientation="horizontal">
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
-        <Button
+        <ImageButton
             android:id="@+id/map_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@drawable/pinavailable"
-            android:onClick="onNavButtonClicked"/>
+            android:background="@android:color/transparent"
+            android:onClick="onNavButtonClicked"
+            android:src="@drawable/marker_grey" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
-        <Button
+        <ImageButton
             android:id="@+id/qr_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@drawable/icon_qrcode"
-            android:onClick="onNavButtonClicked"/>
+            android:background="@android:color/transparent"
+            android:onClick="onNavButtonClicked"
+            android:src="@drawable/qr_grey" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
-        <Button
+        <ImageButton
             android:id="@+id/home_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@drawable/icon_home"
-            android:onClick="onNavButtonClicked"/>
+            android:background="@android:color/transparent"
+            android:onClick="onNavButtonClicked"
+            android:src="@drawable/home_grey" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
-        <Button
+        <ImageButton
             android:id="@+id/search_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@android:drawable/ic_search_category_default"
-            android:onClick="onNavButtonClicked"/>
+            android:background="@android:color/transparent"
+            android:onClick="onNavButtonClicked"
+            android:src="@drawable/search_grey" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
-        <Button
+        <ImageButton
             android:id="@+id/account_nav_button"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@android:drawable/btn_star"
-            android:onClick="onNavButtonClicked"/>
+            android:background="@android:color/transparent"
+            android:onClick="onNavButtonClicked"
+            android:src="@drawable/user_grey" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
     </LinearLayout>
 
 </RelativeLayout>

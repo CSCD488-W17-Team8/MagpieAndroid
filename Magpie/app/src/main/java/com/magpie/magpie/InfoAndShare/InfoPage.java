@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,15 +24,10 @@ import com.magpie.magpie.Services.TrackGPS;
 import com.magpie.magpie.Services.UserProgress.SendProgress;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link InfoPage.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link InfoPage#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class InfoPage extends Fragment implements View.OnClickListener {
+
+
+public class InfoPage extends Fragment implements View.OnClickListener
+{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -51,7 +48,12 @@ public class InfoPage extends Fragment implements View.OnClickListener {
     private final double METERS_TO_MILES = 0.000621371;
 
     /**       WIDGETS            */
-    ImageButton btn_map, btn_share, btn_collect;
+    ImageButton
+            btn_map,
+            btn_share,
+            btn_collect;
+
+    Button btn_url;
 
     TextView result_box;
     ImageView result_image;
@@ -59,10 +61,14 @@ public class InfoPage extends Fragment implements View.OnClickListener {
     boolean isCollected = false;
     LocationManager locationManager;
 
-    String result_text;
+    String URL_text;
     private TrackGPS gps;
-    double longitude_user, longitude_dest;
-    double latitude_user, latitude_dest;
+    double
+            longitude_user,
+            longitude_dest,
+            latitude_user,
+            latitude_dest;
+
     Location user_location = new Location("user_location");
     Location dest_location = new Location("dest_location");
 
@@ -96,14 +102,11 @@ public class InfoPage extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         navActivity = (NavActivity) getActivity();
-        latitude_dest  = navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getLatitude();
-        longitude_dest = navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getLongitude();
-
+        latitude_dest  = navActivity.getActiveElement().getLatitude();
+        longitude_dest = navActivity.getActiveElement().getLongitude();
 
 
         gps = new TrackGPS(getContext());
-
-
     }
 
     @Override
@@ -122,10 +125,18 @@ public class InfoPage extends Fragment implements View.OnClickListener {
         btn_map = (ImageButton)view.findViewById(R.id.map_btn);
         btn_share = (ImageButton)view.findViewById(R.id.share_btn);
         btn_collect = (ImageButton) view.findViewById(R.id.collect_btn);
+        btn_url = (Button) view.findViewById(R.id.url_btn);
+
+
+        btn_collect.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
+        result_image.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
 
         btn_map.setOnClickListener(this);
         btn_share.setOnClickListener(this);
         btn_collect.setOnClickListener(this);
+        btn_url.setOnClickListener(this);
+
+       URL_text =  navActivity.getActiveElement().getInfoLink();
 
         result_box.setText(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getName() + "\n" + navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getDesc());
         isCollected = navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).isCollected();
@@ -156,7 +167,9 @@ public class InfoPage extends Fragment implements View.OnClickListener {
              *
              */
 
-            displayToast();
+            //displayToast();
+            // TODO: test this
+            navActivity.startMarkerMapFragment();
         }
         else if(v.getId() == btn_share.getId())
         {
@@ -167,15 +180,17 @@ public class InfoPage extends Fragment implements View.OnClickListener {
              * collected the current Badge.
              *
              */
-            Fragment shareFrag = new ShareFragment();
-            navActivity.startNewFragment(shareFrag);
+            Fragment picFrag = new PictureFragment();
+            navActivity.startNewFragment(picFrag);
 
         }
         else if(v.getId() == btn_collect.getId())
         {
-            if(!isCollected) {
+            if(!isCollected)
+            {
                 Boolean result = collectBadge();
-                if (result) {
+                if (result)
+                {
                     /**
                      *
                      * Do something like display stuff or
@@ -190,6 +205,12 @@ public class InfoPage extends Fragment implements View.OnClickListener {
             {
                 Toast.makeText(getActivity(), "Badge is already collected", Toast.LENGTH_SHORT).show();
             }
+        }
+        else if(v.getId() == btn_url.getId())
+        {
+            Uri website = Uri.parse(navActivity.getActiveElement().getInfoLink());
+            Intent intent = new Intent(Intent.ACTION_VIEW, website);
+            startActivity(intent);
         }
 
 
@@ -232,8 +253,8 @@ public class InfoPage extends Fragment implements View.OnClickListener {
 
         Log.v("Inside the collect", "Success!");
 
-        if(gps.canGetLocation()){
-
+        if(gps.canGetLocation())
+        {
 
             Log.v("CanGet", "Success!");
             longitude_user = gps.getLongitude();
@@ -243,25 +264,30 @@ public class InfoPage extends Fragment implements View.OnClickListener {
 
             Log.v("Distance", "Success");
             double distance = user_location.distanceTo(dest_location);
-
             Log.v("distance :", "" + distance);
+
+            int result_miles = (int)(distance * METERS_TO_MILES);
+            double miles = (distance * METERS_TO_MILES);
             int result_feet = (int)(distance * METERS_TO_FEET);
             Log.v("distance :", "" + result_feet);
+
             if(isCollected || result_feet <= 20)
             {
                 displayToast("You Collected the Badge");
                 isCollected = true;
             }
             else
-            {   displayToast("You are " + result_feet + " feet away");  }
+            {
+                if(result_miles >= 1)
+                    displayToast("You are " + miles + "miles away");
+                else
+                    displayToast("You are " + result_feet + " feet away");
+            }
 
             //Toast.makeText(getApplicationContext(),"Longitude:"+Double.toString(longitude_user)+"\nLatitude:"+Double.toString(latitude_user),Toast.LENGTH_SHORT).show();
         }
         else
-        {
-
-            gps.showSettingsAlert();
-        }
+        {   gps.showSettingsAlert();    }
 
         return isCollected;
     }

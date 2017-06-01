@@ -89,6 +89,8 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         navActivity = (NavActivity) getActivity();
+        if(navActivity.capturedImage != null)
+            capturedImage = navActivity.capturedImage;
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -107,7 +109,17 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
   //      TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         upload_image = (ImageView)view.findViewById(R.id.upload_image);
         dialogBox = (EditText)view.findViewById(R.id.text_dialog);
+        if(navActivity.capturedImage != null)
+        {
+            Toast.makeText(navActivity, "Picture is here ", Toast.LENGTH_SHORT).show();
+            capturedImage = navActivity.capturedImage;
+        }
+        else
+        {
+            Toast.makeText(navActivity, "Picture was not saved to the nav act", Toast.LENGTH_SHORT).show();
+        }
 
+        upload_image.setImageBitmap(capturedImage);
         btn_pic = (Button)view.findViewById(R.id.btn_camera);
         btn_pic.setOnClickListener(this);
 
@@ -156,7 +168,7 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
         String sharedescription = "This is a test";
 
 
-        if(isAppInstalled("com.instagram.android") && capturedImage != null)
+        if(isAppInstalled("com.instagram.android") )//&& capturedImage != null)
         {
 
             String type = "image/*";
@@ -184,6 +196,8 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
 
     public void post_tweet()
     {
+
+        Toast.makeText(getActivity(), "Need to Register this Device with Fabric", Toast.LENGTH_SHORT).show();
 /**
         TweetComposer.Builder builder = new TweetComposer.Builder(getActivity()).text(dialogBox.getText().toString());
         if(capturedImage != null)

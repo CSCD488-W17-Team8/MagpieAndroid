@@ -4,6 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,11 +19,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -37,27 +43,32 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.magpie.magpie.BadgePage.BadgePage;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
+import com.magpie.magpie.InfoAndShare.InfoPage;
 import com.magpie.magpie.LocalList.Local_loc;
 import com.magpie.magpie.ObtainableList.Obtainable_loc;
 import com.magpie.magpie.QRReader.QRFragment;
 
+
+import java.io.File;
 import java.util.ArrayList;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
-//=======
-        //GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, ImageButton.OnClickListener {
-//>>>>>>> ArrasmithBetaBranch
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener
+{
+
 
     private final int REQUEST_LOCATION = 1;
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 666;
     private final float DEFAULT_ZOOM = 18;
 
     private ArrayList<Collection> mCollections;
     private Collection mActiveCollection;
     private ArrayList<MarkerOptions> mMarkerList;
+    private ArrayList<Element> mMarkerElementsList;
     private Element mActiveElement;
 
     /**
@@ -71,6 +82,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates;
     private boolean mLocationPermissionGranted = false;
+
+    public Bitmap capturedImage;
 
     /**
      * Persistent UI elements.
@@ -142,11 +155,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mCollections = new ArrayList<>();
         mActiveCollection = new Collection();
 
+        mMarkerElementsList = new ArrayList<>();
         mMarkerList = new ArrayList<>();
         //mActiveElement = new Element(); // Leave it null?
 
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
+
+        checkCamPermissions();
 
         // TODO: set visibility of view_bar
 
@@ -160,23 +176,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 return;
             }
 
-            /**
-             * Get the intent to determine which Fragment to inflate.
-             * THIS IS ONLY FOR TESTING!!!!!
-             * Once the map test is no longer needed, this section is no longer needed.
-             * TODO: remove the below if-else once testing is done
-             */
-            Intent i = getIntent();
-
-            if (i.hasExtra("MAP_TEST")) {
-
-                startTestMap();
-
-            } else {
-
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
-            }
-
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
 
         }
 
@@ -191,6 +191,22 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         */
     }
+
+
+    public Element getActiveElement()
+    {   return this.getActiveCollection().getCollectionElements().get(getActiveCollection().getSelectedElement());  }
+
+    public void setPicture(File picFile)
+    {
+        capturedImage = BitmapFactory.decodeFile(picFile.getAbsolutePath());
+
+        if(capturedImage != null)
+            Toast.makeText(this, "Picture was successfully saved", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Error When Trying to save the image", Toast.LENGTH_SHORT).show();
+
+    }
+
 
     @Override
     protected void onStart() {
@@ -255,7 +271,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
             case R.id.home_nav_button:
                 //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Local_loc()).commit();
+                startNewFragment(new Local_loc());
                 break;
 
             case R.id.search_nav_button:
@@ -443,7 +459,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (!mLocManager.isProviderEnabled(providerName)) {
 
-            View parent = findViewById(R.id.map) ;
+            View parent = findViewById(R.id.Nav_Activity) ;
             Snackbar snack = Snackbar.make(parent, "Location Provider Not Enabled: Goto Settings?",
                     Snackbar.LENGTH_LONG) ;
             snack.setAction("Confirm", new View.OnClickListener() {
@@ -472,49 +488,143 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 location.getLongitude()), DEFAULT_ZOOM));
     }
 
+
+
+
+
+    public void checkCamPermissions()
+    {
+        // checking the Camera and Access Fine-Location Permissions - Jacob
+
+        // if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+        // {
+
+        //}
+        check_and_request(Manifest.permission.CAMERA,
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CAMERA), MY_PERMISSIONS_REQUEST_CAMERA);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    public void check_and_request(String permission_type,
+                                  int permission_check,
+                                  int permission_callback)
+    {
+
+
+        if(permission_check != PackageManager.PERMISSION_GRANTED)
+        {
+            // Should we show an explanation?
+
+
+
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    permission_type))
+            {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{permission_type},
+                        permission_callback);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+
+        }
+    }//end of the method
+
+
+
     /**
      * Handles the case where the user grants location permission request
      * @param requestCode
      * @param permissions
      * @param grantResults
      */
+
+
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults)
+    {
 
-        if (requestCode == REQUEST_LOCATION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mLocationPermissionGranted = true;
-                initMap() ;
-            } else {
-                /**
-                 * TODO: Maybe a small popup warning screen?
-                 * Might take user back to either login or list screen if permission is not granted.
-                 */
-                Toast.makeText(this, "Magpie requires location permissions.",
-                        Toast.LENGTH_SHORT).show();
+        switch(requestCode)
+        {
+
+            case REQUEST_LOCATION:
+            {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initMap();
+                }
+                else
+                {
+                    /**
+                     * TODO: Maybe a small popup warning screen?
+                     * Might take user back to either login or list screen if permission is not granted.
+                     */
+                    Toast.makeText(this, "Magpie requires location permissions.",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
+            case MY_PERMISSIONS_REQUEST_CAMERA:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+
+            }
+            default:
+            {   super.onRequestPermissionsResult(requestCode, permissions, grantResults);   }
         }
     }
 
-    private void createMarker(Element element) {
+    // TODO: remove?
+    private void createMarkers() {
 
-        if (element != null) {
+        mMarkerList = new ArrayList<>();
+
+        for (Element element : mMarkerElementsList) {
 
             MarkerOptions marker = new MarkerOptions();
             marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
             marker.title(element.getName());
             //marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable)); // Not the final pin image; wasn't working here
+            mMarkerList.add(marker);
 
-            if (mMarkerList != null) {
+        }
 
-                mMarkerList.add(marker);
+    }
+
+    private void createMarkerList(Element element) {
+
+        if (element != null) {
+
+            if (mMarkerElementsList != null) {
+
+                mMarkerElementsList.add(element);
 
             } else {
 
                 Toast.makeText(getApplicationContext(), "Woops! Something has gone wrong!", Toast.LENGTH_SHORT);
-                Log.d("NULLPOINTER", "mMarkerList is null. Cannot add marker in createMarker.");
-
+                Log.d("NULLPOINTER", "mMarkerElementsList is null. Cannot add marker in createMarkerList.");
             }
         }
 
@@ -533,7 +643,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
             for (Element element : elements) {
 
-                createMarker(element);
+                createMarkerList(element);
 
             }
         }
@@ -559,10 +669,28 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     private void placeMarkers() {
 
+        for (Element element : mMarkerElementsList) {
+
+            MarkerOptions marker = new MarkerOptions();
+            marker.position(new LatLng(element.getLatitude(), element.getLongitude()));
+            marker.title(element.getName());
+
+            if (element.isCollected())
+                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_black));
+            else
+                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_grey));
+
+            mMarkerList.add(marker);
+            mMap.addMarker(marker);
+
+        }
+
+        /*
         for (MarkerOptions marker : mMarkerList) {
-            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.pinavailable));
+            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_black));
             mMap.addMarker(marker);
         }
+        */
     }
 
     @Override
@@ -613,11 +741,31 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private void onMarkerSelected(Marker marker) {
 
         mSelectedMarker = marker;
-        float[] results = new float[1];
-        Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
-        //mDistanceTextView.setText("Distance: "+results[0]);
-        //mTimeTextView.setText("Time: "+(results[0]/1.4)+"s");
-        // TODO: fill in UI elements pertaining to marker.
+        //float[] results = new float[1];
+        //Location.distanceBetween(mMyLocation.getLatitude(), mMyLocation.getLongitude(), mSelectedMarker.getPosition().latitude, mSelectedMarker.getPosition().longitude, results);
+
+        // This is for testing
+        Toast.makeText(getApplicationContext(), marker.getTitle()+" marker selected.", Toast.LENGTH_SHORT).show();
+
+        // TODO: determine marker
+        if (mMarkerElementsList != null) {
+
+            for (Element element : mMarkerElementsList) {
+
+                if (marker.getTitle().equals(element.getName())) {
+
+                    // TODO: inflate custom tooltip
+                    // Goes right to info page for now.
+                    startNewFragment(new InfoPage());
+
+                }
+
+            }
+
+        } else {
+            Toast.makeText(getApplicationContext(), getString(R.string.whoops_message), Toast.LENGTH_SHORT).show();
+            Log.d("NULLLIST", "mMarkerElementsList is null. Error in onMarkerSelected");
+        }
     }
 
     /**
@@ -625,11 +773,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * the user.
      */
     public void startMarkerMapFragment() {
-        // TODO: map showing ONE marker from ONE collection
-        hideViewBar();
+
+        setViewBarVisibility(false);
         setTitle(mActiveElement.getName());
-        createMarker(mActiveElement);
+        mMarkerElementsList = new ArrayList<>();
+        createMarkerList(mActiveElement);
+        //createMarkers();
         startMapFragment();
+
     }
 
     /**
@@ -637,11 +788,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * collection.
      */
     public void startCollectionMapFragment() {
-        // TODO: map showing ALL markers from ONE collection
-        showViewBar();
+
+        setViewBarVisibility(true);
         setTitle(mActiveCollection.getName());
-        startMapFragment();
+        mMarkerElementsList = new ArrayList<>();
         createCollectionMarkerList(mActiveCollection);
+        //createMarkers();
+        startMapFragment();
+
     }
 
     /**
@@ -649,11 +803,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * user is participating in.
      */
     public void startAllCollectionMapFragment() {
-        // TODO: map showing ALL markers from ALL collections
-        hideViewBar();
+
+        setViewBarVisibility(false);
         setTitle(getString(R.string.toolbar_badges_near_me));
+        mMarkerElementsList = new ArrayList<>();
         createAllCollectionMarkerList();
+        //createMarkers();
         startMapFragment();
+
     }
 
     /**
@@ -664,11 +821,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (fr.getClass().getSimpleName().equals(BadgePage.class.getSimpleName())) {
 
-            showViewBar();
+            setViewBarVisibility(true);
 
         } else {
 
-            hideViewBar();
+            setViewBarVisibility(false);
 
         }
 
@@ -677,22 +834,20 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     /**
-     * Shows the view-switching bar for the badge page
+     * Toggles visibility of the view bar
+     * @param visible determines visibility of the view bar.
      */
-    public void showViewBar() {
+    public void setViewBarVisibility(boolean visible) {
 
-        if (mViewBar.getVisibility() == View.GONE)
+        if (visible) {
+
             mViewBar.setVisibility(View.VISIBLE);
 
-    }
+        } else {
 
-    /**
-     * Hides the view-switching bar if not on the badge page or the single-collection map.
-     */
-    public void hideViewBar() {
-
-        if (mViewBar.getVisibility() == View.VISIBLE)
             mViewBar.setVisibility(View.GONE);
+
+        }
 
     }
 
@@ -733,19 +888,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public Collection getActiveCollection(){return mActiveCollection;}
 
-    //@Override
+    //@Override TODO: not needed?
     public void setAddedCollections(ArrayList<Collection> added) {
         addNewCollections(added);
-    }
-
-    // TODO: remove this method once testing is done
-    private void startTestMap() {
-
-
-        MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().add(R.id.fragment_container, mapFragment).commit();
-        mapFragment.getMapAsync(this);
-        //mActiveCollection = Collection.collectionTestBuilder("Test Collection", mMyLocation.getLatitude(), mMyLocation.getLongitude());
     }
 
     @Override
@@ -755,11 +900,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setNavButtonsEnabled(boolean enabled) {
 
-        ((Button) findViewById(R.id.map_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.qr_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.home_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.search_nav_button)).setEnabled(enabled);
-        ((Button) findViewById(R.id.account_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.map_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.qr_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.home_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.search_nav_button)).setEnabled(enabled);
+        ((ImageButton) findViewById(R.id.account_nav_button)).setEnabled(enabled);
 
     }
 
@@ -767,12 +912,13 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setReadFromFile(){mReadFromFile = true;}
 
+
     public RelativeLayout getViewBar(){return mViewBar;}
+
 
     /*
     @Override
     public void onBackPressed() {
-
 
 
         switch (getSupportFragmentManager().getFragments().get(0).getId()) {
