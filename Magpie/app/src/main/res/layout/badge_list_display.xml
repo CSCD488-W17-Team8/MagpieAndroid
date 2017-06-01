@@ -5,14 +5,14 @@
 
     <ImageView
         android:id="@+id/BadgeListImg"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        app:srcCompat="@android:drawable/screen_background_light_transparent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        app:srcCompat="@android:drawable/screen_background_light_transparent" />
 
     <TextView
         android:id="@+id/BadgeListBuf"
@@ -20,30 +20,35 @@
         android:layout_height="75dp"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/BadgeListImg"
-        android:layout_toEndOf="@+id/BadgeListImg" />
+        android:layout_toEndOf="@+id/BadgeListImg"
+        android:layout_alignBottom="@+id/BadgeListImg" />
 
     <TextView
         android:id="@+id/BadgeListTitle"
-        android:layout_width="200dp"
+        android:layout_width="170dp"
         android:layout_height="75dp"
+        android:layout_alignBottom="@+id/BadgeListBuf"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/BadgeListDistance"
-        android:layout_toStartOf="@+id/BadgeListDistance" />
+        android:layout_toRightOf="@+id/BadgeListBuf" />
 
     <TextView
         android:id="@+id/BadgeListDistance"
         android:layout_width="90dp"
-        android:layout_height="37dp"
-        android:layout_alignParentTop="true"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/BadgeListTitle"
+        android:layout_toRightOf="@+id/BadgeListTitle" />
 
     <TextView
         android:id="@+id/BadgeListTime"
         android:layout_width="90dp"
-        android:layout_height="38dp"
-        android:layout_below="@+id/BadgeListDistance"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/BadgeListDistance"
+        android:layout_toRightOf="@+id/BadgeListTitle"
+        android:layout_toEndOf="@+id/BadgeListTitle" />
 
 </RelativeLayout>

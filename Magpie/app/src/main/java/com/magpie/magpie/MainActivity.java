@@ -2,6 +2,7 @@ package com.magpie.magpie;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
@@ -23,6 +23,9 @@ import com.google.android.gms.common.api.Status;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Placeholder button icons are courtesy of icons8.com
+ */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             MY_REQUEST_PERMISSIONS_REQUEST_FINE_LOCATION = 42;
 
     private TextView mErrorTextView;
+    private Typeface font;
 
     /**
      * Initializes the first view in the app for the user. User will be presented with the login
@@ -45,12 +49,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        font  = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
+        ((TextView) findViewById(R.id.welcome_text_view)).setTypeface(font);
+
         mErrorTextView = (TextView)findViewById(R.id.error_text_view);
 
         Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton); // TODO: remove when testing is done
-        Button mapTestButton = (Button)findViewById(R.id.mapViewTestButton); // TODO: remove when testing is done
         sessionTestButton.setOnClickListener(this);
-        mapTestButton.setOnClickListener(this);
 
         SignInButton googleSignInButton = (SignInButton)findViewById(R.id.sign_in_button);
         googleSignInButton.setOnClickListener(this);
@@ -70,20 +75,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent i;
 
-
         switch (v.getId()) {
 
             case R.id.sessionTestButton: // TODO: ensure other fragments work well with NavActivity
                 Toast.makeText(getApplicationContext(), "Starting session test", Toast.LENGTH_SHORT).show();
                 i = new Intent(v.getContext(), NavActivity.class);
-                startActivity(i);
-                finish();
-                break;
-
-            case R.id.mapViewTestButton: // TODO: remove when testing is done
-                Toast.makeText(getApplicationContext(), "Starting Map test", Toast.LENGTH_SHORT).show();
-                i = new Intent(v.getContext(), NavActivity.class);
-                i.putExtra("MAP_TEST", true);
                 startActivity(i);
                 finish();
                 break;
