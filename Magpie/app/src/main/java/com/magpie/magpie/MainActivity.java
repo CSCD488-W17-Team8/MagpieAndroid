@@ -49,16 +49,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        font  = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
-        ((TextView) findViewById(R.id.welcome_text_view)).setTypeface(font);
+        font  = Typeface.createFromAsset(getAssets(), "montserrat_medium.ttf");
+        //((TextView) findViewById(R.id.welcome_text_view)).setTypeface(font);
 
-        mErrorTextView = (TextView)findViewById(R.id.error_text_view);
-
-        Button sessionTestButton = (Button)findViewById(R.id.sessionTestButton); // TODO: remove when testing is done
-        sessionTestButton.setOnClickListener(this);
+        //mErrorTextView = (TextView)findViewById(R.id.error_text_view);
 
         SignInButton googleSignInButton = (SignInButton)findViewById(R.id.sign_in_button);
         googleSignInButton.setOnClickListener(this);
+
+        Button customSessionTestButton = (Button)findViewById(R.id.session_test_button);
+        customSessionTestButton.setTypeface(font);
+        customSessionTestButton.setOnClickListener(this);
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        Button signOutButton = (Button)findViewById(R.id.sign_out_button); // TODO: remove when testing is done
+        //Button signOutButton = (Button)findViewById(R.id.sign_out_button); // TODO: remove when testing is done
 
     }
 
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
 
-            case R.id.sessionTestButton: // TODO: ensure other fragments work well with NavActivity
+            case R.id.session_test_button: // TODO: ensure other fragments work well with NavActivity
                 Toast.makeText(getApplicationContext(), "Starting session test", Toast.LENGTH_SHORT).show();
                 i = new Intent(v.getContext(), NavActivity.class);
                 startActivity(i);
@@ -88,9 +90,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 signIn();
                 break;
 
+            /*
             case R.id.sign_out_button:
                 signOut();
                 break;
+                */
         }
     }
 
