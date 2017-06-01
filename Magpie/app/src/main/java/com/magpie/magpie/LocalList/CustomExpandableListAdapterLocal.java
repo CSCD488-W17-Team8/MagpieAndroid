@@ -17,12 +17,12 @@ import java.util.ArrayList;
  * Created by Zachary Arrasmith on 5/11/2017.
  */
 
-public class CustomExpandableListAdapterLocal extends BaseExpandableListAdapter {
+ class CustomExpandableListAdapterLocal extends BaseExpandableListAdapter {
 
     private ArrayList<Collection> localCollections;
     Context context;
 
-    public CustomExpandableListAdapterLocal(Local_loc local, ArrayList<Collection> fromLocal_loc){
+     CustomExpandableListAdapterLocal(Local_loc local, ArrayList<Collection> fromLocal_loc){
         context = local.getContext();
         localCollections = fromLocal_loc;
     }
@@ -98,27 +98,6 @@ public class CustomExpandableListAdapterLocal extends BaseExpandableListAdapter 
     @Override
     public boolean isChildSelectable(int i, int i1) {
         return true;
-    }
-
-    private String createAcronym(String name) {
-        StringBuilder acronymConstructor = new StringBuilder();
-        String[] words = name.split(" ");
-        if(words.length == 1){
-            acronymConstructor.append(words[0].charAt(0));
-            acronymConstructor.append(words[0].charAt(1));
-            acronymConstructor.append(words[0].charAt(2));
-        }
-        else if(words.length == 2){
-            acronymConstructor.append(words[0].charAt(0));
-            acronymConstructor.append(words[0].charAt(1));
-            acronymConstructor.append(words[1].charAt(0));
-        }
-        else{
-            for(int i = 0; i < words.length; i++){
-                acronymConstructor.append(words[i].charAt(0));
-            }
-        }
-        return acronymConstructor.toString();
     }
 
 }

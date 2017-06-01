@@ -51,15 +51,6 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     private ZipFile imgZIP;
     private String type;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private String bundleKey = "";
-    private String activeCollectionKey = "";
-
-    //private OnFragmentInteractionListener mListener;
-
     public BadgePage() {
         // Required empty public constructor
     }
@@ -83,8 +74,9 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     }
 
     /*
-     * Method onCreate: Handles the obtaining of the Collection to be used in the fragment.
-     * It is assumed that there will always be a Collection to use.
+     * Method onCreate: Handles the creation of the navActivity instance. The
+     * navActivity field will be used to reference the current active collection and
+     * the associated data inside it.
      *
      */
 
@@ -108,8 +100,9 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        //Assigns the images residing in the associated ZIP file to each element
         addImagesToElements();
+        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_badge_page, container, false);
         badgeGrid = (GridView) v.findViewById(R.id.BadgeGridView);
         badgeList = (ListView) v.findViewById(R.id.BadgeListView);
@@ -118,26 +111,25 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filter.setAdapter(spinnerAdapter);
         filter.setOnItemSelectedListener(this);
-        //ArrayList<String> elementNames = elementToString(selectedColl);
         displayElements = new ArrayList<>();
         displayElements.addAll(navActivity.getActiveCollection().getCollectionElements());
+        //Each list has the same adapter, with the string provided determining which type it is.
         cbla = new CustomBadgeListAdapter(this, displayElements, "List", navActivity.getActiveCollection().getPicZip(), navActivity);
         cbga = new CustomBadgeListAdapter(this, displayElements, "Grid", navActivity.getActiveCollection().getPicZip(), navActivity);
-        //ArrayAdapter<String> badgeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, elementNames);
         badgeList.setAdapter(cbla);
         badgeGrid.setAdapter(cbga);
         badgeList.setOnItemClickListener(onLVClick);
         badgeGrid.setOnItemClickListener(onGVClick);
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
-        Log.d("BADGEIMAGETEST", navActivity.getActiveCollection().getCollectionElements().get(5).getBadge().toString());
         whatWasClicked();
         return v;
     }
 
     /*
      * AdapterView.OnItemClickListener onLVClick: handles the selecting of any ListView Item and performs and action on it.
-     * It is expected that the action will be to go the the Information Page of the associated Badge/Element.
+     * The action in this case is to start the InfoPage fragment. The setSelectedElement method in Collection is called.
+     * Allowing for a determination of what Element was selected.
      *
      */
 
@@ -154,7 +146,8 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
 
     /*
      * AdapterView.OnItemClickListener onGVClick: handles the selecting of any GridView Item and performs and action on it.
-     * It is expected that the action will be to go the the Information Page of the associated Badge/Element.
+     * The action in this case is to start the InfoPage fragment. The setSelectedElement method in Collection is called.
+     * Allowing for a determination of what Element was selected.
      *
      */
 
@@ -167,6 +160,10 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         }
     };
 
+    /*
+     * Method onItemSelected: Calls the respective method when the user selects a filter in the Spinner.
+     *
+     */
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -181,10 +178,20 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         }
     }
 
+    /*
+     * Method onNothingSelected: Unused, required for Spinner implementation
+     *
+     */
+
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+    /*
+     * Method filterUnachieved: Will display only badges that have the isCollected set to false.
+     *
+     */
 
     private void filterUnachieved(){
         displayElements.clear();
@@ -197,6 +204,11 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         cbga.notifyDataSetChanged();
     }
 
+    /*
+     * Method filterAchieved: Will display only badges that have the isCollected set to true.
+     *
+     */
+
     private void filterAchieved(){
         displayElements.clear();
         for(Element e : navActivity.getActiveCollection().getCollectionElements()){
@@ -207,6 +219,16 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         cbla.notifyDataSetChanged();
         cbga.notifyDataSetChanged();
     }
+
+    /*
+     * Method filterTime: Based on the selection, the list will only display badges in a particular time away.
+     * These are:
+     *      Less than five minutes
+     *      Less than ten minutes
+     *      Less than fifteen minutes
+     *      More than fifteen minutes
+     *
+     */
 
     public void filterTime(int pos) {
         if (pos == 2) {
@@ -245,44 +267,49 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         cbga.notifyDataSetChanged();
     }
 
+    /*
+     * Method addImagesToElements: Adds all images to the elements.
+     * Due to the uncertainty of how the CMS is storing and naming images, currently it takes them element by
+     * element and assigns them blindly.
+     *
+     */
+
     private void addImagesToElements() {
         int reqHeight;
         int reqWidth;
         Bitmap bm;
-        Enumeration<? extends ZipEntry> entries = imgZIP.entries();
-        ZipEntry curImage = entries.nextElement();
-
-        for(Element e : navActivity.getActiveCollection().getCollectionElements()) {
-            try {
-                InputStream zin = imgZIP.getInputStream(curImage);
-                BitmapFactory.Options opt = new BitmapFactory.Options();
-                opt.inJustDecodeBounds = true;
-                bm = BitmapFactory.decodeStream(zin, null, opt);
-                int imageHeight = opt.outHeight;
-                int imageWidth = opt.outWidth;
-                String imageType = opt.outMimeType;
-                reqHeight = 75;
-                reqWidth = 75;
-                opt.inSampleSize = calculateSampleSize(opt, reqHeight, reqWidth);
-                opt.inJustDecodeBounds = false;
-                zin = imgZIP.getInputStream(curImage);
-                bm = BitmapFactory.decodeStream(zin, null, opt);
-                e.setBadge(bm);
-                if (entries.hasMoreElements()) {
-                    curImage = entries.nextElement();
-                    String elementName = curImage.getName();
-                    String extension = elementName.substring(elementName.length() - 3);
-                    if (extension.compareTo("zip") == 0) {
-                        curImage = imgZIP.entries().nextElement();
+        if(imgZIP != null) {
+            Enumeration<? extends ZipEntry> entries = imgZIP.entries();
+            ZipEntry curImage = entries.nextElement();
+            for (Element e : navActivity.getActiveCollection().getCollectionElements()) {
+                try {
+                    InputStream zin = imgZIP.getInputStream(curImage);
+                    BitmapFactory.Options opt = new BitmapFactory.Options();
+                    opt.inJustDecodeBounds = true;
+                    bm = BitmapFactory.decodeStream(zin, null, opt);
+                    reqHeight = 75;
+                    reqWidth = 75;
+                    opt.inSampleSize = calculateSampleSize(opt, reqHeight, reqWidth);
+                    opt.inJustDecodeBounds = false;
+                    zin = imgZIP.getInputStream(curImage);
+                    bm = BitmapFactory.decodeStream(zin, null, opt);
+                    e.setBadge(bm);
+                    if (entries.hasMoreElements()) {
+                        curImage = entries.nextElement();
+                        String elementName = curImage.getName();
+                        String extension = elementName.substring(elementName.length() - 3);
+                        if (extension.compareTo("zip") == 0) {
+                            curImage = imgZIP.entries().nextElement();
+                        }
                     }
+                } catch (IOException ioe) {
+                    Log.d("ZIPREADINGIO", ioe.getMessage());
                 }
-            } catch (IOException ioe) {
-                Log.d("ZIPREADINGIO", ioe.getMessage());
             }
         }
     }
 
-    //Taken straight from the Android Developers site -- URL: {[URL HERE]}
+    //Taken straight from the Android Developers site -- URL: https://developer.android.com/topic/performance/graphics/load-bitmap.html
     private int calculateSampleSize(BitmapFactory.Options opt, int reqHeight, int reqWidth) {
         final int height = opt.outHeight;
         final int width = opt.outWidth;

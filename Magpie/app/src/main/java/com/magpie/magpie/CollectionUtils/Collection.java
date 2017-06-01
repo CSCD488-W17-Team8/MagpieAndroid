@@ -22,11 +22,10 @@ public class Collection implements Serializable{
 
     private ArrayList<Element> mCollectionElements;
 	private int mCID;
-    //PicID is apparently used only within context of the database. We can use it to store the path to the zip file containing all the pictures related to the Collection.
     private String mCity, mState, mRating, mDescription, mName, mAbbrev;
     private double mDistance;
     private boolean mOrdered;
-    private int mElementTotal; //May not be needed. Putting this in here as CMS has it on the database.
+    private int mElementTotal;
     private int mCollected; //Thinking about the collection progress here.
     private boolean mSelected;
     private boolean mDownloaded; //mDownloaded is an internal check to ensure that the associated zip file has been downloaded successfully. // TODO: remove default set to true

@@ -16,7 +16,7 @@ public class Element implements Serializable {
     private int mLID, mPicID, mCollID;
     private String mName, mQRCode, mCreator, mInfoLink, mDesc;
     private double mLatitude, mLongitude, mTime;
-    private boolean mCollected; //Assuming no user database or Requires internet connection
+    private boolean mCollected; //Assuming no user database or requires internet connection
     private Bitmap mBadge;
     private Bitmap mActualImage; //Assuming that there is a real world image associated with this.
 
