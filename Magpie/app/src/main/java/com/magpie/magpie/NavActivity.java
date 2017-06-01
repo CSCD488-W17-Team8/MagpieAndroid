@@ -26,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -79,12 +80,14 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * These will persist across fragment changes.
      */
     private Toolbar mTitleBar;
+    private TextView mTitleTextView;
     private RelativeLayout mViewBar;
     private RadioGroup mViewRadioGroup;
     private FragmentManager mFragmentMngr;
 
     private Typeface fontawesome;
-    private Typeface font;
+    private Typeface fontMontserratMedium;
+    private Typeface fontMontserratLight;
 
     private boolean showingBadgePage = false;
     private boolean mReadFromFile = false;
@@ -94,8 +97,18 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
 
-        font  = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
+        fontMontserratMedium  = Typeface.createFromAsset(getAssets(), "montserrat_medium.ttf");
+        fontMontserratLight = Typeface.createFromAsset(getAssets(), "montserrat_light.ttf");
         fontawesome = Typeface.createFromAsset(getAssets(), "font_awesome.ttf");
+
+        mTitleTextView = (TextView)findViewById(R.id.toolbar_title);
+
+        try {
+            mTitleTextView.setTypeface(fontMontserratLight);
+        } catch (NullPointerException e) {
+            Log.d("FONTNOTFOUND", "Font not found for title text view");
+        }
+
         //((Button)findViewById(R.id.home_nav_button)).setText(getString(R.string.home_icon));
 
         /*
@@ -777,7 +790,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void setTitle(String title) {
-        mTitleBar.setTitle(title.toUpperCase());
+
+        mTitleTextView.setText(title.toUpperCase());
     }
 
     public Collection getActiveCollection(){return mActiveCollection;}
