@@ -52,9 +52,6 @@ import java.util.ArrayList;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
-//=======
-        //GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMarkerClickListener, ImageButton.OnClickListener {
-//>>>>>>> ArrasmithBetaBranch
 
     private final int REQUEST_LOCATION = 1;
     private final float DEFAULT_ZOOM = 18;
