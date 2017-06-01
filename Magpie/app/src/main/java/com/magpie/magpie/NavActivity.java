@@ -211,10 +211,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         */
     }
 
-
-    public Element getActiveElement()
-    {   return this.getActiveCollection().getCollectionElements().get(getActiveCollection().getSelectedElement());  }
-
     public void setPicture(File picFile)
     {
         capturedImage = BitmapFactory.decodeFile(picFile.getAbsolutePath());
@@ -225,7 +221,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             Toast.makeText(this, "Error When Trying to save the image", Toast.LENGTH_SHORT).show();
 
     }
-
 
     @Override
     protected void onStart() {
@@ -507,10 +502,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 location.getLongitude()), DEFAULT_ZOOM));
     }
 
-
-
-
-
     public void checkCamPermissions()
     {
         // checking the Camera and Access Fine-Location Permissions - Jacob
@@ -558,17 +549,12 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }//end of the method
 
-
-
     /**
      * Handles the case where the user grants location permission request
      * @param requestCode
      * @param permissions
      * @param grantResults
      */
-
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -773,6 +759,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 if (marker.getTitle().equals(element.getName())) {
 
+                    setActiveElement(element);
                     // TODO: inflate custom tooltip
                     // Goes right to info page for now.
                     startNewFragment(new InfoPage());
@@ -907,6 +894,18 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public Collection getActiveCollection(){return mActiveCollection;}
+
+    public void setActiveElement(Element element) {
+
+        mActiveElement = element;
+
+    }
+
+    public Element getActiveElement() {
+
+        return mActiveElement;
+
+    }
 
     //@Override TODO: not needed?
     public void setAddedCollections(ArrayList<Collection> added) {

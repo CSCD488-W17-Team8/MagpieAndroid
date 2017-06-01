@@ -2,6 +2,7 @@ package com.magpie.magpie.InfoAndShare;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -126,19 +127,22 @@ public class InfoPage extends Fragment implements View.OnClickListener
         btn_collect = (ImageButton) view.findViewById(R.id.collect_btn);
         btn_url = (ImageButton) view.findViewById(R.id.url_btn);
 
-
-        btn_collect.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
-        result_image.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
+        Element activeElement = navActivity.getActiveElement();
+        Bitmap bitmap = activeElement.getBadge(); // TODO: might need to check for null value
+        //btn_collect.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
+        btn_collect.setImageBitmap(bitmap);
+        //result_image.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
+        result_image.setImageBitmap(bitmap);
 
         btn_map.setOnClickListener(this);
         btn_share.setOnClickListener(this);
         btn_collect.setOnClickListener(this);
         btn_url.setOnClickListener(this);
 
-       URL_text =  navActivity.getActiveElement().getInfoLink();
+        URL_text =  activeElement.getInfoLink();
 
-        result_box.setText(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getName() + "\n" + navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getDesc());
-        isCollected = navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).isCollected();
+        result_box.setText(activeElement.getName() + "\n" + activeElement.getDesc());
+        isCollected = activeElement.isCollected();
         return view;
     }
 
