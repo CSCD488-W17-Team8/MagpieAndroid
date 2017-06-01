@@ -129,9 +129,7 @@ public class InfoPage extends Fragment implements View.OnClickListener
 
         Element activeElement = navActivity.getActiveElement();
         Bitmap bitmap = activeElement.getBadge(); // TODO: might need to check for null value
-        //btn_collect.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
         btn_collect.setImageBitmap(bitmap);
-        //result_image.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());
         result_image.setImageBitmap(bitmap);
 
         btn_map.setOnClickListener(this);
