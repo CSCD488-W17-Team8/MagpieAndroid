@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context="com.magpie.magpie.BadgePage">
+    tools:context="com.magpie.magpie.BadgePage.BadgePage">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -18,25 +18,6 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_below="@+id/CollectionTitle">
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/ViewTabs"
-                android:layout_width="200dp"
-                android:layout_height="match_parent">
-
-                <android.support.design.widget.TabItem
-                    android:id="@+id/ListTab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/listLabel" />
-
-                <android.support.design.widget.TabItem
-                    android:id="@+id/GridTab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/gridLabel" />
-
-            </android.support.design.widget.TabLayout>
 
             <Spinner
                 android:id="@+id/BadgeFilter"

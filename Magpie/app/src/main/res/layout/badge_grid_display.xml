@@ -17,10 +17,10 @@
     <TextView
         android:id="@+id/GridTitle"
         android:layout_width="100dp"
-        android:layout_height="25dp"
-        android:layout_below="@+id/GridImage"
+        android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/GridImage"
-        android:layout_alignStart="@+id/GridImage" />
+        android:layout_alignStart="@+id/GridImage"
+        android:layout_below="@+id/GridImage" />
 
     <TextView
         android:id="@+id/GridDistance"

@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorMagpieWhite"
-    tools:context="com.magpie.magpie.PictureFragment">
-
+    tools:context="com.magpie.magpie.InfoAndShare.PictureFragment">
 
     <ImageButton
         android:id="@+id/imageButton"
