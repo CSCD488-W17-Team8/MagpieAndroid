@@ -15,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.magpie.magpie.NavActivity;
 import com.magpie.magpie.R;
 
 import java.io.File;
@@ -30,13 +32,11 @@ import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PictureFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link PictureFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PictureFragment extends Fragment implements View.OnClickListener {
+public class PictureFragment extends Fragment implements View.OnClickListener
+{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -46,8 +46,6 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
     private String mParam1;
     private String mParam2;
 
-
-
     private Camera mCamera;
     Uri bmpUri = null;
     ImageButton btn_submit;
@@ -56,10 +54,10 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
     private CameraPage mPreview;
     private ImageButton btn_pic;
     File pictureFile;
+    NavActivity nav_activity;
 
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-
 
 
 
@@ -78,7 +76,8 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
      * @return A new instance of fragment PictureFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PictureFragment newInstance(String param1, String param2) {
+    public static PictureFragment newInstance(String param1, String param2)
+    {
         PictureFragment fragment = new PictureFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -94,6 +93,8 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        nav_activity = (NavActivity)getActivity();
     }
 
     @Override
@@ -105,10 +106,12 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
 
+
         btn_submit = (ImageButton)view.findViewById(R.id.imageButton);
         btn_submit.setOnClickListener(this);
 
         image = (ImageView) view.findViewById(R.id.imageView);
+        image.setOnClickListener(this);
 
         // Create our Preview view and set it as the content of our activity.
         mPreview = new CameraPage(this.getActivity(), mCamera); // Flag < Might not Work, Test
@@ -146,10 +149,12 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+    private Camera.PictureCallback mPicture = new Camera.PictureCallback()
+    {
 
         @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
+        public void onPictureTaken(byte[] data, Camera camera)
+        {
 
 
             pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
@@ -169,6 +174,7 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
                 Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(),bmOptions);
                 //   bitmap = Bitmap.createScaledBitmap(bitmap,parent.getWidth(),parent.getHeight(),true);
 
+                nav_activity.setPicture(pictureFile);
                 image.setImageBitmap(bitmap);
                 bmpUri = Uri.fromFile(pictureFile);
             } catch (FileNotFoundException e) {
@@ -189,14 +195,14 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
         {
             mCamera.takePicture(null, null, mPicture);
             if(capturedImage != null )
-            {
-                image.setImageBitmap(capturedImage);
-
-            }
+            {   image.setImageBitmap(capturedImage);    }
             mCamera.startPreview();
-
-
-
+        }
+        else if(v.getId() == image.getId())
+        {
+                Toast.makeText(nav_activity, "Yoi hittin the share fragment breh", Toast.LENGTH_SHORT).show();
+                Fragment shareFrag = new ShareFragment();
+                nav_activity.startNewFragment(shareFrag);
         }
     }
 

@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,6 +20,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -41,6 +46,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.magpie.magpie.BadgePage.BadgePage;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
@@ -49,12 +55,15 @@ import com.magpie.magpie.LocalList.Local_loc;
 import com.magpie.magpie.ObtainableList.Obtainable_loc;
 import com.magpie.magpie.QRReader.QRFragment;
 
+
+import java.io.File;
 import java.util.ArrayList;
 
 public class NavActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
 
     private final int REQUEST_LOCATION = 1;
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 666;
     private final float DEFAULT_ZOOM = 18;
 
     private ArrayList<Collection> mCollections;
@@ -74,6 +83,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates;
     private boolean mLocationPermissionGranted = false;
+
+    public Bitmap capturedImage;
 
     /**
      * Persistent UI elements.
@@ -172,6 +183,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
         mViewRadioGroup = (RadioGroup)findViewById(R.id.view_radio_group);
 
+        checkCamPermissions();
+
         mFragmentMngr = getSupportFragmentManager(); // TODO: test this
         if (findViewById(R.id.fragment_container) != null) {
 
@@ -197,6 +210,22 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         */
     }
+
+
+    public Element getActiveElement()
+    {   return this.getActiveCollection().getCollectionElements().get(getActiveCollection().getSelectedElement());  }
+
+    public void setPicture(File picFile)
+    {
+        capturedImage = BitmapFactory.decodeFile(picFile.getAbsolutePath());
+
+        if(capturedImage != null)
+            Toast.makeText(this, "Picture was successfully saved", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Error When Trying to save the image", Toast.LENGTH_SHORT).show();
+
+    }
+
 
     @Override
     protected void onStart() {
@@ -478,28 +507,111 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 location.getLongitude()), DEFAULT_ZOOM));
     }
 
+
+
+
+
+    public void checkCamPermissions()
+    {
+        // checking the Camera and Access Fine-Location Permissions - Jacob
+
+        // if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+        // {
+
+        //}
+        check_and_request(Manifest.permission.CAMERA,
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CAMERA), MY_PERMISSIONS_REQUEST_CAMERA);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    public void check_and_request(String permission_type,
+                                  int permission_check,
+                                  int permission_callback)
+    {
+
+
+        if(permission_check != PackageManager.PERMISSION_GRANTED)
+        {
+            // Should we show an explanation?
+
+
+
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    permission_type))
+            {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{permission_type},
+                        permission_callback);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+
+        }
+    }//end of the method
+
+
+
     /**
      * Handles the case where the user grants location permission request
      * @param requestCode
      * @param permissions
      * @param grantResults
      */
+
+
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults)
+    {
 
-        if (requestCode == REQUEST_LOCATION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mLocationPermissionGranted = true;
-                initMap() ;
-            } else {
-                /**
-                 * TODO: Maybe a small popup warning screen?
-                 * Might take user back to either login or list screen if permission is not granted.
-                 */
-                Toast.makeText(this, "Magpie requires location permissions.",
-                        Toast.LENGTH_SHORT).show();
+        switch(requestCode)
+        {
+
+            case REQUEST_LOCATION:
+            {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initMap();
+                }
+                else
+                {
+                    /**
+                     * TODO: Maybe a small popup warning screen?
+                     * Might take user back to either login or list screen if permission is not granted.
+                     */
+                    Toast.makeText(this, "Magpie requires location permissions.",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
+            case MY_PERMISSIONS_REQUEST_CAMERA:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+
+            }
+            default:
+            {   super.onRequestPermissionsResult(requestCode, permissions, grantResults);   }
         }
     }
 
@@ -820,6 +932,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setReadFromFile(){mReadFromFile = true;}
 
+
     public RelativeLayout getViewBar(){return mViewBar;}
 
     public int getSelectedView() {
@@ -831,7 +944,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     /*
     @Override
     public void onBackPressed() {
-
 
 
         switch (getSupportFragmentManager().getFragments().get(0).getId()) {
