@@ -51,8 +51,9 @@ public class InfoPage extends Fragment implements View.OnClickListener
     ImageButton
             btn_map,
             btn_share,
-            btn_collect,
-            btn_url;
+            btn_collect;
+
+    Button btn_url;
 
     TextView result_box;
     ImageView result_image;
@@ -124,7 +125,7 @@ public class InfoPage extends Fragment implements View.OnClickListener
         btn_map = (ImageButton)view.findViewById(R.id.map_btn);
         btn_share = (ImageButton)view.findViewById(R.id.share_btn);
         btn_collect = (ImageButton) view.findViewById(R.id.collect_btn);
-        btn_url = (ImageButton) view.findViewById(R.id.url_btn);
+        btn_url = (Button) view.findViewById(R.id.url_btn);
 
 
         btn_collect.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(navActivity.getActiveCollection().getSelectedElement()).getBadge());

@@ -133,9 +133,6 @@ public class PictureFragment extends Fragment implements View.OnClickListener
     }
 
 
-
-
-
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance(){
         Camera c = null;
@@ -171,12 +168,14 @@ public class PictureFragment extends Fragment implements View.OnClickListener
                 fos.close();
 
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(),bmOptions);
+               // Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(),bmOptions);
                 //   bitmap = Bitmap.createScaledBitmap(bitmap,parent.getWidth(),parent.getHeight(),true);
 
                 nav_activity.setPicture(pictureFile);
-                image.setImageBitmap(bitmap);
+                //image.setImageBitmap(bitmap);
                 bmpUri = Uri.fromFile(pictureFile);
+                Fragment shareFrag = new ShareFragment();
+                nav_activity.startNewFragment(shareFrag);
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "File not found: " + e.getMessage());
             } catch (IOException e) {
@@ -198,12 +197,15 @@ public class PictureFragment extends Fragment implements View.OnClickListener
             {   image.setImageBitmap(capturedImage);    }
             mCamera.startPreview();
         }
+        /**
         else if(v.getId() == image.getId())
         {
                 Toast.makeText(nav_activity, "Yoi hittin the share fragment breh", Toast.LENGTH_SHORT).show();
                 Fragment shareFrag = new ShareFragment();
                 nav_activity.startNewFragment(shareFrag);
         }
+
+         */
     }
 
 
