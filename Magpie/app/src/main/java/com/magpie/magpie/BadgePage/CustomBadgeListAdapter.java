@@ -1,6 +1,8 @@
 package com.magpie.magpie.BadgePage;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,7 +33,7 @@ import java.util.zip.ZipFile;
  *
  */
 
-public class CustomBadgeListAdapter extends BaseAdapter {
+ class CustomBadgeListAdapter extends BaseAdapter {
 
     private final double WALKING_RATE = 272.8;
     private final double FOOT_CONVERSION = 3.28;
@@ -43,18 +45,12 @@ public class CustomBadgeListAdapter extends BaseAdapter {
     private Location user;
     private float dist;
     private static LayoutInflater inflater;
-    private ZipFile zipImages;
-    private ZipEntry defaultImage;
-    private Enumeration<? extends ZipEntry> entries;
     private NavActivity navActivity;
 
-    public CustomBadgeListAdapter(BadgePage bp, ArrayList<Element> e, String t, ZipFile picZIP, NavActivity nav){
+     CustomBadgeListAdapter(BadgePage bp, ArrayList<Element> e, String t, ZipFile picZIP, NavActivity nav){
         context = bp.getContext();
         elements = e;
         type = t;
-        zipImages = picZIP;
-        entries = zipImages.entries();
-        defaultImage = entries.nextElement();
         user_location = new TrackGPS(bp.getContext());
         navActivity = nav;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -80,7 +76,7 @@ public class CustomBadgeListAdapter extends BaseAdapter {
      *
      *
      */
-    public class Item{
+    private class Item{
         ImageView badgeImage;
         TextView title;
         TextView distance;
@@ -123,7 +119,12 @@ public class CustomBadgeListAdapter extends BaseAdapter {
         item.distance.setText("Distance: " + determineDistance(i));
         navActivity.getActiveCollection().getCollectionElements().get(i).setTime(determineTime());
         item.time.setText("Time: " + navActivity.getActiveCollection().getCollectionElements().get(i).getTime());
-        item.badgeImage.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(i).getBadge());
+        if(navActivity.getActiveCollection().getCollectionElements().get(i).getBadge() != null) {
+            item.badgeImage.setImageBitmap(navActivity.getActiveCollection().getCollectionElements().get(i).getBadge());
+        }
+        else{
+            item.badgeImage.setImageBitmap(BitmapFactory.decodeResource(context.getResources(), android.R.drawable.picture_frame));
+        }
         return badgeListItem;
     }
 
