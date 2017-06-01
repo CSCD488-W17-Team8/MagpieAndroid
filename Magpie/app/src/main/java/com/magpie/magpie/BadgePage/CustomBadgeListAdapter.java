@@ -124,6 +124,7 @@ import java.util.zip.ZipFile;
         }
         else{
             item.badgeImage.setImageBitmap(BitmapFactory.decodeResource(context.getResources(), android.R.drawable.picture_frame));
+            //item.badgeImage.setImageBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.magpie_logo_concept_05));
         }
         return badgeListItem;
     }

@@ -2,12 +2,12 @@ package com.magpie.magpie;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,11 +22,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -835,7 +835,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         }
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).addToBackStack(null).commit();
 
     }
 
@@ -863,7 +863,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void startMapFragment() {
 
         MapFragment mapFragment = new MapFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).addToBackStack(null).commit();
         mapFragment.getMapAsync(this);
 
     }
@@ -940,27 +940,36 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    /*
     @Override
     public void onBackPressed() {
 
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
 
-        switch (getSupportFragmentManager().getFragments().get(0).getId()) {
+            // TODO: bug with returning to non Local_loc or collection map fragment; view bar persists
 
-            case R.id.fragment_local_loc:
-                super.onBackPressed();
-                break;
+            getSupportFragmentManager().popBackStack();
 
-            case R.id.fragment_obtainable_loc:
-                b.putSerializable("CurrentCollections", localCollections);
-                Fragment fr = new Obtainable_loc();
-                fr.setArguments(b);
-                android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.Nav_Activity, fr);
-                ft.commit();
-                break;
+        } else {
+
+            AlertDialog returnAlert = new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.return_to_login_title))
+                    .setMessage(getString(R.string.return_to_login_body))
+                    .setPositiveButton(R.string.yes_confirmation, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(NavActivity.this, MainActivity.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.no_confirmation, null)
+                    .show();
+
+            //((TextView)returnAlert.findViewById(android.R.id.message)).setTypeface(fontMontserratLight);
+            //((TextView)returnAlert.findViewById(android.R.id.title)).setTypeface(fontMontserratMedium);
+            //((TextView)returnAlert.findViewById(android.R.id.button1)).setTypeface(fontMontserratMedium);
+            //((TextView)returnAlert.findViewById(android.R.id.button2)).setTypeface(fontMontserratMedium);
         }
+
     }
-    */
 }
