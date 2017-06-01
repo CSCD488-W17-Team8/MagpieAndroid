@@ -199,16 +199,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     public void setPicture(File picFile)
     {
         capturedImage = BitmapFactory.decodeFile(picFile.getAbsolutePath());
-        Matrix matrix = new Matrix();
-        matrix.setRotate(-90);
-
-        capturedImage = Bitmap.createBitmap(capturedImage, 0, 0, capturedImage.getWidth(),
-                capturedImage.getHeight(), matrix, true);
 
         if(capturedImage != null)
             Toast.makeText(this, "Picture was successfully saved", Toast.LENGTH_SHORT).show();
         else
-            Toast.makeText(this, "Zach is a pooper scooper", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error When Trying to save the image", Toast.LENGTH_SHORT).show();
 
     }
 

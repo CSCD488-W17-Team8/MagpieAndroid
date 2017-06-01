@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.magpie.magpie.NavActivity;
 import com.magpie.magpie.R;
 
 import java.io.File;
