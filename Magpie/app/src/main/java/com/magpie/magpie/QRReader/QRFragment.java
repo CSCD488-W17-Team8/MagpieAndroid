@@ -108,21 +108,7 @@ public class QRFragment extends Fragment implements View.OnClickListener, Activi
     }
 
 
-    public void onActivityResult(int requestCode, int resultCode, Intent intent)
-    {
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanResult != null) {
 
-            // handle scan result
-
-            result_text = scanResult.getContents();
-            resultsView.setText(result_text);
-            Toast.makeText(getActivity(), result_text, Toast.LENGTH_SHORT).show();
-
-        }
-        Toast.makeText(getActivity(), "LOL", Toast.LENGTH_SHORT).show();
-        // else continue with any other code you need in the method...
-    }
 
     @Override
     public void onClick(View view)

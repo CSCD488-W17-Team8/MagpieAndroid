@@ -11,6 +11,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -44,6 +45,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.magpie.magpie.BadgePage.BadgePage;
 import com.magpie.magpie.CollectionUtils.Collection;
 import com.magpie.magpie.CollectionUtils.Element;
@@ -51,6 +54,7 @@ import com.magpie.magpie.InfoAndShare.InfoPage;
 import com.magpie.magpie.LocalList.Local_loc;
 import com.magpie.magpie.ObtainableList.Obtainable_loc;
 import com.magpie.magpie.QRReader.QRFragment;
+import com.magpie.magpie.QRReader.QRFragmentIntentIntegrator;
 
 
 import java.io.File;
@@ -82,6 +86,8 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates;
     private boolean mLocationPermissionGranted = false;
+    private Uri bmpUri = null;
+
 
     public Bitmap capturedImage;
 
@@ -193,20 +199,13 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
+    public void setImageUri(Uri uri)
+    {   bmpUri = uri;    }
+    public Uri getUriPath()
+    {   return bmpUri;    }
+
     public Element getActiveElement()
     {   return this.getActiveCollection().getCollectionElements().get(getActiveCollection().getSelectedElement());  }
-
-    public void setPicture(File picFile)
-    {
-        capturedImage = BitmapFactory.decodeFile(picFile.getAbsolutePath());
-
-        if(capturedImage != null)
-            Toast.makeText(this, "Picture was successfully saved", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(this, "Error When Trying to save the image", Toast.LENGTH_SHORT).show();
-
-    }
-
 
     @Override
     protected void onStart() {
@@ -264,8 +263,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
 
             case R.id.qr_nav_button:
-                Fragment qrFrag = new QRFragment();
-                startNewFragment(qrFrag);
+                QR_Reader();
+                //Fragment qrFrag = new QRFragment();
+                //startNewFragment(qrFrag);
                 //Toast.makeText(getApplicationContext(), "Not ready yet", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -914,6 +914,34 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
     public RelativeLayout getViewBar(){return mViewBar;}
+
+    public void QR_Reader()
+    {
+
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setOrientationLocked(false);
+        integrator.initiateScan(integrator.QR_CODE_TYPES);
+    }
+
+
+
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
+
+            // handle scan result
+
+            String result_text = scanResult.getContents();
+            //resultsView.setText(result_text);
+            Toast.makeText(this, result_text, Toast.LENGTH_SHORT).show();
+
+        }
+        else
+        {   Toast.makeText(this, "Miss: result came negative", Toast.LENGTH_SHORT).show(); }
+        // else continue with any other code you need in the method...
+    }
 
 
     /*

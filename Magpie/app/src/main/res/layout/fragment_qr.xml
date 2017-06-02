@@ -31,13 +31,5 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
-    <SurfaceView
-        android:id="@+id/surfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
 
 </RelativeLayout>

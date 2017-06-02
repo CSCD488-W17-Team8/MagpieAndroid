@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.magpie.magpie.NavActivity;
 import com.magpie.magpie.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,8 +76,11 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
      * @param param2 Parameter 2.
      * @return A new instance of fragment ShareFragment.
      */
+
+
     // TODO: Rename and change types and number of parameters
-    public static ShareFragment newInstance(String param1, String param2) {
+    public static ShareFragment newInstance(String param1, String param2)
+    {
         ShareFragment fragment = new ShareFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -86,40 +90,38 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         navActivity = (NavActivity) getActivity();
-        if(navActivity.capturedImage != null)
-            capturedImage = navActivity.capturedImage;
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-
-
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_share, container, false);
 
-  //      TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        //TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         upload_image = (ImageView)view.findViewById(R.id.upload_image);
         dialogBox = (EditText)view.findViewById(R.id.text_dialog);
-        if(navActivity.capturedImage != null)
+
+        if(navActivity.getUriPath() != null)
         {
             Toast.makeText(navActivity, "Picture is here ", Toast.LENGTH_SHORT).show();
-            capturedImage = navActivity.capturedImage;
+            //capturedImage = navActivity.capturedImage;
+            Picasso.with(getContext()).load(navActivity.getUriPath()).rotate(90f).into(upload_image);
         }
         else
-        {
-            Toast.makeText(navActivity, "Picture was not saved to the nav act", Toast.LENGTH_SHORT).show();
-        }
+        {   Toast.makeText(navActivity, "Picture was not saved to the nav act", Toast.LENGTH_SHORT).show();     }
 
-        upload_image.setImageBitmap(capturedImage);
+       // upload_image.setImageBitmap(capturedImage);
         btn_pic = (Button)view.findViewById(R.id.btn_camera);
         btn_pic.setOnClickListener(this);
 
@@ -164,17 +166,19 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
     public void post_instagram()
     {
 
-        String sharename = "The Kakapo Application";
+        String sharename = "The Magpie Application";
         String sharedescription = "This is a test";
 
 
-        if(isAppInstalled("com.instagram.android") )//&& capturedImage != null)
+        if(isAppInstalled("com.instagram.android")&& navActivity.getUriPath() != null)//&& capturedImage != null)
         {
 
             String type = "image/*";
+
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("image/*");
-            shareIntent.putExtra(Intent.EXTRA_STREAM,getLocalBitmapUri(capturedImage));
+            shareIntent.putExtra(Intent.EXTRA_STREAM, navActivity.getUriPath());
+
             shareIntent.setPackage("com.instagram.android");
             startActivity(shareIntent);
 
@@ -202,7 +206,7 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
         TweetComposer.Builder builder = new TweetComposer.Builder(getActivity()).text(dialogBox.getText().toString());
         if(capturedImage != null)
         {
-            Uri uri = getLocalBitmapUri(capturedImage);
+            Uri uri = navActivity.getUriPath();
             builder.image(uri);
         }
 
@@ -239,6 +243,8 @@ public class ShareFragment extends Fragment implements View.OnClickListener {
         {   post_snapchat();    }
     }
 
+
+    /** SIMPLY NAVIGATES TO THE PICTURE FRAGMENT PAGE   */
     private void dispatchTakePictureIntent()
     {
         /**
