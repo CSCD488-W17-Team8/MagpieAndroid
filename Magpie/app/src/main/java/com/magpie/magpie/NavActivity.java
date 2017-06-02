@@ -66,11 +66,15 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     private final int MY_PERMISSIONS_REQUEST_CAMERA = 666;
     private final float DEFAULT_ZOOM = 18;
 
-    private ArrayList<Collection> mCollections;
-    private Collection mActiveCollection;
-    private ArrayList<MarkerOptions> mMarkerList;
-    private ArrayList<Element> mMarkerElementsList;
-    private Element mActiveElement;
+    /**
+     * These fields hold Collection and Element info that will need to be accessed by the contained
+     * fragments.
+     */
+    private ArrayList<Collection> mCollections;     // List of Collections the user is participating in
+    private Collection mActiveCollection;           // Collection most recently viewed or being tracked on the map
+    private ArrayList<MarkerOptions> mMarkerList;   // List of Markers to be placed on the map
+    private ArrayList<Element> mMarkerElementsList; // List of Elements the Marker list is representing.
+    private Element mActiveElement;                 // Element selected by user to either be collected or to be viewed for more info.
 
     /**
      * Map-related member variables
@@ -211,8 +215,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         */
     }
 
-    public void setPicture(File picFile)
-    {
+    public void setPicture(File picFile) {
         capturedImage = BitmapFactory.decodeFile(picFile.getAbsolutePath());
 
         if(capturedImage != null)
