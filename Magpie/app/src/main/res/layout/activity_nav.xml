@@ -115,7 +115,7 @@
                 android:layout_weight="1" />
 
             <Spinner
-                android:id="@+id/sort_option_spinner"
+                android:id="@+id/filter_spinner"
                 android:layout_width="170dp"
                 android:layout_height="60dp" />
 

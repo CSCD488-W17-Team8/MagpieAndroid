@@ -106,11 +106,13 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         View v = inflater.inflate(R.layout.fragment_badge_page, container, false);
         badgeGrid = (GridView) v.findViewById(R.id.BadgeGridView);
         badgeList = (ListView) v.findViewById(R.id.BadgeListView);
-        filter = (Spinner) v.findViewById(R.id.BadgeFilter);
+        //filter = (Spinner) v.findViewById(R.id.BadgeFilter);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this.getContext(), R.array.BadgeFilterArray, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        filter.setAdapter(spinnerAdapter);
-        filter.setOnItemSelectedListener(this);
+        //filter.setAdapter(spinnerAdapter);
+        //filter.setOnItemSelectedListener(this);
+        navActivity.getFilter().setAdapter(spinnerAdapter);
+        navActivity.getFilter().setOnItemSelectedListener(this);
         displayElements = new ArrayList<>();
         displayElements.addAll(navActivity.getActiveCollection().getCollectionElements());
         //Each list has the same adapter, with the string provided determining which type it is.

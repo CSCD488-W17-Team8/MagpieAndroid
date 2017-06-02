@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,23 +71,23 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * These fields hold Collection and Element info that will need to be accessed by the contained
      * fragments.
      */
-    private ArrayList<Collection> mCollections;     // List of Collections the user is participating in
-    private Collection mActiveCollection;           // Collection most recently viewed or being tracked on the map
-    private ArrayList<MarkerOptions> mMarkerList;   // List of Markers to be placed on the map
-    private ArrayList<Element> mMarkerElementsList; // List of Elements the Marker list is representing.
-    private Element mActiveElement;                 // Element selected by user to either be collected or to be viewed for more info.
+    private ArrayList<Collection> mCollections;         // List of Collections the user is participating in
+    private Collection mActiveCollection;               // Collection most recently viewed or being tracked on the map
+    private ArrayList<MarkerOptions> mMarkerList;       // List of Markers to be placed on the map
+    private ArrayList<Element> mMarkerElementsList;     // List of Elements the Marker list is representing.
+    private Element mActiveElement;                     // Element selected by user to either be collected or to be viewed for more info.
 
     /**
      * Map-related member variables
      */
-    private GoogleApiClient mGoogleApiClient;
-    private GoogleMap mMap;
-    private LocationManager mLocManager;
-    private Marker mSelectedMarker;
-    private Location mMyLocation;
-    private LocationRequest mLocationRequest;
-    private boolean mRequestingLocationUpdates;
-    private boolean mLocationPermissionGranted = false;
+    private GoogleApiClient mGoogleApiClient;           // Used in conjunction with Google Sign-In
+    private GoogleMap mMap;                             // Map to be displayed
+    private LocationManager mLocManager;                // To be used with live locations updates
+    private Marker mSelectedMarker;                     // Holds reference to the marker the user touches on the map
+    private Location mMyLocation;                       // Hold reference to user location.
+    private LocationRequest mLocationRequest;           // To be used with live location updates
+    private boolean mRequestingLocationUpdates;         // Used with live location updates
+    private boolean mLocationPermissionGranted = false; // Used with live location updates
 
     public Bitmap capturedImage;
 
@@ -94,18 +95,35 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * Persistent UI elements.
      * These will persist across fragment changes.
      */
-    private Toolbar mTitleBar;
-    private TextView mTitleTextView;
-    private RelativeLayout mViewBar;
-    private RadioGroup mViewRadioGroup;
+    private Toolbar mTitleBar;                          // Title bar at the top of the page
+    private TextView mTitleTextView;                    // Text view in the title bar. We don't use the Toolbar's text because we need to set our own font
+    private RelativeLayout mViewBar;                    // The view bar that is only shown in the Local_loc or the single-collection map view
+    private RadioGroup mViewRadioGroup;                 // The list, grid, and map view button in the view bar
+    private Spinner mFilter;                            // Drop-down filter spinner to sort badges with.
+
     private FragmentManager mFragmentMngr;
 
-    private Typeface fontawesome;
-    private Typeface fontMontserratMedium;
-    private Typeface fontMontserratLight;
+    private Typeface fontawesome;                       // The font that contains all the icon images for the button icons
+    private Typeface fontMontserratMedium;              // Monserrat font
+    private Typeface fontMontserratLight;               // Monserrat font
 
     private boolean showingBadgePage = false;
     private boolean mReadFromFile = false;
+
+
+    /**
+     * This is the primary activity of the application once the user moves past the login screen.
+     * This activity will hold all other fragments in the application. Each fragment will hold
+     * as reference to this activity established in that fragment's onCreate. From there, the
+     * fragment will be able to access NavActivity's methods to access data in the activity
+     * such as collection data. We went with this rather than implementing fragment interaction
+     * listeners for each fragment that NavActivity would then need to implement. That would
+     * likely be a better implementation and improve portability of the other fragments, but each
+     * fragment will not exist in another activity besides NavActivity.
+     */
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +144,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         //((Button)findViewById(R.id.home_nav_button)).setText(getString(R.string.home_icon));
 
+        /**
+         * This commented-out section below pertains to the live-updating location functionality
+         */
         /*
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -186,6 +207,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         mTitleBar = (Toolbar)findViewById(R.id.nav_toolbar);
         mViewBar = (RelativeLayout)findViewById(R.id.view_bar);
         mViewRadioGroup = (RadioGroup)findViewById(R.id.view_radio_group);
+        mFilter = (Spinner)findViewById(R.id.filter_spinner);
 
         checkCamPermissions();
 
@@ -202,17 +224,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new Local_loc()).commit();
 
         }
-
-        /*
-        if (i.hasExtra(mBundleExtraKey)) {
-
-            Bundle b = i.getBundleExtra(mBundleExtraKey);
-
-            if (b.containsKey(mActiveCollectionKey)) {
-                mActiveCollection = (Collection) b.getSerializable(mActiveCollectionKey);
-            }
-        }
-        */
     }
 
     public void setPicture(File picFile) {
@@ -225,6 +236,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * onStart and on Stop are to be used in conjunction with live-updating location services
+     */
     @Override
     protected void onStart() {
 
@@ -242,6 +256,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * Ensures we have a connection to location services, checking permissions in the process
+     * @param connectionHint
+     */
     @Override
     public void onConnected(Bundle connectionHint) {
 
@@ -263,6 +281,9 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * To be used in conjunction with live location updates
+     */
     protected void createLocationRequest() {
 
         mLocationRequest = new LocationRequest();
@@ -272,6 +293,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * Handler for click events with the buttons in the bottom nav bar
+     * @param v
+     */
     public void onNavButtonClicked(View v) {
 
         switch (v.getId()) {
@@ -303,6 +328,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Handler for click events in the radio group in the view bar
+     * @param view
+     */
     public void onRadioButtonClicked(View view) {
 
         boolean checked = ((RadioButton) view).isChecked();
@@ -340,10 +369,11 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     /**
+     * This comment was added automatically.
+     *
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -438,6 +468,10 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
         handler.postDelayed(runnable, 1);
     }
 
+    /**
+     * Returns user's location
+     * @return user's location
+     */
     private Location getLocation() {
 
         Location location = null;
@@ -934,15 +968,30 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setReadFromFile(){mReadFromFile = true;}
 
-
     public RelativeLayout getViewBar(){return mViewBar;}
 
+    /**
+     * Determines which button is selected in the view bar radio group
+     * @return
+     */
     public int getSelectedView() {
 
         return mViewRadioGroup.getCheckedRadioButtonId();
 
     }
 
+    public Spinner getFilter() {
+
+        return mFilter;
+
+    }
+
+    /**
+     * Returns to the previous fragment if there are other activities to return to. If there are no
+     * more fragments in the back stack, back returns the user to the MainActivity after checking
+     * if that's what they want to to. This should log the user out as well once sign-in services
+     * are operational.
+     */
     @Override
     public void onBackPressed() {
 
@@ -960,9 +1009,12 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                     .setPositiveButton(R.string.yes_confirmation, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+
+                            // TODO: user should be signed out here
                             Intent i = new Intent(NavActivity.this, MainActivity.class);
                             startActivity(i);
                             finish();
+
                         }
                     })
                     .setNegativeButton(R.string.no_confirmation, null)
