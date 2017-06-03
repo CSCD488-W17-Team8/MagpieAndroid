@@ -920,6 +920,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
 
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setOrientationLocked(false);
+        integrator.setPrompt("QR READER");
         integrator.initiateScan(integrator.QR_CODE_TYPES);
     }
 
