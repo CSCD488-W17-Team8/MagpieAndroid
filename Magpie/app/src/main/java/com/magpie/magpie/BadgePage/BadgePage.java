@@ -139,7 +139,8 @@ public class BadgePage extends Fragment implements AdapterView.OnItemSelectedLis
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-            navActivity.getActiveCollection().setSelectedElement(i);
+            //navActivity.getActiveCollection().setSelectedElement(i);
+            navActivity.setActiveElement(navActivity.getActiveCollection().getElementAtIndex(i));
             Fragment fr = new InfoPage();
             navActivity.startNewFragment(fr);
 

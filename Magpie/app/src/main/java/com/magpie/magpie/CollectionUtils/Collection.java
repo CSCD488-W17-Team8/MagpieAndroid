@@ -229,4 +229,10 @@ public class Collection implements Serializable{
 
     public int getSelectedElement(){return mSelectedElement;}
 
+    public Element getElementAtIndex(int i) {
+
+        return mCollectionElements.get(i);
+
+    }
+
 }

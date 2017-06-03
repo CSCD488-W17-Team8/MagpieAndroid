@@ -128,8 +128,6 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      */
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -413,6 +411,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
      * initializes map and its UI settings.
      */
     private void initMap() {
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -424,6 +423,7 @@ public class NavActivity extends AppCompatActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
             return;
         }
+
         mMap.setMyLocationEnabled(true);
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
