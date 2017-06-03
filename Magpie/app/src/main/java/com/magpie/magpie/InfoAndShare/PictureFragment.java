@@ -117,6 +117,7 @@ public class PictureFragment extends Fragment implements View.OnClickListener
         preview.addView(mPreview);
 
 
+
         return view;
     }
 
