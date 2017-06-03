@@ -236,11 +236,20 @@ public class Local_loc extends Fragment implements View.OnClickListener{
      */
 
     private void downloadZIPs() {
+
         //The idea here is to construct zip files that contain the CID of the associated Collection within the zip file's name.
         //This is mainly because we are guaranteed that the CID will be unique amongst all the data within the JSON sent.
         ArrayList<Integer> CIDs = new ArrayList<>(navActivity.getCollections().size());
+        String[] downloadFiles = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).list();
         for(int i = 0; i < navActivity.getCollections().size(); i++){
-            CIDs.add(navActivity.getCollections().get(i).getCID());
+            boolean download = true;
+            for (String zipName : downloadFiles) {
+                if (zipName.compareTo("imagesCID" + navActivity.getCollections().get(i).getCID() + ".zip") == 0) {
+                    download = false;
+                }
+            }
+            if(download)
+                CIDs.add(navActivity.getCollections().get(i).getCID());
         }
         Intent download = new Intent(getContext(), ZIPDownload.class);
         download.putIntegerArrayListExtra("TheCIDs", CIDs);
