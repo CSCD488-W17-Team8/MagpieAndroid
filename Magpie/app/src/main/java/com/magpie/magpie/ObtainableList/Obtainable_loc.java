@@ -85,8 +85,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                     String fin = j.getString("CID") + " : " + j.getString("Name") + "\r\n";
                     fin += j.getString("Description") + " (" + j.getString("Rating") + ")";
                     allColl.add(fin);
-                    //obtainable_loc_Adapter.notifyDataSetChanged();
-
                 }
             }
             celao.notifyDataSetChanged();
@@ -183,20 +181,6 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                 Log.d("PULLERROR", e.getMessage());
             }
         }
-        /*
-        else if(((String)(view.getTag())).compareTo("Send") == 0) {
-            Fragment fr = new Local_loc();
-            Bundle coll = new Bundle();
-            if (added.size() != 0) {
-                coll.putSerializable("CollectionList", added);
-            }
-            fr.setArguments(coll);
-            android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.Nav_Activity, fr);
-            ft.commit();
-        }
-        */
     }
 
     /*
@@ -312,6 +296,7 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
         public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
             boolean addIt = true;
             Collection c = collection.get(i);
+            //This loop determines if the user has added this collection already. If so, then it is removed.
             for(int j = 0; j < navActivity.getCollections().size(); j++){
                 if(c.getCID() == navActivity.getCollections().get(i).getCID()){
                     addIt = false;
@@ -320,6 +305,8 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
                     Toast.makeText(getActivity(), c.getName() + "removed", Toast.LENGTH_SHORT).show();
                 }
             }
+            //The boolean addIt determines the possibility of adding a collection. By default, addIt is true, as it is assumed
+            //that the collection is going to be added. Only when A collection has been removed in the loop above will it fail.
             if(addIt) {
                 try {
                     navActivity.setNavButtonsEnabled(false);
@@ -333,7 +320,10 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
             return true;
         }
     };
-
+    /*
+     * Method onItemSelected: Determines which item has been selected by the user for sorting
+     *
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if(position == 0){
@@ -344,12 +334,16 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
         }
 
     }
-
+    /*
+     * Method onNothingSelected: Required to implement, not used in the current version.
+     */
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
+    /*
+     * Method sortListByNumberOfBadges: Sorts the list of CMS Collections by the number of elements in the collection.
+     */
     public void sortListByNumberOfBadges(){
         Collection[] sortTemp = new Collection[collection.size()];
         Object[] tempArray = collection.toArray();
@@ -377,7 +371,9 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
         }
         celao.notifyDataSetChanged();
     }
-
+    /*
+     * Method sortListByCollectionLength: Sorts the CMS Collections by the total distance of the collection.
+     */
     public void sortListByCollectionLength(){
         Collection[] sortTemp = new Collection[collection.size()];
         Object[] tempArray = collection.toArray();
@@ -404,10 +400,5 @@ public class Obtainable_loc extends Fragment implements View.OnClickListener, Ad
             collection.add(c);
         }
         celao.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
     }
 }
