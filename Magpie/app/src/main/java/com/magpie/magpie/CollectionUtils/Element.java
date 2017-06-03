@@ -95,7 +95,7 @@ public class Element implements Serializable {
         return mCollected;
     }
 
-    void setCollected(boolean mCollected) {this.mCollected = mCollected;}
+    public void setCollected(boolean mCollected) {this.mCollected = mCollected;}
 
     public Bitmap getBadge(){return mBadge;}
 

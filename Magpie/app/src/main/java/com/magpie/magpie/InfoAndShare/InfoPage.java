@@ -8,6 +8,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,8 +42,6 @@ public class InfoPage extends Fragment implements View.OnClickListener
 
     /**       CONSTANTS          */
     private final double RANGE = 20;
-
-    private Element curElement;
     private final long MIN_TIME_BW_UPDATES = 2000;
     private final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 1;
     private final double METERS_TO_FEET = 3.28084;
@@ -61,7 +60,7 @@ public class InfoPage extends Fragment implements View.OnClickListener
 
     boolean isCollected = false;
     LocationManager locationManager;
-
+    private Element curElement;
     String URL_text;
     private TrackGPS gps;
     double
@@ -119,6 +118,8 @@ public class InfoPage extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_infopage, container, false);
         result_box = (TextView)view.findViewById(R.id.Info_box_view);
         result_image = (ImageView)view.findViewById(R.id.display_img);
+
+        result_box.setMovementMethod(new ScrollingMovementMethod());
 
         dest_location.setLatitude(latitude_dest);
         dest_location.setLongitude(longitude_dest);
@@ -179,7 +180,7 @@ public class InfoPage extends Fragment implements View.OnClickListener
             /**
              *
              * Can the user press the share button if they have not
-             * collected the current Badge.
+             * collected the current Badge?
              *
              */
             Fragment picFrag = new PictureFragment();
@@ -198,9 +199,18 @@ public class InfoPage extends Fragment implements View.OnClickListener
                      * Do something like display stuff or
                      * whatever.
                      */
+
+                    /**
+                     *
+                     * At the moment Does not work since Single-Sign On Has not been implemented
                     Intent intent = new Intent(getActivity(), SendProgress.class);
                     intent.putExtra("UserProgressCollection", navActivity.getCollections());
                     navActivity.startService(intent);
+
+                     */
+
+
+                    navActivity.getActiveElement().setCollected(result);
                 }
             }
             else
@@ -252,9 +262,8 @@ public class InfoPage extends Fragment implements View.OnClickListener
          */
 
 
-
         Log.v("Inside the collect", "Success!");
-
+        gps.update();
         if(gps.canGetLocation())
         {
 
@@ -273,7 +282,7 @@ public class InfoPage extends Fragment implements View.OnClickListener
             int result_feet = (int)(distance * METERS_TO_FEET);
             Log.v("distance :", "" + result_feet);
 
-            if(isCollected || result_feet <= 20)
+            if(isCollected == true || result_feet <= 20)
             {
                 displayToast("You Collected the Badge");
                 isCollected = true;
@@ -296,12 +305,8 @@ public class InfoPage extends Fragment implements View.OnClickListener
 
 
     public void displayToast(String value)
-    {
-        Toast.makeText(getContext(), value, Toast.LENGTH_SHORT).show();
-    }
+    {   Toast.makeText(getContext(), value, Toast.LENGTH_SHORT).show(); }
 
     public void displayToast()
-    {
-        Toast.makeText(getContext(), "Not implemented", Toast.LENGTH_SHORT).show();
-    }
+    {   Toast.makeText(getContext(), "Not implemented", Toast.LENGTH_SHORT).show();     }
 }

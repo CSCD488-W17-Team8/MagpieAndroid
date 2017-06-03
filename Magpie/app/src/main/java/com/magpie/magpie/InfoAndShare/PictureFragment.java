@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.magpie.magpie.NavActivity;
 import com.magpie.magpie.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,9 +59,6 @@ public class PictureFragment extends Fragment implements View.OnClickListener
 
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-
-
-
 
 
     public PictureFragment() {
@@ -171,9 +169,10 @@ public class PictureFragment extends Fragment implements View.OnClickListener
                // Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(),bmOptions);
                 //   bitmap = Bitmap.createScaledBitmap(bitmap,parent.getWidth(),parent.getHeight(),true);
 
-                nav_activity.setPicture(pictureFile);
+                //nav_activity.setPicture(pictureFile);
                 //image.setImageBitmap(bitmap);
                 bmpUri = Uri.fromFile(pictureFile);
+                nav_activity.setImageUri(bmpUri);
                 Fragment shareFrag = new ShareFragment();
                 nav_activity.startNewFragment(shareFrag);
             } catch (FileNotFoundException e) {

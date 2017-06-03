@@ -50,6 +50,10 @@ public class TrackGPS extends Service implements LocationListener {
         getLocation();
     }
 
+
+    public void update()
+    {   getLocation();  }
+
     private Location getLocation() {
 
         try {
